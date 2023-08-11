@@ -36,17 +36,23 @@ public class GridLayer : RasterLayer
         ComplexAgents = agentManager.Spawn<ComplexAgent, GridLayer>().ToList();
         HelperAgents = agentManager.Spawn<HelperAgent, GridLayer>().ToList();
 
+        List<Position> stairLocation = new List<Position>()
+        {
+            new Position(61, 75),
+            new Position(62, 75),
+            new Position(63, 75)
+        };
+
         List<Position> exitLocations = new List<Position>
         {
             new Position(57, 68),
             new Position(58, 68),
             new Position(55, 70),
-            new Position(55, 71),
             new Position(64, 70),
-            new Position(64, 71),
         };
 
-        Exits = exitLocations; 
+        Exits = exitLocations;
+        Stairs = stairLocation;
 
         return initLayer;
     }
@@ -89,6 +95,7 @@ public class GridLayer : RasterLayer
     public SpatialHashEnvironment<SimpleAgent> SimpleAgentEnvironment { get; set; }
 
     public List<Position> Exits { get; private set; }
+    public List<Position> Stairs { get; private set; }
 
     /// <summary>
     ///     The environment of the ComplexAgent agents

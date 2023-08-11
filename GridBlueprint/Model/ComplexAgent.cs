@@ -39,10 +39,21 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     public void Tick()
     {
+        _stairs = FindNearestExit(Position, _layer.Stairs);
+        _exit = FindNearestExit(Position, _layer.Exits);
+        var  distStairs = CalculateDistance(Position, _stairs );
+        var distExit = CalculateDistance(Position, _exit);
+
+        if (distExit < distStairs)
+        {
+            MoveTowardsGoal();
+        }
+        else
+        {
+            MoveStraightToExit();
+        }
         
         
-        
-        MoveTowardsGoal();
 
     }
 
@@ -68,8 +79,8 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             MovementDirections.Northwest
         };
     }
-    
- 
+
+
 
     /// <summary>
     ///     Moves the agent one step along the shortest routable path towards a fixed goal.
@@ -78,12 +89,44 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     {
         if (!_tripInProgress)
         {
-            // Explore nearby grid cells based on their values
-            Position exit = FindNearestExit(Position, _layer.Exits);
-            _path = _layer.FindPath(Position, exit).GetEnumerator();
+            // Finds closest exit and moves towards exit 
+            _exit = FindNearestExit(Position, _layer.Exits);
+            _goal = FindNearestExit(Position, _layer.Stairs);
+            _path = _layer.FindPath(Position, _exit).GetEnumerator();
             _tripInProgress = true;
         }
-        
+
+        if (_path.MoveNext())
+        {
+            _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
+            if (Position.Equals(_exit))
+            {
+                _path = _layer.FindPath(Position, _goal).GetEnumerator();
+                _tripInProgress = true;
+                if (_path.MoveNext())
+                {
+                    _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
+                    if (Position.Equals(_goal))
+                    {
+                        Console.WriteLine($"ComplexAgent {ID} reached goal {_goal}");
+                        RemoveFromSimulation();
+                        _tripInProgress = false;
+                    }
+                }
+            }
+        }
+    }
+
+    private void MoveStraightToExit()
+    {
+        if (!_tripInProgress)
+        {
+            // Finds closest exit and moves towards exit 
+            _goal = FindNearestExit(Position, _layer.Stairs);
+            _path = _layer.FindPath(Position, _exit).GetEnumerator();
+            _tripInProgress = true;
+        }
+
         if (_path.MoveNext())
         {
             _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
@@ -92,10 +135,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
                 Console.WriteLine($"ComplexAgent {ID} reached goal {_goal}");
                 RemoveFromSimulation();
                 _tripInProgress = false;
-            }
-        }
+                    }
+                }
     }
-    
     /// <summary>
      /// Finds the exit closest to the agent  
      /// </summary>
@@ -201,6 +243,8 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     private List<Position> _directions;
     private readonly Random _random = new();
     private Position _goal;
+    private Position _exit;
+    private Position _stairs;
     private bool _tripInProgress;
     private AgentState _state;
     private List<Position>.Enumerator _path;
