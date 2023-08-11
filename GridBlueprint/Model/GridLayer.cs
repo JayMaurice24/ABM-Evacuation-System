@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using Mars.Common.Core.Random;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Core.Data;
 using Mars.Interfaces.Data;
+using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 
 namespace GridBlueprint.Model;
@@ -34,6 +36,18 @@ public class GridLayer : RasterLayer
         ComplexAgents = agentManager.Spawn<ComplexAgent, GridLayer>().ToList();
         HelperAgents = agentManager.Spawn<HelperAgent, GridLayer>().ToList();
 
+        List<Position> exitLocations = new List<Position>
+        {
+            new Position(57, 68),
+            new Position(58, 68),
+            new Position(55, 70),
+            new Position(55, 71),
+            new Position(64, 70),
+            new Position(64, 71),
+        };
+
+        Exits = exitLocations; 
+
         return initLayer;
     }
 
@@ -48,15 +62,33 @@ public class GridLayer : RasterLayer
     /// <param name="y">y-coordinate of grid cell</param>
     /// <returns>Boolean representing if (x,y) is accessible</returns>
     public override bool IsRoutable(int x, int y) => this[x, y] == 0;
-
+    public Position FindRandomPosition()
+    {
+        var random = RandomHelper.Random;
+        bool check = true;
+        int x = 0, y = 0;
+        while (check)
+        {   x = random.Next(Width);
+            y = random.Next(Height);
+            if (IsRoutable(x,y))
+            {
+                check = false; 
+                 
+            }
+        }
+        return Position.CreatePosition(x, y); 
+    }
     #endregion
-
+    
+   
     #region Fields and Properties
 
     /// <summary>
     ///     The environment of the SimpleAgent agents
     /// </summary>
     public SpatialHashEnvironment<SimpleAgent> SimpleAgentEnvironment { get; set; }
+
+    public List<Position> Exits { get; private set; }
 
     /// <summary>
     ///     The environment of the ComplexAgent agents

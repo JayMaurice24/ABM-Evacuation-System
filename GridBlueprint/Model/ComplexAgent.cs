@@ -7,7 +7,6 @@ using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Numerics;
-
 namespace GridBlueprint.Model;
 
 public class ComplexAgent : IAgent<GridLayer>, IPositionable
@@ -20,12 +19,13 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     /// <param name="layer">The GridLayer that manages the agents</param>
     public void Init(GridLayer layer)
-    {
+    { 
         _layer = layer;
-        Position = new Position(StartX, StartY);
+        Position = _layer.FindRandomPosition();
         _state = AgentState.MoveTowardsGoal;  // Initial state of the agent. Is overwritten eventually in Tick()
         _directions = CreateMovementDirectionsList();
         _layer.ComplexAgentEnvironment.Insert(this);
+        
     }
 
     #endregion
@@ -39,30 +39,11 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     public void Tick()
     {
-        // Chooses random state if trip is no longer in progress. Comment this out if the agent should keep its initial state.
-        _state = RandomlySelectNewState();
         
-        if (_state == AgentState.MoveRandomly)
-        {
-            MoveRandomly();
-        }
-        else if (_state == AgentState.MoveWithBearing)
-        {
-            MoveWithBearing();
-        }
-        else if (_state == AgentState.MoveTowardsGoal)
-        {
-            MoveTowardsGoal();
-        }
-        else if (_state == AgentState.ExploreAgents)
-        {
-            ExploreAgents();
-        }
         
-        if (_layer.GetCurrentTick() == 595)
-        {
-            RemoveFromSimulation();
-        }
+        
+        MoveTowardsGoal();
+
     }
 
     #endregion
@@ -88,51 +69,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         };
     }
     
-    /// <summary>
-    ///     Performs one random move, if possible, using the movement directions list.
-    /// </summary>
-    private void MoveRandomly()
-    {
-        var nextDirection = _directions[_random.Next(_directions.Count)];
-        var newX = Position.X + nextDirection.X;
-        var newY = Position.Y + nextDirection.Y;
-        
-        // Check if chosen move is within the bounds of the grid
-        if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height)
-        {
-            // Check if chosen move goes to a cell that is routable
-            if (_layer.IsRoutable(newX, newY))
-            {
-                Position = new Position(newX, newY);
-                _layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY));
-                Console.WriteLine($"{GetType().Name} moved to a new cell: {Position}");
-            }
-            else
-            {
-                Console.WriteLine($"{GetType().Name} tried to move to a blocked cell: ({newX}, {newY})");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"{GetType().Name} tried to leave the world: ({newX}, {newY})");
-        }
-    }
-
-    /// <summary>
-    ///     Moves the agent towards a random routable adjacent cell via a calculated bearing.
-    /// </summary>
-    private void MoveWithBearing()
-    {
-        var goal = FindRoutableGoal();
-        var bearing = PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, goal.X, goal.Y);
-        var curPos = Position;
-        var newPos = _layer.ComplexAgentEnvironment.MoveTowards(this, bearing, 1);
-        if (!_layer.IsRoutable(newPos))
-        {
-            Position = curPos;
-            Console.WriteLine("Rollback");
-        }
-    }
+ 
 
     /// <summary>
     ///     Moves the agent one step along the shortest routable path towards a fixed goal.
@@ -142,8 +79,8 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         if (!_tripInProgress)
         {
             // Explore nearby grid cells based on their values
-            _goal = FindRoutableGoal(MaxTripDistance);
-            _path = _layer.FindPath(Position, _goal).GetEnumerator();
+            Position exit = FindNearestExit(Position, _layer.Exits);
+            _path = _layer.FindPath(Position, exit).GetEnumerator();
             _tripInProgress = true;
         }
         
@@ -153,33 +90,45 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             if (Position.Equals(_goal))
             {
                 Console.WriteLine($"ComplexAgent {ID} reached goal {_goal}");
+                RemoveFromSimulation();
                 _tripInProgress = false;
             }
         }
     }
-
+    
     /// <summary>
-    ///     Finds a routable grid cell that serves as a goal for subsequent pathfinding.
-    /// </summary>
-    /// <param name="maxDistanceToGoal">The maximum distance in grid cells between the agent's position and its goal</param>
-    /// <returns>The found grid cell</returns>
-    private Position FindRoutableGoal(double maxDistanceToGoal = 1.0)
+     /// Finds the exit closest to the agent  
+     /// </summary>
+     /// <param name="currPos"></param>
+     /// <param name="targets"></param>
+    private Position FindNearestExit(Position currPos, List<Position> targets)
     {
-        var nearbyRoutableCells = _layer.Explore(Position, radius: maxDistanceToGoal, predicate: cellValue => cellValue == 0.0).ToList();
-        var goal = nearbyRoutableCells[_random.Next(nearbyRoutableCells.Count)].Node.NodePosition;
-
-        // in case only one cell is routable, use directly no need to random!
-        // other vise, try to find a cell we are not coming from
-        if (nearbyRoutableCells.Count > 1)
+        Position nearestExit = null; 
+        double shortestDistance = double.MaxValue;
+        foreach (var p in targets)
         {
-            while (Position.Equals(goal))
+            double distance = CalculateDistance(currPos,p);
+            if (distance < shortestDistance)
             {
-                goal = nearbyRoutableCells[_random.Next(nearbyRoutableCells.Count)].Node.NodePosition;
+                shortestDistance = distance;
+                nearestExit = p; 
             }
         }
-        
-        Console.WriteLine($"New goal: {goal}");
-        return goal;
+
+        return nearestExit;
+    }
+    /// <summary>
+    /// Calculates the distance between the agent's current position and the exit
+    /// </summary>
+    /// <param name="agentCoord"></param>
+    /// <param name="exitCoord"></param>
+    /// <returns></returns>
+    private double CalculateDistance(Position agentCoord, Position exitCoord)
+    {
+        double dx = agentCoord.X - exitCoord.X; 
+        double dy = agentCoord.Y - exitCoord.Y;
+        return Math.Sqrt(dx * dx + dy * dy);
+
     }
 
     /// <summary>
@@ -188,7 +137,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     private void ExploreAgents()
     {
         // Explore nearby other SimpleAgent instances
-        var agents = _layer.SimpleAgentEnvironment.Explore(Position, radius: AgentExploreRadius);
+        var agents = _layer.ComplexAgentEnvironment.Explore(Position, radius: AgentExploreRadius);
 
         foreach (var agent in agents)
         {
@@ -227,20 +176,18 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         _layer.ComplexAgentEnvironment.Remove(this);
         UnregisterAgentHandle.Invoke(_layer, this);
     }
+    public void IncrementCounter()
+    {
+        MeetingCounter += 1;
+    }
 
     #endregion
 
     #region Fields and Properties
 
     public Guid ID { get; set; }
-    
+   
     public Position Position { get; set; }
-
-    [PropertyDescription(Name = "StartX")]
-    public int StartX { get; set; }
-    
-    [PropertyDescription(Name = "StartY")]
-    public int StartY { get; set; }
     
     [PropertyDescription(Name = "MaxTripDistance")]
     public double MaxTripDistance { get; set; }
@@ -257,6 +204,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     private bool _tripInProgress;
     private AgentState _state;
     private List<Position>.Enumerator _path;
+    public int MeetingCounter { get; private set; }
 
     #endregion
 }
