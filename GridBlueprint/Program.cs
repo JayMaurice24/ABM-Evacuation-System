@@ -15,8 +15,11 @@ internal static class Program
         description.AddLayer<GridLayer>();
         description.AddAgent<SimpleAgent, GridLayer>();
         description.AddAgent<ComplexAgent, GridLayer>();
+        description.AddAgent<Fire, GridLayer>();
         description.AddAgent<HelperAgent, GridLayer>();
-
+        description.AddEntity<Exits>();
+        description.AddEntity<Alarm>();
+            
         // Load the simulation configuration from a JSON configuration file
         var file = File.ReadAllText("config.json");
         var config = SimulationConfig.Deserialize(file);

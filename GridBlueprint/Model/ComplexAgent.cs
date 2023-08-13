@@ -39,7 +39,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     public void Tick()
     {
-        _stairs = FindNearestExit(Position, _layer.Stairs);
+        var rand = new Random();
+        var i = rand.Next(0, 2);
+        _stairs = _layer.Stairs[i];
         _exit = FindNearestExit(Position, _layer.Exits);
         var  distStairs = CalculateDistance(Position, _stairs );
         var distExit = CalculateDistance(Position, _exit);
@@ -90,8 +92,10 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         if (!_tripInProgress)
         {
             // Finds closest exit and moves towards exit 
+            var rand = new Random();
+            var i = rand.Next(0, 2);
             _exit = FindNearestExit(Position, _layer.Exits);
-            _goal = FindNearestExit(Position, _layer.Stairs);
+            _goal = _layer.Stairs[i];
             _path = _layer.FindPath(Position, _exit).GetEnumerator();
             _tripInProgress = true;
         }
@@ -122,7 +126,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         if (!_tripInProgress)
         {
             // Finds closest exit and moves towards exit 
-            _goal = FindNearestExit(Position, _layer.Stairs);
+            var rand = new Random();
+            var i = rand.Next(0, 2);
+            _goal = _layer.Stairs[i];
             _path = _layer.FindPath(Position, _exit).GetEnumerator();
             _tripInProgress = true;
         }
@@ -143,17 +149,17 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
      /// </summary>
      /// <param name="currPos"></param>
      /// <param name="targets"></param>
-    private Position FindNearestExit(Position currPos, List<Position> targets)
+    private Position FindNearestExit(Position currPos, List<Exits> targets)
     {
         Position nearestExit = null; 
         double shortestDistance = double.MaxValue;
         foreach (var p in targets)
         {
-            double distance = CalculateDistance(currPos,p);
+            double distance = CalculateDistance(currPos,p.Position);
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;
-                nearestExit = p; 
+                nearestExit = p.Position; 
             }
         }
 

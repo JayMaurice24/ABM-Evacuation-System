@@ -27,33 +27,44 @@ public class GridLayer : RasterLayer
     {
         var initLayer = base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
 
-        SimpleAgentEnvironment = new SpatialHashEnvironment<SimpleAgent>(Width, Height);
+        SimpleAgentEnvironment = new SpatialHashEnvironment<SimpleAgent>(Width, Height
+        );
         ComplexAgentEnvironment = new SpatialHashEnvironment<ComplexAgent>(Width, Height);
-
+        ExitEnvironment = new SpatialHashEnvironment<Exits>(Width, Height);
+        FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
+        
         var agentManager = layerInitData.Container.Resolve<IAgentManager>();
-
+        //var entityManager = Container.Resolve<IEntityManager>();
         SimpleAgents = agentManager.Spawn<SimpleAgent, GridLayer>().ToList();
         ComplexAgents = agentManager.Spawn<ComplexAgent, GridLayer>().ToList();
         HelperAgents = agentManager.Spawn<HelperAgent, GridLayer>().ToList();
+        Fire = agentManager.Spawn<Fire, GridLayer>().ToList();
+        IReadOnlyCollection<Exits> x = Exits;
 
-        List<Position> stairLocation = new List<Position>()
-        {
-            new Position(61, 75),
-            new Position(62, 75),
-            new Position(63, 75)
-        };
+        var westExit = new Exits();
+        var eastExit = new Exits();
+        var mainExit = new Exits();
+    
+        mainExit.Initialize(new Position(58, 68), true, false);
+        eastExit.Initialize(new Position(55, 70), true, false);
+        westExit.Initialize(new Position(64, 70), true, false);
 
-        List<Position> exitLocations = new List<Position>
-        {
-            new Position(57, 68),
-            new Position(58, 68),
-            new Position(55, 70),
-            new Position(64, 70),
-        };
+        List<Exits> exitLocations = new List<Exits> {};
+       
+        exitLocations.Add(mainExit);
+        exitLocations.Add(westExit);
+        exitLocations.Add(eastExit);
 
         Exits = exitLocations;
+        
+        
+        List<Position> stairLocation = new List<Position>()
+        {
+            new Position(58, 75),
+            new Position(57, 75),
+            new Position(56, 75)
+        };
         Stairs = stairLocation;
-
         return initLayer;
     }
 
@@ -94,19 +105,21 @@ public class GridLayer : RasterLayer
     /// </summary>
     public SpatialHashEnvironment<SimpleAgent> SimpleAgentEnvironment { get; set; }
 
-    public List<Position> Exits { get; private set; }
+    public List<Exits> Exits { get; private set; }
     public List<Position> Stairs { get; private set; }
 
     /// <summary>
     ///     The environment of the ComplexAgent agents
     /// </summary>
     public SpatialHashEnvironment<ComplexAgent> ComplexAgentEnvironment { get; set; }
-
+    public SpatialHashEnvironment<Exits> ExitEnvironment { get; set; }
+    public SpatialHashEnvironment<Fire> FireEnvironment { get; set; }
+    
     /// <summary>
     ///     A collection that holds the SimpleAgent instances
     /// </summary>
     public List<SimpleAgent> SimpleAgents { get; private set; }
-
+    public List<Fire> Fire { get; private set; }
     /// <summary>
     ///     A collection that holds the ComplexAgent instances
     /// </summary>

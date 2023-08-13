@@ -32,7 +32,7 @@ RASTER_COLORS = {
     4: BLUE_LIGHT,
 }
 UNKNOWN_RASTER = WHITE
-AGENT_COLORS = [GREEN_LIGHT, YELLOW_LIGHT, PURPLE_LIGHT, BLUE_LIGHT]
+AGENT_COLORS = [GREEN_LIGHT, YELLOW_LIGHT, PURPLE_LIGHT, BLUE_LIGHT, ORANGE]
 VECTOR_COLORS = [RED, WHITE, BLUE, ORANGE, YELLOW]
 
 # WINDOW_SIZE = 800, 800
@@ -44,7 +44,7 @@ class Visualization:
 
         self.programIcon = pygame.image.load('icon.png')
         pygame.display.set_icon(self.programIcon)
-
+        self.exit_colors = {}
         self.clock = pygame.time.Clock()
         self.WINDOW_SIZE = [900, 920]
         self.WORLD_SIZE = 0, 0, 100, 100  # used for scaling
@@ -124,7 +124,7 @@ class Visualization:
                 self.ws = None
                 return
 
-            # print(message)
+            print(message)
             data = json.loads(message)
 
             self.l.acquire_write()
@@ -136,6 +136,8 @@ class Visualization:
             if "entities" in data:
                 entities_points = data["entities"]
                 self.entities[data['t']] = entities_points
+                if "Exits" in entities_points: 
+                    self.update_exit_states(entities_points["Exits"])
             if "worldSize" in data:
                 world_data = data["worldSize"]
                 if world_data["maxX"] > 0:
@@ -168,6 +170,19 @@ class Visualization:
                 self.l.release_write()
             self.screen.fill(BLACK)
             self.ws = None
+
+    def update_exit_states(self, exit_data):
+        for exit_info in exit_data:
+            exit_id = exit_info["id"]
+            exit_color = RED
+            if exit_info["IsOpen"]:
+                exit_color = CYAN
+            elif not exit_info["IsLocked"]:
+                exit_color = YELLOW
+
+            # Update the exit's color in the visualization
+            if exit_id in self.exit_colors:
+                self.exit_colors[exit_id] = exit_color
 
     def visualize_content(self):
         self.clock.tick(self.desired_fps)
@@ -254,8 +269,32 @@ class Visualization:
                                    (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
                                     ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
                                    line_width * agent_size, 0)
+        for fire in self.entities.get("Fire", []):
+                x = fire["x"]
+                y = fire["y"]
+                cell_width = raster["cellWidth"]
+                cell_height = raster["cellHeight"]
+                pygame.draw.rect(surface, ORANGE, (exit_x, exit_y, cell_width, cell_height)) 
 
-        # Map game area to main view
+        for exit_data in self.entities.get("Exits", []):
+                exit_location = exit_data["position"]
+                locked = exit_data["IsLocked"]
+                opened = exit_data["IsOpen"]
+
+                exit_color = RED
+                if opened:
+                    exit_color = CYAN
+                elif not locked: 
+                    exit_color = YELLOW 
+                
+                exit_x = int((exit_location[0] - self.WORLD_SIZE[0]) * scale_x)
+                exit_y = int((exit_location[1] - self.WORLD_SIZE[1]) * scale_y)
+                cell_width = raster["cellWidth"]
+                cell_height = raster["cellHeight"]
+        
+        # Draw the exit rectangle with the calculated exit_x, exit_y, and exit_color
+                pygame.draw.rect(surface, exit_color, (exit_x, exit_y, cell_width, cell_height)) 
+
         flipped = pygame.transform.flip(surface, False, True)
         self.screen.blit(flipped, (10, 10))
         pygame.draw.rect(self.screen, WHITE, (*self.gamePos, *self.gameSize), 1)

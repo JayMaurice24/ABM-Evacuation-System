@@ -27,6 +27,25 @@
     {
       "name": "HelperAgent",
       "count": 1
+    },
+    {
+      "name": "Fire", 
+      "count": 1
+    }
+  ], 
+  "entities": [
+    {
+      "name": "Exits", 
+      "count": 3, 
+      "properties": {
+        "position":[
+          [55, 70], 
+          [64, 70],
+          [58, 68]
+        ], 
+        "IsLocked": [true, true, false], 
+        "IsOpen": [false, false, true]
+      }
     }
   ]
 }
