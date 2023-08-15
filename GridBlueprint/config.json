@@ -22,15 +22,19 @@
     },
     {
       "name": "ComplexAgent",
-      "count": 20,
+      "count": 20
     },
     {
       "name": "HelperAgent",
       "count": 1
     },
     {
-      "name": "Fire", 
+      "name": "Fire",
       "count": 1
+    },
+    {
+      "name": "Alarm",
+      "count": 10
     }
   ], 
   "entities": [

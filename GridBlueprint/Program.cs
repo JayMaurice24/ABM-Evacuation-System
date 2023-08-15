@@ -13,13 +13,13 @@ internal static class Program
         // Create a new model description and add model components to it
         var description = new ModelDescription();
         description.AddLayer<GridLayer>();
+        description.AddAgent<Fire, GridLayer>();
+        description.AddAgent<Alarm, GridLayer>();
         description.AddAgent<SimpleAgent, GridLayer>();
         description.AddAgent<ComplexAgent, GridLayer>();
-        description.AddAgent<Fire, GridLayer>();
         description.AddAgent<HelperAgent, GridLayer>();
         description.AddEntity<Exits>();
-        description.AddEntity<Alarm>();
-            
+
         // Load the simulation configuration from a JSON configuration file
         var file = File.ReadAllText("config.json");
         var config = SimulationConfig.Deserialize(file);

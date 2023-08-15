@@ -1,10 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Mars.Common;
-using Mars.Components.Agents;
 using Mars.Interfaces.Agents;
-using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Numerics;
@@ -12,16 +7,13 @@ namespace GridBlueprint.Model;
 
 public class Alarm : IAgent<GridLayer>, IPositionable
 {
-    public Guid ID { get; set; }
-    public bool On = false;
-   
-
+    
     #region Init
     public void Init(GridLayer layer){
         _layer = layer;
+        _state = AgentState.ExploreAgents;  // Initial state of the agent. Is overwritten eventually in Tick()
         Position = _layer.FindRandomPosition();
-        _state = AgentState.MoveTowardsGoal;  // Initial state of the agent. Is overwritten eventually in Tick()
-        //_layer.ComplexAgentEnvironment.Insert(this);
+        _layer.AlarmEnvironment.Insert(this);
     }
 
     #endregion
@@ -29,7 +21,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region Tick
         public void Tick()
         {
-            throw new NotImplementedException();
+            On = DetectFire();
         }
         
 
@@ -37,23 +29,32 @@ public class Alarm : IAgent<GridLayer>, IPositionable
 
     #region Methods
 
-    private void detectFire()
+    
+    private bool DetectFire()
     {
-        
+            var agents = _layer.FireEnvironment.Explore(Position, radius: 10);
+
+            foreach (var agent in agents)
+            {
+                if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{agent.Position.X, agent.Position.Y}) <= 1.0)
+                {
+                    return true; 
+                }
+            }
+
+            return false; 
     }
+    
 
     #endregion
 
     #region  Fields and properties
-
     public Position Position { get; set; }
     public Guid ID { get; set; }
+    public bool On; 
     public UnregisterAgent UnregisterAgentHandle { get; set; }
     private GridLayer _layer;
-    private List<Position> _directions;
-    private readonly Random _random = new();
     private AgentState _state;
-    private List<Position>.Enumerator _path;
 
     #endregion
     

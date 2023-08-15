@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Mars.Common;
 using Mars.Interfaces.Agents;
-using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
-using Mars.Numerics;
 namespace GridBlueprint.Model;
 
 
@@ -18,7 +14,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
     {
         _layer = layer;
         Position = _layer.FindRandomPosition();
-        _state = AgentState.MoveRandomly;  // Initial state of the agent. Is overwritten eventually in Tick()
+        _startSpread = 5;
         _layer.FireEnvironment.Insert(this);
     }
 
@@ -27,9 +23,13 @@ public class Fire : IAgent<GridLayer>, IPositionable
 
     #region Tick
 
+  
     public void Tick()
     {
-        Spread();
+        if (_startSpread < _layer.GetCurrentTick())
+        {
+            Spread(); 
+        }
     }
 
     #endregion
@@ -58,20 +58,26 @@ public class Fire : IAgent<GridLayer>, IPositionable
     private void Spread()
     {
         _directions = CreateMovementDirectionsList();
+        var currPos = Position;
 
         foreach (Position cell in _directions)
         {
-            if (_layer.IsRoutable(cell.X, cell.Y))
+            var newX = currPos.X + cell.X;
+            var newY = currPos.Y + cell.Y;
+            if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height)
             {
-                _layer.FireEnvironment.Insert(new Fire
-                {
-                    Position = cell
-                });
+                if (_layer.IsRoutable(newX, newY)){
+                    _layer.FireEnvironment.Insert(new Fire
+                    {
+                        Position = new Position(newX, newY)
+                    });
 
-                Console.WriteLine("Fire spread to: {0}", cell);
+                    Console.WriteLine("Fire spread to: {0}", Position);
+                }
             }
         }
     }
+    
 
     #endregion
 
@@ -84,8 +90,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
     private GridLayer _layer;
     private List<Position> _directions;
     private readonly Random _random = new();
-    private AgentState _state;
-    private List<Position>.Enumerator _path;
+    private int _startSpread; 
+
 
     #endregion
 }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Mars.Common;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -39,23 +37,29 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     public void Tick()
     {
-        var rand = new Random();
-        var i = rand.Next(0, 2);
-        _stairs = _layer.Stairs[i];
-        _exit = FindNearestExit(Position, _layer.Exits);
-        var  distStairs = CalculateDistance(Position, _stairs );
-        var distExit = CalculateDistance(Position, _exit);
-
-        if (distExit < distStairs)
+        if (_alarm.On)
         {
-            MoveTowardsGoal();
+            var rand = new Random();
+            var i = rand.Next(0, 2);
+            _stairs = _layer.Stairs[i];
+            _exit = FindNearestExit(Position, _layer.Exits);
+            var distStairs = CalculateDistance(Position, _stairs);
+            var distExit = CalculateDistance(Position, _exit);
+
+            if (distExit < distStairs)
+            {
+                MoveTowardsGoal();
+            }
+            else
+            {
+                MoveStraightToExit();
+            }
         }
         else
         {
-            MoveStraightToExit();
+            MoveRandomly();
         }
-        
-        
+
 
     }
 
@@ -98,6 +102,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             _goal = _layer.Stairs[i];
             _path = _layer.FindPath(Position, _exit).GetEnumerator();
             _tripInProgress = true;
+            
         }
 
         if (_path.MoveNext())
@@ -120,7 +125,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
     }
-
+/// <summary>
+/// Moves the agent straight towards the stairs if closer to the stairs
+/// </summary>
     private void MoveStraightToExit()
     {
         if (!_tripInProgress)
@@ -184,8 +191,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     private void ExploreAgents()
     {
-        // Explore nearby other SimpleAgent instances
-        var agents = _layer.ComplexAgentEnvironment.Explore(Position, radius: AgentExploreRadius);
+        var agents = _layer.ComplexAgentEnvironment.Explore(Position, radius: 5);
 
         foreach (var agent in agents)
         {
@@ -195,25 +201,39 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
     }
+    
+    private void MoveRandomly()
+    {
+        var nextDirection = _directions[_random.Next(_directions.Count)];
+        var newX = Position.X + nextDirection.X;
+        var newY = Position.Y + nextDirection.Y;
+        
+        // Check if chosen move is within the bounds of the grid
+        if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height)
+        {
+            // Check if chosen move goes to a cell that is routable
+            if (_layer.IsRoutable(newX, newY))
+            {
+                Position = new Position(newX, newY);
+                _layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY));
+                Console.WriteLine($"{GetType().Name} moved to a new cell: {Position}");
+            }
+            else
+            {
+                Console.WriteLine($"{GetType().Name} tried to move to a blocked cell: ({newX}, {newY})");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"{GetType().Name} tried to leave the world: ({newX}, {newY})");
+        }
+    }
 
     /// <summary>
     ///     Selects a new state from the AgentState enumeration to guide for subsequent behavior.
     ///     Will return the current state if a route is still in progress.
     /// </summary>
     /// <returns>The selected state</returns>
-    private AgentState RandomlySelectNewState()
-    {
-        if (_state == AgentState.MoveTowardsGoal && _tripInProgress)
-        {
-            Console.WriteLine("Trip still in progress, so no state change.");
-            return AgentState.MoveTowardsGoal;
-        }
-
-        var agentStates = Enum.GetValues(typeof(AgentState));
-        var newState = (AgentState) agentStates.GetValue(_random.Next(agentStates.Length))!;
-        Console.WriteLine($"New state: {newState}");
-        return newState;
-    }
 
     /// <summary>
     ///     Removes this agent from the simulation and, by extension, from the visualization.
@@ -241,18 +261,18 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     public double MaxTripDistance { get; set; }
     
     [PropertyDescription(Name = "AgentExploreRadius")]
-    public double AgentExploreRadius { get; set; }
-    
+
     public UnregisterAgent UnregisterAgentHandle { get; set; }
     
     private GridLayer _layer;
     private List<Position> _directions;
-    private readonly Random _random = new();
     private Position _goal;
     private Position _exit;
     private Position _stairs;
     private bool _tripInProgress;
     private AgentState _state;
+    private readonly Alarm _alarm = new Alarm();
+    private readonly Random _random = new();
     private List<Position>.Enumerator _path;
     public int MeetingCounter { get; private set; }
 

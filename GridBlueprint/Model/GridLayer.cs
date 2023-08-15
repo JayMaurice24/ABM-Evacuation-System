@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mars.Common.Core.Random;
 using Mars.Components.Environments;
@@ -22,25 +24,33 @@ public class GridLayer : RasterLayer
     /// <param name="registerAgentHandle">A handle for registering agents</param>
     /// <param name="unregisterAgentHandle">A handle for unregistering agents</param>
     /// <returns>A boolean that states if initialization was successful</returns>
+    [SuppressMessage("ReSharper.DPA", "DPA0000: DPA issues")]
     public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle,
         UnregisterAgent unregisterAgentHandle)
     {
         var initLayer = base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
 
-        SimpleAgentEnvironment = new SpatialHashEnvironment<SimpleAgent>(Width, Height
-        );
+        SimpleAgentEnvironment = new SpatialHashEnvironment<SimpleAgent>(Width, Height);
         ComplexAgentEnvironment = new SpatialHashEnvironment<ComplexAgent>(Width, Height);
         ExitEnvironment = new SpatialHashEnvironment<Exits>(Width, Height);
         FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
+        AlarmEnvironment = new SpatialHashEnvironment<Alarm>(Width, Height);
         
         var agentManager = layerInitData.Container.Resolve<IAgentManager>();
         //var entityManager = Container.Resolve<IEntityManager>();
         SimpleAgents = agentManager.Spawn<SimpleAgent, GridLayer>().ToList();
         ComplexAgents = agentManager.Spawn<ComplexAgent, GridLayer>().ToList();
         HelperAgents = agentManager.Spawn<HelperAgent, GridLayer>().ToList();
-        Fire = agentManager.Spawn<Fire, GridLayer>().ToList();
-        IReadOnlyCollection<Exits> x = Exits;
+        Fires = agentManager.Spawn<Fire, GridLayer>().ToList();
+        Alarms = agentManager.Spawn<Alarm, GridLayer>().ToList();
+    
+        var layer = this;
 
+        /*agentManager.Create<Fire>()(
+            layerInitData.AgentInitConfigs.First(config => config.Name == "MyOtherAgent"), 
+            registerAgentHandle, unregisterAgentHandle, 
+            new List<ILayer> {layer});*/
+        
         var westExit = new Exits();
         var eastExit = new Exits();
         var mainExit = new Exits();
@@ -49,11 +59,12 @@ public class GridLayer : RasterLayer
         eastExit.Initialize(new Position(55, 70), true, false);
         westExit.Initialize(new Position(64, 70), true, false);
 
-        List<Exits> exitLocations = new List<Exits> {};
-       
-        exitLocations.Add(mainExit);
-        exitLocations.Add(westExit);
-        exitLocations.Add(eastExit);
+        var exitLocations = new List<Exits>
+        {
+            mainExit,
+            westExit,
+            eastExit
+        };
 
         Exits = exitLocations;
         
@@ -95,6 +106,13 @@ public class GridLayer : RasterLayer
         }
         return Position.CreatePosition(x, y); 
     }
+    
+    public int PreTick()
+    {
+        var rand = new Random();
+        return rand.Next(1, 20);
+    }
+    
     #endregion
     
    
@@ -114,12 +132,15 @@ public class GridLayer : RasterLayer
     public SpatialHashEnvironment<ComplexAgent> ComplexAgentEnvironment { get; set; }
     public SpatialHashEnvironment<Exits> ExitEnvironment { get; set; }
     public SpatialHashEnvironment<Fire> FireEnvironment { get; set; }
+    public SpatialHashEnvironment<Alarm> AlarmEnvironment { get; set; }
     
     /// <summary>
     ///     A collection that holds the SimpleAgent instances
     /// </summary>
     public List<SimpleAgent> SimpleAgents { get; private set; }
-    public List<Fire> Fire { get; private set; }
+    
+    public List<Fire> Fires { get; private set; }
+    public List<Alarm> Alarms { get; private set; }
     /// <summary>
     ///     A collection that holds the ComplexAgent instances
     /// </summary>
