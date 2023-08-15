@@ -36,7 +36,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
 
             foreach (var agent in agents)
             {
-                if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{agent.Position.X, agent.Position.Y}) <= 1.0)
+                if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{agent.Position.X, agent.Position.Y}) <= 10)
                 {
                     return true; 
                 }

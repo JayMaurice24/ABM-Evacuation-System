@@ -32,7 +32,7 @@ RASTER_COLORS = {
     4: BLUE_LIGHT,
 }
 UNKNOWN_RASTER = WHITE
-AGENT_COLORS = [GREEN_LIGHT, YELLOW_LIGHT, PURPLE_LIGHT, BLUE_LIGHT, ORANGE]
+AGENT_COLORS = [WHITE, ORANGE, BLUE_LIGHT, PURPLE_LIGHT, YELLOW, CYAN]
 VECTOR_COLORS = [RED, WHITE, BLUE, ORANGE, YELLOW]
 
 # WINDOW_SIZE = 800, 800
@@ -46,7 +46,7 @@ class Visualization:
         pygame.display.set_icon(self.programIcon)
         self.exit_colors = {}
         self.clock = pygame.time.Clock()
-        self.WINDOW_SIZE = [900, 920]
+        self.WINDOW_SIZE = [1800, 1320]
         self.WORLD_SIZE = 0, 0, 100, 100  # used for scaling
         self.BORDER_WIDTH_PIXEL = -20
         self.font = pygame.font.Font('freesansbold.ttf', 12)
@@ -269,12 +269,6 @@ class Visualization:
                                    (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
                                     ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
                                    line_width * agent_size, 0)
-        for fire in self.entities.get("Fire", []):
-                x = fire["x"]
-                y = fire["y"]
-                cell_width = raster["cellWidth"]
-                cell_height = raster["cellHeight"]
-                pygame.draw.rect(surface, ORANGE, (exit_x, exit_y, cell_width, cell_height)) 
 
         for exit_data in self.entities.get("Exits", []):
                 exit_location = exit_data["position"]

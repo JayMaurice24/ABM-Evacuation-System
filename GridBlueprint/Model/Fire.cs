@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
@@ -13,9 +14,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
     public void Init(GridLayer layer)
     {
         _layer = layer;
-        Position = _layer.FindRandomPosition();
         _startSpread = 5;
-        _layer.FireEnvironment.Insert(this);
+        _directions = CreateMovementDirectionsList();
     }
 
 
@@ -26,9 +26,18 @@ public class Fire : IAgent<GridLayer>, IPositionable
   
     public void Tick()
     {
-        if (_startSpread < _layer.GetCurrentTick())
+        if(_startSpread < _layer.GetCurrentTick() && _layer.GetCurrentTick()%10 == 0)
         {
-            Spread(); 
+            if(!_layer.FireStarted)
+            {
+                Position = _layer.FindRandomPosition(); 
+                _layer.FireEnvironment.Insert(this);
+                _layer.FireStarted = true; 
+            }
+            else
+            {
+                Spread();
+            }
         }
     }
 
@@ -57,25 +66,28 @@ public class Fire : IAgent<GridLayer>, IPositionable
     /// </summary>
     private void Spread()
     {
-        _directions = CreateMovementDirectionsList();
-        var currPos = Position;
-
         foreach (Position cell in _directions)
         {
-            var newX = currPos.X + cell.X;
-            var newY = currPos.Y + cell.Y;
+            var newX = Position.X + cell.X;
+            var newY = Position.Y + cell.Y;
             if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height)
             {
                 if (_layer.IsRoutable(newX, newY)){
-                    _layer.FireEnvironment.Insert(new Fire
-                    {
-                        Position = new Position(newX, newY)
-                    });
-
-                    Console.WriteLine("Fire spread to: {0}", Position);
+                    SpreadFromPosition(new Position(newX, newY));
                 }
             }
         }
+    }
+
+
+    private void SpreadFromPosition(Position position)
+    {
+        _layer.AgentManager.Spawn<Fire, GridLayer>(null, agent =>
+        {
+            agent.Position = position;
+        }).Take(1).First();
+
+        Console.WriteLine("Fire spread to: {0}", position);
     }
     
 
@@ -90,8 +102,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
     private GridLayer _layer;
     private List<Position> _directions;
     private readonly Random _random = new();
-    private int _startSpread; 
-
+    private int _startSpread;
+    private bool _fireStarted = false; 
 
     #endregion
 }

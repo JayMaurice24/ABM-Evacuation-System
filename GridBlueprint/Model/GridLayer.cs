@@ -6,6 +6,7 @@ using Mars.Common.Core.Random;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Core.Data;
+using Mars.Interfaces.Agents;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
@@ -36,20 +37,22 @@ public class GridLayer : RasterLayer
         FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
         AlarmEnvironment = new SpatialHashEnvironment<Alarm>(Width, Height);
         
-        var agentManager = layerInitData.Container.Resolve<IAgentManager>();
+        AgentManager = layerInitData.Container.Resolve<IAgentManager>();
         //var entityManager = Container.Resolve<IEntityManager>();
-        SimpleAgents = agentManager.Spawn<SimpleAgent, GridLayer>().ToList();
-        ComplexAgents = agentManager.Spawn<ComplexAgent, GridLayer>().ToList();
-        HelperAgents = agentManager.Spawn<HelperAgent, GridLayer>().ToList();
-        Fires = agentManager.Spawn<Fire, GridLayer>().ToList();
-        Alarms = agentManager.Spawn<Alarm, GridLayer>().ToList();
+        SimpleAgents = AgentManager.Spawn<SimpleAgent, GridLayer>().ToList();
+        ComplexAgents = AgentManager.Spawn<ComplexAgent, GridLayer>().ToList();
+        HelperAgents = AgentManager.Spawn<HelperAgent, GridLayer>().ToList();
+        Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
+        Alarms = AgentManager.Spawn<Alarm, GridLayer>().ToList();
     
         var layer = this;
 
         /*agentManager.Create<Fire>()(
             layerInitData.AgentInitConfigs.First(config => config.Name == "MyOtherAgent"), 
             registerAgentHandle, unregisterAgentHandle, 
-            new List<ILayer> {layer});*/
+            new List<ILayer> {layer});
+        agentManager.Create<Fire>();
+        RegisterAgent(this, );*/
         
         var westExit = new Exits();
         var eastExit = new Exits();
@@ -150,6 +153,9 @@ public class GridLayer : RasterLayer
     ///     A collection that holds the HelperAgent instance
     /// </summary>
     public List<HelperAgent> HelperAgents { get; private set; }
+
+    public IAgentManager AgentManager { get; private set; }
+    public bool FireStarted { get; set; } = false; 
 
     #endregion
 }
