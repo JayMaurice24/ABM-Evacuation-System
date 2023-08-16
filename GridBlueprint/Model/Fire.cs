@@ -66,8 +66,10 @@ public class Fire : IAgent<GridLayer>, IPositionable
     /// </summary>
     private void Spread()
     {
-        foreach (Position cell in _directions)
-        {
+        var randomDirection = _rand.Next(1, _directions.Count);
+        for (var i = 0; i < randomDirection; i++ ){
+            var numMovements = _rand.Next(0, _directions.Count - 1);
+            var cell = _directions[numMovements];
             var newX = Position.X + cell.X;
             var newY = Position.Y + cell.Y;
             if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height)
@@ -101,9 +103,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
     public UnregisterAgent UnregisterAgentHandle { get; set; }
     private GridLayer _layer;
     private List<Position> _directions;
-    private readonly Random _random = new();
     private int _startSpread;
-    private bool _fireStarted = false; 
-
+    private readonly Random _rand = new Random();
     #endregion
 }

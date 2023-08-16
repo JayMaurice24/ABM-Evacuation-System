@@ -1,5 +1,6 @@
 using System;
 using Mars.Interfaces.Agents;
+using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Numerics;
@@ -11,8 +12,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region Init
     public void Init(GridLayer layer){
         _layer = layer;
-        _state = AgentState.ExploreAgents;  // Initial state of the agent. Is overwritten eventually in Tick()
-        Position = _layer.FindRandomPosition();
+        Position = new Position(locX, locY);
         _layer.AlarmEnvironment.Insert(this);
     }
 
@@ -21,7 +21,10 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region Tick
         public void Tick()
         {
-            On = DetectFire();
+            if (DetectFire())
+            {
+                _layer.Ring = true; 
+            }
         }
         
 
@@ -32,12 +35,13 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     
     private bool DetectFire()
     {
-            var agents = _layer.FireEnvironment.Explore(Position, radius: 10);
+            var agents = _layer.FireEnvironment.Explore(Position, radius: 15);
 
             foreach (var agent in agents)
             {
-                if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{agent.Position.X, agent.Position.Y}) <= 10)
+                if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{agent.Position.X, agent.Position.Y}) <= 15)
                 {
+                    Console.WriteLine("Fire detected");
                     return true; 
                 }
             }
@@ -54,7 +58,13 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     public bool On; 
     public UnregisterAgent UnregisterAgentHandle { get; set; }
     private GridLayer _layer;
-    private AgentState _state;
+    
+    [PropertyDescription(Name = "locX")]
+    public int locX { get; set; }
+    
+    [PropertyDescription(Name = "locY")]
+    public int locY { get; set; }
+
 
     #endregion
     

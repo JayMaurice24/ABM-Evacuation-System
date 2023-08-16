@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Mars.Components.Agents;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -37,7 +38,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     public void Tick()
     {
-        if (_alarm.On)
+        if (_layer.Ring)
         {
             var rand = new Random();
             var i = rand.Next(0, 2);
@@ -45,6 +46,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             _exit = FindNearestExit(Position, _layer.Exits);
             var distStairs = CalculateDistance(Position, _stairs);
             var distExit = CalculateDistance(Position, _exit);
+            Console.WriteLine("Agents moving towards exit");
 
             if (distExit < distStairs)
             {
@@ -105,7 +107,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             
         }
 
-        if (_path.MoveNext())
+        if (_path.MoveNext() &&  !AvoidFire())
         {
             _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
             if (Position.Equals(_exit))
@@ -140,7 +142,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             _tripInProgress = true;
         }
 
-        if (_path.MoveNext())
+        if (_path.MoveNext() && !AvoidFire())
         {
             _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
             if (Position.Equals(_goal))
@@ -201,6 +203,21 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
     }
+
+    private bool AvoidFire()
+    {
+        var fire = _layer.FireEnvironment.Explore(Position, radius: 1); 
+        
+        foreach (var flame in fire)
+        {
+            if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{flame.Position.X, flame.Position.Y}) <= 1.0)
+            {
+                return true;
+            }
+        }
+
+        return false; 
+    }
     
     private void MoveRandomly()
     {
@@ -229,12 +246,31 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         }
     }
 
-    /// <summary>
-    ///     Selects a new state from the AgentState enumeration to guide for subsequent behavior.
-    ///     Will return the current state if a route is still in progress.
-    /// </summary>
-    /// <returns>The selected state</returns>
+    private bool IsCellOccupied(Position targetPosition)
+    {
+        foreach (var agent in _layer.ComplexAgents)
+        {
+            if (agent!= this && agent.Position.Equals(targetPosition)){ 
+                return true;  //Cell is occupied
+            }
+        }
+        return false; // The cell is not occupied
+    }
+/*
+    private void Riskiness()
+    {
+        
+    }
 
+    private void Pushiness()
+    {
+        
+    }
+
+    private void Speed()
+    {
+        
+    }*/
     /// <summary>
     ///     Removes this agent from the simulation and, by extension, from the visualization.
     /// </summary>
@@ -271,7 +307,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     private Position _stairs;
     private bool _tripInProgress;
     private AgentState _state;
-    private readonly Alarm _alarm = new Alarm();
     private readonly Random _random = new();
     private List<Position>.Enumerator _path;
     public int MeetingCounter { get; private set; }

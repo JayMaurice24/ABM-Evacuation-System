@@ -155,7 +155,8 @@ public class GridLayer : RasterLayer
     public List<HelperAgent> HelperAgents { get; private set; }
 
     public IAgentManager AgentManager { get; private set; }
-    public bool FireStarted { get; set; } = false; 
+    public bool FireStarted { get; set; } = false;
+    public bool Ring { get; set; } = false; 
 
     #endregion
 }

@@ -264,8 +264,14 @@ class Visualization:
             for entity in self.entities[type_key]:
                 x = entity["x"]
                 y = entity["y"]
+                cell_width = raster["cellWidth"]
+                cell_height = raster["cellHeight"]
 
-                pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],
+                if (entity == self.entities.get("Alarm")):
+                    pygame.draw.rect(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)], 
+                                     (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2), ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2, cell_width, cell_height)) 
+                else: 
+                    pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],
                                    (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
                                     ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
                                    line_width * agent_size, 0)
