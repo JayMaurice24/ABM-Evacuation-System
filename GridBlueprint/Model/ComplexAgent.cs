@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Mars.Components.Agents;
+using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -24,7 +24,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         _state = AgentState.MoveTowardsGoal;  // Initial state of the agent. Is overwritten eventually in Tick()
         _directions = CreateMovementDirectionsList();
         _layer.ComplexAgentEnvironment.Insert(this);
-        
+        RiskLevel = 0;
+        Speed = 1; 
+
     }
 
     #endregion
@@ -40,21 +42,28 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     {
         if (_layer.Ring)
         {
-            var rand = new Random();
-            var i = rand.Next(0, 2);
-            _stairs = _layer.Stairs[i];
-            _exit = FindNearestExit(Position, _layer.Exits);
-            var distStairs = CalculateDistance(Position, _stairs);
-            var distExit = CalculateDistance(Position, _exit);
-            Console.WriteLine("Agents moving towards exit");
-
-            if (distExit < distStairs)
+            if (_layer.GetCurrentTick() > RiskLevel)
             {
-                MoveTowardsGoal();
+                Console.WriteLine("Risk level {RiskLevel}");
+                var i = _random.Next(0, 2);
+                _stairs = _layer.Stairs[i];
+                _exit = FindNearestExit(_layer.Exits);
+                var distStairs = CalculateDistance(Position, _stairs);
+                var distExit = CalculateDistance(Position, _exit);
+                Console.WriteLine("Agents moving towards exit");
+
+                if (distExit < distStairs)
+                {
+                    MoveTowardsGoal();
+                }
+                else
+                {
+                    MoveStraightToExit();
+                }
             }
             else
             {
-                MoveStraightToExit();
+                MoveRandomly();
             }
         }
         else
@@ -98,28 +107,31 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         if (!_tripInProgress)
         {
             // Finds closest exit and moves towards exit 
-            var rand = new Random();
-            var i = rand.Next(0, 2);
-            _exit = FindNearestExit(Position, _layer.Exits);
-            _goal = _layer.Stairs[i];
             _path = _layer.FindPath(Position, _exit).GetEnumerator();
             _tripInProgress = true;
             
         }
 
-        if (_path.MoveNext() &&  !AvoidFire())
+        if (_path.MoveNext())
         {
-            _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
+            if (AvoidFire())
+            {
+                _layer.ComplexAgentEnvironment.MoveTo(this, ChangeDirection(_path.Current), Speed);
+            }
+            else
+            {
+                _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);  
+            }
             if (Position.Equals(_exit))
             {
-                _path = _layer.FindPath(Position, _goal).GetEnumerator();
+                _path = _layer.FindPath(Position, _stairs).GetEnumerator();
                 _tripInProgress = true;
                 if (_path.MoveNext())
                 {
-                    _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
-                    if (Position.Equals(_goal))
+                    _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);
+                    if (Position.Equals(_stairs))
                     {
-                        Console.WriteLine($"ComplexAgent {ID} reached goal {_goal}");
+                        Console.WriteLine($"ComplexAgent {ID} reached goal {_stairs}");
                         RemoveFromSimulation();
                         _tripInProgress = false;
                     }
@@ -135,36 +147,38 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         if (!_tripInProgress)
         {
             // Finds closest exit and moves towards exit 
-            var rand = new Random();
-            var i = rand.Next(0, 2);
-            _goal = _layer.Stairs[i];
-            _path = _layer.FindPath(Position, _exit).GetEnumerator();
+            _path = _layer.FindPath(Position, _stairs).GetEnumerator();
             _tripInProgress = true;
         }
 
-        if (_path.MoveNext() && !AvoidFire())
+        if (_path.MoveNext())
         {
-            _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
-            if (Position.Equals(_goal))
+            if (AvoidFire())
             {
-                Console.WriteLine($"ComplexAgent {ID} reached goal {_goal}");
+                _layer.ComplexAgentEnvironment.MoveTo(this, ChangeDirection(_path.Current), Speed);
+            }
+            else
+            {
+                _layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);  
+            }
+            if (Position.Equals(_stairs))
+            {
+                Console.WriteLine($"ComplexAgent {ID} reached goal {_stairs}");
                 RemoveFromSimulation();
                 _tripInProgress = false;
-                    }
-                }
+            }
+        }
     }
     /// <summary>
      /// Finds the exit closest to the agent  
      /// </summary>
-     /// <param name="currPos"></param>
-     /// <param name="targets"></param>
-    private Position FindNearestExit(Position currPos, List<Exits> targets)
+    private Position FindNearestExit(List<Exits> targets)
     {
         Position nearestExit = null; 
         double shortestDistance = double.MaxValue;
         foreach (var p in targets)
         {
-            double distance = CalculateDistance(currPos,p.Position);
+            double distance = CalculateDistance(Position, p.Position); 
             if (distance < shortestDistance)
             {
                 shortestDistance = distance;
@@ -177,15 +191,46 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
     /// Calculates the distance between the agent's current position and the exit
     /// </summary>
-    /// <param name="agentCoord"></param>
-    /// <param name="exitCoord"></param>
-    /// <returns></returns>
-    private double CalculateDistance(Position agentCoord, Position exitCoord)
+    private double CalculateDistance(Position coords1, Position coords2)
     {
-        double dx = agentCoord.X - exitCoord.X; 
-        double dy = agentCoord.Y - exitCoord.Y;
-        return Math.Sqrt(dx * dx + dy * dy);
+        return Distance.Chebyshev(new[] { coords1.X, coords1.Y }, new[] { coords2.X, coords2.Y }); 
 
+    }
+
+    private Position ChangeDirection(Position position)
+    {
+        var fire = _layer.FireEnvironment.Entities.OrderBy(flame =>
+                Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }))
+            .FirstOrDefault();
+
+        if (fire != null)
+        {
+            if (position.Equals(fire.Position))
+            {
+                foreach (var next in _directions)
+                {
+                    var newX = Position.X + next.X;
+                    var newY = Position.Y + next.Y;
+
+                    if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height &&
+                        _layer.IsRoutable(newX, newY) && AvoidFire() == false)
+                    {
+                        var nextCell = _layer.FireEnvironment.Entities.FirstOrDefault(flame =>
+                            Distance.Chebyshev(new[] { newX, newY }, new[] { flame.Position.X, flame.Position.Y }) <=
+                            1.0);
+
+                        if (nextCell == null)
+                        {
+                            return new Position(newX, newY);
+
+                        }
+                    }
+                }
+            }
+
+           
+        }
+        return position;
     }
 
     /// <summary>
@@ -210,7 +255,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         
         foreach (var flame in fire)
         {
-            if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{flame.Position.X, flame.Position.Y}) <= 1.0)
+            if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{flame.Position.X, flame.Position.Y}) <= 2.0)
             {
                 return true;
             }
@@ -256,21 +301,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         }
         return false; // The cell is not occupied
     }
-/*
-    private void Riskiness()
-    {
-        
-    }
 
-    private void Pushiness()
-    {
-        
-    }
-
-    private void Speed()
-    {
-        
-    }*/
     /// <summary>
     ///     Removes this agent from the simulation and, by extension, from the visualization.
     /// </summary>
@@ -302,7 +333,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     
     private GridLayer _layer;
     private List<Position> _directions;
-    private Position _goal;
     private Position _exit;
     private Position _stairs;
     private bool _tripInProgress;
@@ -310,6 +340,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     private readonly Random _random = new();
     private List<Position>.Enumerator _path;
     public int MeetingCounter { get; private set; }
+    public int RiskLevel;
+    public int Speed; 
+
 
     #endregion
 }

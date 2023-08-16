@@ -32,7 +32,7 @@ RASTER_COLORS = {
     4: BLUE_LIGHT,
 }
 UNKNOWN_RASTER = WHITE
-AGENT_COLORS = [WHITE, ORANGE, BLUE_LIGHT, PURPLE_LIGHT, YELLOW, CYAN]
+AGENT_COLORS = [WHITE, ORANGE, BLUE_LIGHT, GRAY, YELLOW, GREEN, PURPLE, PURPLE_LIGHT, CYAN, BLUE, NAVYBLUE, RED]
 VECTOR_COLORS = [RED, WHITE, BLUE, ORANGE, YELLOW]
 
 # WINDOW_SIZE = 800, 800
@@ -46,7 +46,7 @@ class Visualization:
         pygame.display.set_icon(self.programIcon)
         self.exit_colors = {}
         self.clock = pygame.time.Clock()
-        self.WINDOW_SIZE = [1800, 1320]
+        self.WINDOW_SIZE = [1440, 960]
         self.WORLD_SIZE = 0, 0, 100, 100  # used for scaling
         self.BORDER_WIDTH_PIXEL = -20
         self.font = pygame.font.Font('freesansbold.ttf', 12)
@@ -264,14 +264,8 @@ class Visualization:
             for entity in self.entities[type_key]:
                 x = entity["x"]
                 y = entity["y"]
-                cell_width = raster["cellWidth"]
-                cell_height = raster["cellHeight"]
-
-                if (entity == self.entities.get("Alarm")):
-                    pygame.draw.rect(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)], 
-                                     (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2), ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2, cell_width, cell_height)) 
-                else: 
-                    pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],
+               
+                pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],
                                    (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
                                     ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
                                    line_width * agent_size, 0)

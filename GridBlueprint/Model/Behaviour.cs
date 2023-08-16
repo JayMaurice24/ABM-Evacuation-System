@@ -11,26 +11,41 @@ public class Behaviour
 
     public Behaviour()
     {
-        Risk = Riskiness();
-        Push = Pushiness();
-        Movement = Speed();
+        
     }
 
-        private int Riskiness()
+        public static int LowRisk()
         {
             var rand = new Random();
-            return rand.Next(1, 10);
+            return rand.Next(1, 4);
+        }
+        public static int MediumRisk()
+        {
+            var rand = new Random();
+            return rand.Next(4, 7);
         }
 
-        private int Pushiness()
+        public static int HighRisk()
         {
             var rand = new Random();
-            return rand.Next(1, 10);
+            return rand.Next(7, 10);
         }
 
-        private int Speed()
+        public static int LowSpeed()
         {
             var rand = new Random();
-            return rand.Next(1, 10);
+            return rand.Next(1, 4);
+        }
+        
+        public static int MediumSpeed()
+        {
+            var rand = new Random();
+            return rand.Next(4, 7);
+        }
+
+        public static int HighSpeed()
+        {
+            var rand = new Random();
+            return rand.Next(7, 10);
         }
     }

@@ -30,30 +30,28 @@ public class GridLayer : RasterLayer
         UnregisterAgent unregisterAgentHandle)
     {
         var initLayer = base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
-
-        SimpleAgentEnvironment = new SpatialHashEnvironment<SimpleAgent>(Width, Height);
+        
         ComplexAgentEnvironment = new SpatialHashEnvironment<ComplexAgent>(Width, Height);
         ExitEnvironment = new SpatialHashEnvironment<Exits>(Width, Height);
         FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
         AlarmEnvironment = new SpatialHashEnvironment<Alarm>(Width, Height);
         
         AgentManager = layerInitData.Container.Resolve<IAgentManager>();
-        //var entityManager = Container.Resolve<IEntityManager>();
-        SimpleAgents = AgentManager.Spawn<SimpleAgent, GridLayer>().ToList();
-        ComplexAgents = AgentManager.Spawn<ComplexAgent, GridLayer>().ToList();
+        Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
+        Agent2 = AgentManager.Spawn<AgentType2, GridLayer>().ToList();
+        Agent3 = AgentManager.Spawn<AgentType3, GridLayer>().ToList();
+        Agent4 = AgentManager.Spawn<AgentType4, GridLayer>().ToList();
+        Agent5 = AgentManager.Spawn<AgentType5, GridLayer>().ToList();
+        Agent6 = AgentManager.Spawn<AgentType6, GridLayer>().ToList();
+        Agent7 = AgentManager.Spawn<AgentType7, GridLayer>().ToList();
+        Agent8 = AgentManager.Spawn<AgentType8, GridLayer>().ToList();
+        Agent9 = AgentManager.Spawn<AgentType9, GridLayer>().ToList();
+       
+        
         HelperAgents = AgentManager.Spawn<HelperAgent, GridLayer>().ToList();
         Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
         Alarms = AgentManager.Spawn<Alarm, GridLayer>().ToList();
-    
-        var layer = this;
 
-        /*agentManager.Create<Fire>()(
-            layerInitData.AgentInitConfigs.First(config => config.Name == "MyOtherAgent"), 
-            registerAgentHandle, unregisterAgentHandle, 
-            new List<ILayer> {layer});
-        agentManager.Create<Fire>();
-        RegisterAgent(this, );*/
-        
         var westExit = new Exits();
         var eastExit = new Exits();
         var mainExit = new Exits();
@@ -124,7 +122,6 @@ public class GridLayer : RasterLayer
     /// <summary>
     ///     The environment of the SimpleAgent agents
     /// </summary>
-    public SpatialHashEnvironment<SimpleAgent> SimpleAgentEnvironment { get; set; }
 
     public List<Exits> Exits { get; private set; }
     public List<Position> Stairs { get; private set; }
@@ -140,15 +137,21 @@ public class GridLayer : RasterLayer
     /// <summary>
     ///     A collection that holds the SimpleAgent instances
     /// </summary>
-    public List<SimpleAgent> SimpleAgents { get; private set; }
-    
     public List<Fire> Fires { get; private set; }
     public List<Alarm> Alarms { get; private set; }
     /// <summary>
     ///     A collection that holds the ComplexAgent instances
     /// </summary>
-    public List<ComplexAgent> ComplexAgents { get; private set; }
 
+    public List<AgentType1> Agent1 { get; private set; }
+    public List<AgentType2> Agent2 { get; private set; }
+    public List<AgentType3> Agent3 { get; private set; }
+    public List<AgentType4> Agent4 { get; private set; }
+    public List<AgentType5> Agent5 { get; private set; }
+    public List<AgentType6> Agent6 { get; private set; }
+    public List<AgentType7> Agent7 { get; private set; }
+    public List<AgentType8> Agent8{ get; private set; }
+    public List<AgentType9> Agent9 { get; private set; }
     /// <summary>
     ///     A collection that holds the HelperAgent instance
     /// </summary>
@@ -156,7 +159,8 @@ public class GridLayer : RasterLayer
 
     public IAgentManager AgentManager { get; private set; }
     public bool FireStarted { get; set; } = false;
-    public bool Ring { get; set; } = false; 
+    public bool Ring { get; set; } = false;
+    public IEnumerable<ComplexAgent> ComplexAgents { get; set; }
 
     #endregion
 }
