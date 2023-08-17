@@ -41,9 +41,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     {
         if (_layer.Ring)
         {
-            if (_layer.GetCurrentTick() > RiskLevel)
-            {
-                Console.WriteLine("Risk level {RiskLevel}");
                 var i = _random.Next(0, 2);
                 _stairs = _layer.Stairs[i];
                 _exit = FindNearestExit(_layer.Exits);
@@ -60,11 +57,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
                     MoveStraightToExit();
                 }
             }
-            else
-            {
-                MoveRandomly();
-            }
-        }
         else
         {
             MoveRandomly();

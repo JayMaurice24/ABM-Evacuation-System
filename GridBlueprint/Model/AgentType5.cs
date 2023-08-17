@@ -1,7 +1,7 @@
 namespace GridBlueprint.Model;
 
 /// <summary>
-/// Agent With Medium Risk and medium Speed 
+/// Agent With Low Risk, Medium Speed and Medium Aggression 
 /// </summary>
 public class AgentType5 : ComplexAgent
 {

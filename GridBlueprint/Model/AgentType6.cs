@@ -2,7 +2,7 @@ namespace GridBlueprint.Model;
 
 
 /// <summary>
-/// Agent With Medium Risk and High Speed 
+/// Agent With Low Risk, Medium Speed and High Aggression 
 /// </summary>
 public class AgentType6 : ComplexAgent
 {
@@ -10,8 +10,7 @@ public class AgentType6 : ComplexAgent
     {
         base.Init(layer);
         RiskLevel = Behaviour.MediumRisk();
-        Speed = Behaviour.HighSpeed();
-    }
+        Speed = Behaviour.MediumSpeed();    }
 
     public new void Tick()
     {

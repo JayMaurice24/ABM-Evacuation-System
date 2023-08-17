@@ -2,7 +2,7 @@ namespace GridBlueprint.Model;
 
 
 /// <summary>
-/// Agent With High Risk and High Speed 
+/// Agent With Low Risk, High Speed and High Aggression 
 /// </summary>
 /// 
 public class AgentType9 : ComplexAgent
