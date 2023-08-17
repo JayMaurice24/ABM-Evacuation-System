@@ -2,18 +2,8 @@ using System;
 
 namespace GridBlueprint.Model;
 
-public class Behaviour
+public abstract class Behaviour
 {
-    public int Risk;
-    public int Push;
-    public int Movement;
-
-
-    public Behaviour()
-    {
-        
-    }
-
         public static int LowRisk()
         {
             var rand = new Random();
@@ -48,4 +38,6 @@ public class Behaviour
             var rand = new Random();
             return rand.Next(7, 10);
         }
+
+
     }

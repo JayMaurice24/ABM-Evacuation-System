@@ -21,7 +21,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     { 
         _layer = layer;
         Position = _layer.FindRandomPosition();
-        _state = AgentState.MoveTowardsGoal;  // Initial state of the agent. Is overwritten eventually in Tick()
         _directions = CreateMovementDirectionsList();
         _layer.ComplexAgentEnvironment.Insert(this);
         RiskLevel = 0;
@@ -197,11 +196,15 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
     }
 
+    /// <summary>
+    /// Changes the agent's travel direction when they're in close proximity to the fire 
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
     private Position ChangeDirection(Position position)
     {
-        var fire = _layer.FireEnvironment.Entities.OrderBy(flame =>
-                Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }))
-            .FirstOrDefault();
+        var fire = _layer.FireEnvironment.Entities.MinBy(flame =>
+            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
 
         if (fire != null)
         {
@@ -248,7 +251,11 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
     }
-
+    
+    /// <summary>
+    /// Checks if the agent is in close proximity to the fire
+    /// </summary>
+    /// <returns></returns>
     private bool AvoidFire()
     {
         var fire = _layer.FireEnvironment.Explore(Position, radius: 1); 
@@ -291,16 +298,27 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         }
     }
 
+    /// <summary>
+    /// Checks if the next cell is occupied by an agent
+    /// </summary>
+    /// <param name="targetPosition"></param>
+    /// <returns></returns>
     private bool IsCellOccupied(Position targetPosition)
     {
-        foreach (var agent in _layer.ComplexAgents)
+        var agents = _layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { agent.Position.X, agent.Position.Y }));
+
+        if (agents != null)
         {
-            if (agent!= this && agent.Position.Equals(targetPosition)){ 
-                return true;  //Cell is occupied
+            if (targetPosition.Equals(agents.Position))
+            {
+                return true; 
             }
         }
-        return false; // The cell is not occupied
+        
+        return false;
     }
+    
 
     /// <summary>
     ///     Removes this agent from the simulation and, by extension, from the visualization.
@@ -315,6 +333,97 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     {
         MeetingCounter += 1;
     }
+    
+        private void Low()
+        {
+            if (IsCellOccupied(Position))
+            {
+                // Do nothing and wait for the cell to become unoccupied
+            }
+            else
+            {
+                MoveRandomly();
+            }
+        }
+
+        private void Medium()
+        {
+            if (IsCellOccupied(Position))
+            {
+                ComplexAgent otherAgent = GetAgentAt(Position);
+                if (otherAgent != null)
+                {
+                    if (otherAgent._pushiness < _pushiness)
+                    {
+                        PushAgent(otherAgent);
+                    }
+                    else
+                    {
+                        // Do nothing and wait for the other agent to move
+                    }
+                }
+            }
+            else
+            {
+                MoveRandomly();
+            }
+        }
+
+        private void High()
+        {
+            if (IsCellOccupied(Position))
+            {
+                ComplexAgent otherAgent = GetAgentAt(Position);
+                if (otherAgent != null)
+                {
+                    PushAgent(otherAgent);
+                }
+            }
+            else
+            {
+                MoveRandomly();
+            }
+        }
+
+        private void PushAgent(ComplexAgent otherAgent)
+        {
+            // Calculate the direction to push the other agent
+            var pushDirectionX = otherAgent.Position.X - Position.X;
+            var pushDirectionY = otherAgent.Position.Y - Position.Y;
+
+            // Calculate the new position for the other agent after the push
+            var newAgentX = otherAgent.Position.X + pushDirectionX;
+            var newAgentY = otherAgent.Position.Y + pushDirectionY;
+
+            // Check if the new position is within the bounds of the grid
+            if (0 <= newAgentX && newAgentX < _layer.Width &&
+                0 <= newAgentY && newAgentY < _layer.Height)
+            {
+                // Check if the new position is routable
+                if (_layer.IsRoutable(newAgentX, newAgentY))
+                {
+                    // Move the other agent to the new position
+                    otherAgent.Position = new Position(newAgentX, newAgentY);
+                    _layer.ComplexAgentEnvironment.MoveTo(otherAgent, new Position(newAgentX, newAgentY));
+                }
+            }
+        }
+
+
+        private ComplexAgent GetAgentAt(Position position)
+        {
+            // Iterate through the list of agents in the environment
+            foreach (var agent in _layer.ComplexAgentEnvironment.Entities)
+            {
+                if (agent != this && agent.Position.Equals(position))
+                {
+                    return agent; // Return the agent found at the specified position
+                }
+            }
+    
+            return null; // No agent found at the specified position
+        }
+    
 
     #endregion
 
@@ -336,12 +445,12 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     private Position _exit;
     private Position _stairs;
     private bool _tripInProgress;
-    private AgentState _state;
+    private Aggression _pushiness;
     private readonly Random _random = new();
     private List<Position>.Enumerator _path;
-    public int MeetingCounter { get; private set; }
-    public int RiskLevel;
-    public int Speed; 
+    protected int MeetingCounter { get; private set; }
+    protected int RiskLevel { get; set;}
+    protected int Speed { get; set; }
 
 
     #endregion
