@@ -24,7 +24,7 @@ public abstract class Behaviour
         public static int LowSpeed()
         {
             var rand = new Random();
-            return rand.Next(1, 4);
+            return rand.Next(7, 10);
         }
         
         public static int MediumSpeed()
@@ -36,7 +36,7 @@ public abstract class Behaviour
         public static int HighSpeed()
         {
             var rand = new Random();
-            return rand.Next(7, 10);
+            return rand.Next(1, 4);
         }
 
 

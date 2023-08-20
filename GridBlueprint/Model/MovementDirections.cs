@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Mars.Interfaces.Environments;
 
 namespace GridBlueprint.Model;
@@ -12,4 +13,19 @@ public abstract class MovementDirections
     public static readonly Position Southwest = new(-1, -1);
     public static readonly Position West = new(-1, 0);
     public static readonly Position Northwest = new(-1, 1);
+    
+    public static List<Position> CreateMovementDirectionsList()
+    {
+        return new List<Position>
+        {
+            MovementDirections.North,
+            MovementDirections.Northeast,
+            MovementDirections.East,
+            MovementDirections.Southeast,
+            MovementDirections.South,
+            MovementDirections.Southwest,
+            MovementDirections.West,
+            MovementDirections.Northwest
+        };
+    }
 }
