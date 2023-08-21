@@ -21,11 +21,8 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     { 
         _layer = layer;
         Position = _layer.FindRandomPosition();
-        _directions = CreateMovementDirectionsList();
+        Directions = CreateMovementDirectionsList();
         _layer.ComplexAgentEnvironment.Insert(this);
-        RiskLevel = 0;
-        Speed = 1; 
-
     }
 
     #endregion
@@ -93,7 +90,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
     ///     Moves the agent one step along the shortest routable path towards a fixed goal.
     /// </summary>
-    private void MoveTowardsGoal()
+    protected void MoveTowardsGoal()
     {
         if (!_tripInProgress)
         {
@@ -133,7 +130,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 /// <summary>
 /// Moves the agent straight towards the stairs if closer to the stairs
 /// </summary>
-    private void MoveStraightToExit()
+    protected void MoveStraightToExit()
     {
         if (!_tripInProgress)
         {
@@ -163,7 +160,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
      /// Finds the exit closest to the agent  
      /// </summary>
-    private Position FindNearestExit(List<Exits> targets)
+    protected Position FindNearestExit(List<Exits> targets)
     {
         Position nearestExit = null; 
         double shortestDistance = double.MaxValue;
@@ -182,7 +179,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
     /// Calculates the distance between the agent's current position and the exit
     /// </summary>
-    private double CalculateDistance(Position coords1, Position coords2)
+    protected double CalculateDistance(Position coords1, Position coords2)
     {
         return Distance.Chebyshev(new[] { coords1.X, coords1.Y }, new[] { coords2.X, coords2.Y }); 
 
@@ -193,7 +190,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-    private Position ChangeDirection(Position position)
+    protected Position ChangeDirection(Position position)
     {
         var fire = _layer.FireEnvironment.Entities.MinBy(flame =>
             Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
@@ -202,7 +199,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         {
             if (position.Equals(fire.Position))
             {
-                foreach (var next in _directions)
+                foreach (var next in Directions)
                 {
                     var newX = Position.X + next.X;
                     var newY = Position.Y + next.Y;
@@ -231,7 +228,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
     ///     Explores the environment for agents of another type and increments their counter if they are nearby.
     /// </summary>
-    private void ExploreAgents()
+    protected void ExploreAgents()
     {
         var agents = _layer.ComplexAgentEnvironment.Explore(Position, radius: 5);
 
@@ -248,7 +245,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// Checks if the agent is in close proximity to the fire
     /// </summary>
     /// <returns></returns>
-    private bool AvoidFire()
+    protected bool AvoidFire()
     {
         var fire = _layer.FireEnvironment.Explore(Position, radius: 1); 
         
@@ -263,9 +260,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         return false; 
     }
     
-    private void MoveRandomly()
+    protected void MoveRandomly()
     {
-        var nextDirection = _directions[_random.Next(_directions.Count)];
+        var nextDirection = Directions[_random.Next(Directions.Count)];
         var newX = Position.X + nextDirection.X;
         var newY = Position.Y + nextDirection.Y;
         
@@ -295,7 +292,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// </summary>
     /// <param name="targetPosition"></param>
     /// <returns></returns>
-    private bool IsCellOccupied(Position targetPosition)
+    protected bool IsCellOccupied(Position targetPosition)
     {
         var agents = _layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
             Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { agent.Position.X, agent.Position.Y }));
@@ -315,7 +312,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
     ///     Removes this agent from the simulation and, by extension, from the visualization.
     /// </summary>
-    private void RemoveFromSimulation()
+    protected void RemoveFromSimulation()
     {
         Console.WriteLine($"ComplexAgent {ID} is removing itself from the simulation.");
         _layer.ComplexAgentEnvironment.Remove(this);
@@ -326,7 +323,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         MeetingCounter += 1;
     }
     
-        private void Low()
+        protected void Low()
         {
             if (IsCellOccupied(Position))
             {
@@ -338,7 +335,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
 
-        private void Medium()
+        protected void Medium()
         {
             if (IsCellOccupied(Position))
             {
@@ -361,7 +358,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
 
-        private void High()
+        protected void High()
         {
             if (IsCellOccupied(Position))
             {
@@ -377,7 +374,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
 
-        private void PushAgent(ComplexAgent otherAgent)
+        protected void PushAgent(ComplexAgent otherAgent)
         {
             // Calculate the direction to push the other agent
             var pushDirectionX = otherAgent.Position.X - Position.X;
@@ -402,7 +399,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         }
 
 
-        private ComplexAgent GetAgentAt(Position position)
+        protected ComplexAgent GetAgentAt(Position position)
         {
             // Iterate through the list of agents in the environment
             foreach (var agent in _layer.ComplexAgentEnvironment.Entities)
@@ -432,14 +429,14 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
     public UnregisterAgent UnregisterAgentHandle { get; set; }
     
-    private GridLayer _layer;
-    private List<Position> _directions;
-    private Position _exit;
-    private Position _stairs;
-    private bool _tripInProgress;
-    private Aggression _pushiness;
-    private readonly Random _random = new();
-    private List<Position>.Enumerator _path;
+    protected GridLayer _layer;
+    protected List<Position> Directions;
+    protected Position _exit;
+    protected Position _stairs;
+    protected bool _tripInProgress;
+    protected Aggression _pushiness;
+    protected readonly Random _random = new();
+    protected List<Position>.Enumerator _path;
     protected int MeetingCounter { get; private set; }
     protected int RiskLevel { get; set;}
     protected int Speed { get; set; }

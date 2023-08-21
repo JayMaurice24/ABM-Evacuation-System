@@ -1,3 +1,5 @@
+using System;
+
 namespace GridBlueprint.Model;
 
 /// <summary>
@@ -5,16 +7,37 @@ namespace GridBlueprint.Model;
 /// </summary>
 public class AgentType1 : ComplexAgent
 {
-    private new void Init(GridLayer layer)
+    public new void Init(GridLayer layer)
     {
         base.Init(layer);
         RiskLevel = Behaviour.LowRisk();
         Speed = Behaviour.LowSpeed();
     }
 
-    private new void Tick()
+    public new void Tick()
     {
-        base.Tick();
+        if (_layer.Ring)
+        {
+            var i = _random.Next(0, 2);
+            _stairs = _layer.Stairs[i];
+            _exit = FindNearestExit(_layer.Exits);
+            var distStairs = CalculateDistance(Position, _stairs);
+            var distExit = CalculateDistance(Position, _exit);
+            Console.WriteLine("Agents moving towards exit");
+
+            if (distExit < distStairs)
+            {
+                MoveTowardsGoal();
+            }
+            else
+            {
+                MoveStraightToExit();
+            }
+        }
+        else
+        {
+            MoveRandomly();
+        }
     }
 
 }
