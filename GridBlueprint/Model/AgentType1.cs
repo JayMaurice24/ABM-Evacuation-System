@@ -7,31 +7,48 @@ namespace GridBlueprint.Model;
 /// </summary>
 public class AgentType1 : ComplexAgent
 {
-    public new void Init(GridLayer layer)
+    #region Init
+
+    public override void Init(GridLayer layer)
     {
-        base.Init(layer);
+        Layer = layer;
+        Position = Layer.FindRandomPosition();
+        Directions = CreateMovementDirectionsList(); 
+        Layer.ComplexAgentEnvironment.Insert(this);
         RiskLevel = Behaviour.LowRisk();
         Speed = Behaviour.LowSpeed();
+        Pushiness = 0; 
     }
+    
+    #endregion
 
-    public new void Tick()
+    #region Tick
+
+    public override void Tick()
     {
-        if (_layer.Ring)
+        if (Layer.Ring)
         {
-            var i = _random.Next(0, 2);
-            _stairs = _layer.Stairs[i];
-            _exit = FindNearestExit(_layer.Exits);
-            var distStairs = CalculateDistance(Position, _stairs);
-            var distExit = CalculateDistance(Position, _exit);
+            var i = Random.Next(0, 2);
+            Stairs = Layer.Stairs[i];
+            Exit = FindNearestExit(Layer.Exits);
+            var distStairs = CalculateDistance(Position, Stairs);
+            var distExit = CalculateDistance(Position, Exit);
             Console.WriteLine("Agents moving towards exit");
-
-            if (distExit < distStairs)
+            if (RiskLevel > TickCount)
             {
-                MoveTowardsGoal();
+                if (TickCount % Speed != 0) return;
+                if (distExit < distStairs)
+                {
+                    MoveTowardsGoalLow();
+                }
+                else
+                {
+                    MoveStraightToExitLow();
+                }
             }
-            else
+        else
             {
-                MoveStraightToExit();
+                MoveRandomly();
             }
         }
         else
@@ -39,5 +56,9 @@ public class AgentType1 : ComplexAgent
             MoveRandomly();
         }
     }
+
+
+    #endregion
+
 
 }

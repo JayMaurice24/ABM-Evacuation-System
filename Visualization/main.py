@@ -32,7 +32,7 @@ RASTER_COLORS = {
     4: BLUE_LIGHT,
 }
 UNKNOWN_RASTER = WHITE
-AGENT_COLORS = [WHITE, ORANGE, BLUE_LIGHT, GRAY, YELLOW, GREEN, PURPLE, PURPLE_LIGHT, CYAN, BLUE, NAVYBLUE, RED]
+AGENT_COLORS = [GREEN, YELLOW, RED]
 VECTOR_COLORS = [RED, WHITE, BLUE, ORANGE, YELLOW]
 
 # WINDOW_SIZE = 800, 800
@@ -124,7 +124,7 @@ class Visualization:
                 self.ws = None
                 return
 
-            print(message)
+            #print(message)
             data = json.loads(message)
 
             self.l.acquire_write()
@@ -160,7 +160,7 @@ class Visualization:
                 for raster in raster_data:
                     proxy_key = raster["t"]
                     self.raster_metadata[proxy_key] = raster
-
+            #print(self.entities)
             self.tick_display[0] = True
             self.l.release_write()
         except (ConnectionResetError, ConnectionRefusedError, WebSocketConnectionClosedException):
@@ -264,30 +264,28 @@ class Visualization:
             for entity in self.entities[type_key]:
                 x = entity["x"]
                 y = entity["y"]
-               
-                pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],
-                                   (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
-                                    ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
-                                   line_width * agent_size, 0)
 
-        for exit_data in self.entities.get("Exits", []):
-                exit_location = exit_data["position"]
-                locked = exit_data["IsLocked"]
-                opened = exit_data["IsOpen"]
+                if type_key == 1:
+                    pygame.draw.rect(surface, ORANGE,
+                             pygame.Rect((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y,
+                                         scale_x, scale_y))
+                elif type_key == 2:
+                    pygame.draw.line(surface, BLUE_LIGHT,
+                             ((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y),
+                             ((x - self.WORLD_SIZE[0]) * scale_x + scale_x, (y - self.WORLD_SIZE[1]) * scale_y + scale_y),
+                             line_width)
+                    pygame.draw.line(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],
+                             ((x - self.WORLD_SIZE[0]) * scale_x + scale_x, (y - self.WORLD_SIZE[1]) * scale_y),
+                             ((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y + scale_y),
+                             line_width)
+                else:
+                    font = pygame.font.Font(None, 30)
+                    text_surface = font.render(str(type_key-2), True, AGENT_COLORS[type_key % len(AGENT_COLORS)])
+                    text_rect = text_surface.get_rect(center=((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2,
+                                                       (y - self.WORLD_SIZE[1]) * scale_y + scale_y / 2))
+                    surface.blit(text_surface, text_rect)
 
-                exit_color = RED
-                if opened:
-                    exit_color = CYAN
-                elif not locked: 
-                    exit_color = YELLOW 
-                
-                exit_x = int((exit_location[0] - self.WORLD_SIZE[0]) * scale_x)
-                exit_y = int((exit_location[1] - self.WORLD_SIZE[1]) * scale_y)
-                cell_width = raster["cellWidth"]
-                cell_height = raster["cellHeight"]
-        
-        # Draw the exit rectangle with the calculated exit_x, exit_y, and exit_color
-                pygame.draw.rect(surface, exit_color, (exit_x, exit_y, cell_width, cell_height)) 
+
 
         flipped = pygame.transform.flip(surface, False, True)
         self.screen.blit(flipped, (10, 10))

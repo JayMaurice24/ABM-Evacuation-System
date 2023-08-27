@@ -6,7 +6,6 @@ using Mars.Common.Core.Random;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Core.Data;
-using Mars.Interfaces.Agents;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
@@ -46,6 +45,25 @@ public class GridLayer : RasterLayer
         Agent7 = AgentManager.Spawn<AgentType7, GridLayer>().ToList();
         Agent8 = AgentManager.Spawn<AgentType8, GridLayer>().ToList();
         Agent9 = AgentManager.Spawn<AgentType9, GridLayer>().ToList();
+        Agent10 = AgentManager.Spawn<AgentType10, GridLayer>().ToList();
+        Agent11 = AgentManager.Spawn<AgentType11, GridLayer>().ToList();
+        Agent12 = AgentManager.Spawn<AgentType12, GridLayer>().ToList();
+        Agent13 = AgentManager.Spawn<AgentType13, GridLayer>().ToList();
+        Agent14 = AgentManager.Spawn<AgentType14, GridLayer>().ToList();
+        Agent15 = AgentManager.Spawn<AgentType15, GridLayer>().ToList();
+        Agent16 = AgentManager.Spawn<AgentType16, GridLayer>().ToList();
+        Agent17 = AgentManager.Spawn<AgentType17, GridLayer>().ToList();
+        Agent18 = AgentManager.Spawn<AgentType18, GridLayer>().ToList();
+        Agent19 = AgentManager.Spawn<AgentType19, GridLayer>().ToList();
+        Agent20 = AgentManager.Spawn<AgentType20, GridLayer>().ToList();
+        Agent21 = AgentManager.Spawn<AgentType21, GridLayer>().ToList();
+        Agent22 = AgentManager.Spawn<AgentType22, GridLayer>().ToList();
+        Agent23 = AgentManager.Spawn<AgentType23, GridLayer>().ToList();
+        Agent24 = AgentManager.Spawn<AgentType24, GridLayer>().ToList();
+        Agent25 = AgentManager.Spawn<AgentType25, GridLayer>().ToList();
+        Agent26 = AgentManager.Spawn<AgentType26, GridLayer>().ToList();
+        Agent27 = AgentManager.Spawn<AgentType27, GridLayer>().ToList();
+        
        
         
         HelperAgents = AgentManager.Spawn<HelperAgent, GridLayer>().ToList();
@@ -152,9 +170,29 @@ public class GridLayer : RasterLayer
     public List<AgentType7> Agent7 { get; private set; }
     public List<AgentType8> Agent8{ get; private set; }
     public List<AgentType9> Agent9 { get; private set; }
-    /// <summary>
-    ///     A collection that holds the HelperAgent instance
-    /// </summary>
+    public List<AgentType10> Agent10 { get; private set; }
+    public List<AgentType11> Agent11 { get; private set; }
+    public List<AgentType12> Agent12 { get; private set; }
+    public List<AgentType13> Agent13 { get; private set; }
+    public List<AgentType14> Agent14 { get; private set; }
+    public List<AgentType15> Agent15 { get; private set; }
+    public List<AgentType16> Agent16 { get; private set; }
+    public List<AgentType17> Agent17 { get; private set; }
+    public List<AgentType18> Agent18 { get; private set; }
+    public List<AgentType19> Agent19 { get; private set; }
+    public List<AgentType20> Agent20 { get; private set; }
+    
+    public List<AgentType21> Agent21 { get; private set; }
+    public List<AgentType22> Agent22 { get; private set; }
+    public List<AgentType23> Agent23 { get; private set; }
+    public List<AgentType24> Agent24 { get; private set; }
+    
+    public List<AgentType25> Agent25 { get; private set; }
+    public List<AgentType26> Agent26 { get; private set; }
+    
+    public List<AgentType27> Agent27 { get; private set; }
+    
+
     public List<HelperAgent> HelperAgents { get; private set; }
 
     public IAgentManager AgentManager { get; private set; }

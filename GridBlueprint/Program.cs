@@ -24,6 +24,27 @@ internal static class Program
         description.AddAgent<AgentType7, GridLayer>();
         description.AddAgent<AgentType8, GridLayer>();
         description.AddAgent<AgentType9, GridLayer>();
+        description.AddAgent<AgentType10, GridLayer>();
+        description.AddAgent<AgentType11, GridLayer>();
+        description.AddAgent<AgentType12, GridLayer>();
+        description.AddAgent<AgentType13, GridLayer>();
+        description.AddAgent<AgentType14, GridLayer>();
+        description.AddAgent<AgentType15, GridLayer>();
+        description.AddAgent<AgentType16, GridLayer>();
+        description.AddAgent<AgentType17, GridLayer>();
+        description.AddAgent<AgentType18, GridLayer>();
+        description.AddAgent<AgentType19, GridLayer>();
+        description.AddAgent<AgentType20, GridLayer>();
+        description.AddAgent<AgentType21, GridLayer>();
+        description.AddAgent<AgentType22, GridLayer>();
+        description.AddAgent<AgentType23, GridLayer>();
+        description.AddAgent<AgentType24, GridLayer>();
+        description.AddAgent<AgentType25, GridLayer>();
+        description.AddAgent<AgentType26, GridLayer>();
+        description.AddAgent<AgentType27, GridLayer>();
+        
+        
+        
         description.AddAgent<HelperAgent, GridLayer>();
         description.AddEntity<Exits>();
 

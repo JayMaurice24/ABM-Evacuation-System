@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
+using Mars.Numerics;
+
 namespace GridBlueprint.Model;
 
 
@@ -14,8 +17,10 @@ public class Fire : IAgent<GridLayer>, IPositionable
     public void Init(GridLayer layer)
     {
         _layer = layer;
-        _startSpread = 5;
-        _directions = CreateMovementDirectionsList();
+        _startSpread = _rand.Next(1, 20);
+        _directions = CreateMovementDirectionsList(); 
+        _expand = _rand.Next(20, 30);
+        _spreadCounter = 0; 
     }
 
 
@@ -26,18 +31,27 @@ public class Fire : IAgent<GridLayer>, IPositionable
   
     public void Tick()
     {
-        if(_startSpread < _layer.GetCurrentTick() && _layer.GetCurrentTick()%10 == 0)
+        if (_startSpread >= _layer.GetCurrentTick()) return;
+        if(!_layer.FireStarted)
         {
-            if(!_layer.FireStarted)
+            Position = _layer.FindRandomPosition(); 
+            _layer.FireEnvironment.Insert(this);
+            _layer.FireStarted = true; 
+        }
+        else
+        {
+            if (_spreadCounter == _expand)
             {
-                Position = _layer.FindRandomPosition(); 
-                _layer.FireEnvironment.Insert(this);
-                _layer.FireStarted = true; 
+                Spread();
+                Kill();
+                _expand = _rand.Next(20, 30);
+                _spreadCounter = 0; 
             }
             else
             {
-                Spread();
+                _spreadCounter++; 
             }
+            
         }
     }
 
@@ -72,16 +86,15 @@ public class Fire : IAgent<GridLayer>, IPositionable
             var cell = _directions[numMovements];
             var newX = Position.X + cell.X;
             var newY = Position.Y + cell.Y;
-            if (0 <= newX && newX < _layer.Width && 0 <= newY && newY < _layer.Height)
-            {
-                if (_layer.IsRoutable(newX, newY)){
-                    SpreadFromPosition(new Position(newX, newY));
-                }
+            if (!(0 <= newX) || !(newX < _layer.Width) || !(0 <= newY) || !(newY < _layer.Height)) continue;
+            if (_layer.IsRoutable(newX, newY)){
+                SpreadFromPosition(new Position(newX, newY));
             }
         }
     }
 
 
+    [SuppressMessage("ReSharper.DPA", "DPA0000: DPA issues")]
     private void SpreadFromPosition(Position position)
     {
         _layer.AgentManager.Spawn<Fire, GridLayer>(null, agent =>
@@ -91,7 +104,18 @@ public class Fire : IAgent<GridLayer>, IPositionable
 
         Console.WriteLine("Fire spread to: {0}", position);
     }
-    
+
+    private void Kill ()
+    {
+        var agent = _layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
+        if (agent == null) return;
+        var targetDistance = (int) Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray);
+        if (targetDistance <= 1)
+        {
+            agent.RemoveFromSimulation();
+        }
+    }
 
     #endregion
 
@@ -104,6 +128,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
     private GridLayer _layer;
     private List<Position> _directions;
     private int _startSpread;
+    private int _expand;
+    private int _spreadCounter; 
     private readonly Random _rand = new Random();
     #endregion
 }

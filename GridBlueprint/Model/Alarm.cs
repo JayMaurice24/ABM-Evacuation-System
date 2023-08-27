@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -12,7 +13,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region Init
     public void Init(GridLayer layer){
         _layer = layer;
-        Position = new Position(locX, locY);
+        Position = new Position(LocX, LocY);
         _layer.AlarmEnvironment.Insert(this);
     }
 
@@ -37,16 +38,12 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     {
             var agents = _layer.FireEnvironment.Explore(Position, radius: 15);
 
-            foreach (var agent in agents)
-            {
-                if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{agent.Position.X, agent.Position.Y}) <= 15)
-                {
-                    Console.WriteLine("Fire detected");
-                    return true; 
-                }
-            }
+            if (!agents.Any(agent =>
+                    Distance.Chebyshev(new[] { Position.X, Position.Y },
+                        new[] { agent.Position.X, agent.Position.Y }) <= 15)) return false;
+            Console.WriteLine("Fire detected");
+            return true;
 
-            return false; 
     }
     
 
@@ -60,10 +57,10 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     private GridLayer _layer;
     
     [PropertyDescription(Name = "locX")]
-    public int locX { get; set; }
+    public int LocX { get; set; }
     
     [PropertyDescription(Name = "locY")]
-    public int locY { get; set; }
+    public int LocY { get; set; }
 
 
     #endregion
