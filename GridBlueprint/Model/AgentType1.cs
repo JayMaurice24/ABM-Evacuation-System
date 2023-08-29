@@ -35,17 +35,34 @@ public class AgentType1 : ComplexAgent
             Exit = FindNearestExit(Layer.Exits);
             var distStairs = CalculateDistance(Position, Stairs);
             var distExit = CalculateDistance(Position, Exit);
+            Group = ExploreAgents();
             Console.WriteLine("Agents moving towards exit");
             if (RiskLevel > TickCount)
             {
                 if (TickCount % Speed != 0) return;
                 if (distExit < distStairs)
                 {
-                    MoveTowardsGoalLow();
+                    if (IsInGroup)
+                    {
+                        MoveTogether(Group);
+                    }
+                    else
+                    {
+                        MoveTowardsGoalLow(); 
+                    }
+                    
                 }
                 else
                 {
-                    MoveStraightToExitLow();
+                    if (IsInGroup)
+                    {
+                        MoveTogether(Group);
+                    }
+                    else
+                    {
+                        MoveStraightToExitLow();
+                    }
+                    
                 }
             }
         else

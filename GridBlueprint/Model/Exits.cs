@@ -3,7 +3,7 @@ using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 namespace GridBlueprint.Model;
 
-public class Exits : IEntity, IPositionable
+public class Exits : IAgent<GridLayer>, IPositionable
 {
     public Position Position { get; set; }
     public bool IsOpen { get; private set;}
@@ -36,4 +36,13 @@ public class Exits : IEntity, IPositionable
     }
 
     public Guid ID { get; set; }
+    public void Init(GridLayer layer)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Tick()
+    {
+        throw new NotImplementedException();
+    }
 }

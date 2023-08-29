@@ -24,7 +24,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
         {
             if (DetectFire())
             {
-                _layer.Ring = true; 
+                _layer.Ring = true;
             }
         }
         
@@ -36,13 +36,15 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     
     private bool DetectFire()
     {
-            var agents = _layer.FireEnvironment.Explore(Position, radius: 15);
 
-            if (!agents.Any(agent =>
-                    Distance.Chebyshev(new[] { Position.X, Position.Y },
-                        new[] { agent.Position.X, agent.Position.Y }) <= 15)) return false;
-            Console.WriteLine("Fire detected");
-            return true;
+        var fire = _layer.FireEnvironment.Entities.MinBy(flame =>
+            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
+
+        if (fire != null &&
+            !(Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { fire.Position.X, fire.Position.Y }) <=
+              12.0)) return false;
+        Console.WriteLine("Fire detected");
+        return true;
 
     }
     
