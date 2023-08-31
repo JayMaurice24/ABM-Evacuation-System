@@ -92,7 +92,9 @@ public class GridLayer : RasterLayer
         {
             new Position(58, 75),
             new Position(57, 75),
-            new Position(56, 75)
+            new Position(56, 75),
+            new Position(74, 30) ,
+            new Position(74, 29)
         };
         Stairs = stairLocation;
         return initLayer;
@@ -109,6 +111,19 @@ public class GridLayer : RasterLayer
     /// <param name="y">y-coordinate of grid cell</param>
     /// <returns>Boolean representing if (x,y) is accessible</returns>
     public override bool IsRoutable(int x, int y) => this[x, y] == 0;
+
+    private bool NoSpawn(int x, int y)
+    {
+        switch (x)
+        {
+            case > 56 and < 64 when y is < 44 and > 33:
+            case > 73 and < 94 when y is < 25 and > 19:
+            case > 36 and < 41 when y is < 86 and > 77:
+                return true;
+            default:
+                return false;
+        }
+    }
     public Position FindRandomPosition()
     {
         var random = RandomHelper.Random;
@@ -119,18 +134,13 @@ public class GridLayer : RasterLayer
             y = random.Next(Height);
             if (IsRoutable(x,y))
             {
-                check = false; 
+                check = NoSpawn(x, y); 
                  
             }
         }
         return Position.CreatePosition(x, y); 
     }
     
-    public int PreTick()
-    {
-        var rand = new Random();
-        return rand.Next(1, 20);
-    }
     
     #endregion
     
@@ -199,6 +209,7 @@ public class GridLayer : RasterLayer
     public bool FireStarted { get; set; } = false;
     public bool Ring { get; set; } = false;
     public IEnumerable<ComplexAgent> ComplexAgents { get; set; }
+    public bool FirstAct;
 
     #endregion
 }
