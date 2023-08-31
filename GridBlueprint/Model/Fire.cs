@@ -17,7 +17,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
     public void Init(GridLayer layer)
     {
         _layer = layer;
-        _startSpread = _rand.Next(1, 20);
+        _startSpread = _rand.Next(10, 20);
         _directions = CreateMovementDirectionsList(); 
         _expand = _rand.Next(20, 30);
         _spreadCounter = 0; 
@@ -31,7 +31,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
   
     public void Tick()
     {
-        if (_startSpread >= _layer.GetCurrentTick()) return;
+        if (_startSpread < _layer.GetCurrentTick()) return;
         if(!_layer.FireStarted)
         {
             Position = _layer.FindRandomPosition(); 

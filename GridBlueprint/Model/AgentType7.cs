@@ -28,25 +28,40 @@ public class AgentType7 : ComplexAgent
 
     public override void Tick()
     {
+        FormGroup();
         if (Layer.Ring)
         {
-            var i = Random.Next(0, 2);
-            Stairs = Layer.Stairs[i];
-            Exit = FindNearestExit(Layer.Exits);
-            var distStairs = CalculateDistance(Position, Stairs);
-            var distExit = CalculateDistance(Position, Exit);
-            Console.WriteLine("Agents moving towards exit");
             if (RiskLevel > TickCount)
             {
-                if (TickCount % Speed != 0) return;
-                if (distExit < distStairs)
+                if (!FirstAct)
                 {
-                    MoveTowardsGoalLow();
+                    Exit = FindNearestExit(Layer.Exits);
+                    Stairs = ClosestStairs(Layer.Stairs);
+                    var distStairs = CalculateDistance(Position, Stairs);
+                    var distExit = CalculateDistance(Position, Exit);
+                    Goal = distExit < distStairs ? Exit : Stairs;
+                    Console.WriteLine($"Agent moving towards exit");
+                    FirstAct = true;
+                }
+                if (IsInGroup)
+                {
+                    if (IsLeader)
+                    {
+                        MoveTowardsGoalLow();
+                    }
+                    else
+                    {
+                        MoveTowardsGroupLeader();
+                    }
+                    
+                    Console.WriteLine($"Agent moving in group");
                 }
                 else
                 {
-                    MoveStraightToExitLow();
+                    if (TickCount % Speed != 0) return;
+                    MoveTowardsGoalLow();
                 }
+                
             }
             else
             {
@@ -57,9 +72,11 @@ public class AgentType7 : ComplexAgent
         {
             MoveRandomly();
         }
+        
     }
 
 
     #endregion
+
 
 }

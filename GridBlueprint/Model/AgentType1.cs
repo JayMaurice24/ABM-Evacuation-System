@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace GridBlueprint.Model;
 
@@ -41,15 +42,27 @@ public class AgentType1 : ComplexAgent
                     Goal = distExit < distStairs ? Exit : Stairs;
                     Console.WriteLine($"Agent moving towards exit");
                     FirstAct = true;
+                    FormGroup();
                 }
                 if (IsInGroup)
                 {
-                    MoveGroup();
+                    if (IsLeader)
+                    {
+                        MoveTowardsGoalLow();
+                        Console.WriteLine($"Agent {GetType().Name} is leading group");
+                    }
+                    else
+                    {
+                        MoveTowardsGroupLeader();
+                        Console.WriteLine($"Agent {GetType().Name} moving in group");
+                    }
+                    
                 }
                 else
                 {
                     if (TickCount % Speed != 0) return;
                     MoveTowardsGoalLow();
+                    Console.WriteLine($"Agent {GetType().Name} is moving alone");
                 }
                 
             }
