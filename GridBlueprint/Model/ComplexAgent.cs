@@ -245,18 +245,42 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         return nearestExit;
     }
 
-    protected void FormGroup()
+    protected void FormGroup(ComplexAgent leader)
     {
         var potentialGroupMembers = Layer.ComplexAgentEnvironment.Explore(Position, radius: 5).ToList();
-
         if (potentialGroupMembers.Count > 0)
         {
-            Group = potentialGroupMembers;
-            foreach (var agent in Group)
+            foreach (var agent in potentialGroupMembers)
             {
-                agent.IsInGroup = true; 
+                if (agent.CollaborationFactor > 0.5)
+                {
+                    agent.IsInGroup = true;
+                    agent.Leader = leader;
+                    leader.Group.Add(agent); 
+                }
+                
             }
-            SelectLeader();
+        }
+    }
+
+    protected void MakeAgentLead()
+    {
+        var agents = Layer.ComplexAgentEnvironment.Explore(Position, radius: 5).ToList();
+        var lead = this.Leadership;
+        var closestAgent = this;
+        if(!(agents.Count > 1)) return;
+        foreach (var agent in agents)
+        {
+            var agentLead = agent.Leadership; 
+            if (agentLead > lead)
+            {
+                closestAgent = agent; 
+            }
+        }
+
+        if (closestAgent == this)
+        {
+            this.IsLeader = true;
         }
     }
     private void SelectLeader()
@@ -285,27 +309,16 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         }
         leader.IsLeader = true;
     }
-    private ComplexAgent FindGroupLeader()
-    {
-        // Find the leader of the group that the agent belongs to
-        foreach (var otherAgent in Group)
-        {
-            if (otherAgent.IsLeader)
-                return otherAgent;
-        }
-        // If no leader is found, return the agent itself as a fallback
-        return this;
-    }
-    private Vector2 CalculateSocialForce(ComplexAgent leader)
+    private Vector2 CalculateSocialForce()
     {
         Vector2 totalForce = Vector2.Zero;
         if (IsInGroup)
         {
-            Vector2 attractiveForce = Vector2.Normalize(new Vector2((float)(leader.Position.X - Position.X),(float)(leader.Position.Y - Position.Y) )) * (float)_attractiveForceMultiplier;
+            Vector2 attractiveForce = Vector2.Normalize(new Vector2((float)(Leader.Position.X - Position.X),(float)(Leader.Position.Y - Position.Y) )) * (float)_attractiveForceMultiplier;
 
             totalForce += attractiveForce;
 
-            foreach (var groupMember in Group)
+            foreach (var groupMember in Leader.Group)
             {
                 if (groupMember != this)
                 {
@@ -349,7 +362,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     }
     protected void MoveTowardsGroupLeader()
     {
-        var socialForce = CalculateSocialForce(FindGroupLeader());
+        var socialForce = CalculateSocialForce();
         var obstacleAvoidanceForce = CalculateObstacleAvoidanceForce();
         var netForce = socialForce + obstacleAvoidanceForce;
 
@@ -367,7 +380,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
                     Layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY));
                 }
             }
-        }
+    }
    /*
     
     private void MoveTogether(List<ComplexAgent> group)
@@ -733,20 +746,21 @@ private List<ComplexAgent> GetAgentsInProximity()
     protected Position Stairs;
     protected Position Goal; 
     private bool _tripInProgress;
-    private static readonly Random Rand = new();
+    protected static readonly Random Rand = new();
     private List<Position>.Enumerator _path;
     protected int RiskLevel { get; set;}
-    private List<ComplexAgent> Group { get; set; }
+    protected List<ComplexAgent> Group { get; set; }
     protected int Pushiness { get; set; }
     protected int Health;
     protected bool IsLeader { get; set; }
     protected int Speed { get; set; }
-    private ComplexAgent Leader { get; set; }
+    protected ComplexAgent Leader { get; set; }
     protected int TickCount;
     protected bool IsInGroup;
     protected bool FirstAct;
     private const int MaxSpeed = 10;
-    protected int Collaboration;
+    protected double CollaborationFactor { get; set; }
+    protected double Leadership { get; set; }
     private readonly double _attractiveForceMultiplier = Rand.NextDouble();
     private readonly int _repulsiveForceMultiplier = Rand.Next(1, 10);
     private readonly int _obstacleAvoidanceMultiplier = Rand.Next(1, 10);

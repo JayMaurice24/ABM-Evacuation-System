@@ -65,7 +65,7 @@ public class GridLayer : RasterLayer
         Agent27 = AgentManager.Spawn<AgentType27, GridLayer>().ToList();
         
        
-        
+        var entityManager = Container.Resolve<IEntityManager>();
         HelperAgents = AgentManager.Spawn<HelperAgent, GridLayer>().ToList();
         Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
         Alarms = AgentManager.Spawn<Alarm, GridLayer>().ToList();

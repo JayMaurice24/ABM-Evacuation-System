@@ -28,7 +28,6 @@ public class AgentType9 : ComplexAgent
 
     public override void Tick()
     {
-        FormGroup();
         if (Layer.Ring)
         {
             if (RiskLevel > TickCount)
