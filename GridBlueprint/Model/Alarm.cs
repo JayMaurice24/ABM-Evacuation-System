@@ -3,7 +3,6 @@ using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
-using Mars.Interfaces.Layers;
 using Mars.Numerics;
 namespace GridBlueprint.Model;
 
@@ -22,9 +21,9 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region Tick
         public void Tick()
         {
-            if (DetectFire())
+            if (!_layer.Ring)
             {
-                _layer.Ring = true;
+                _layer.Ring = DetectFire();
             }
         }
         
@@ -42,7 +41,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
 
         if (fire != null &&
             !(Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { fire.Position.X, fire.Position.Y }) <=
-              12.0)) return false;
+              10.0)) return false;
         Console.WriteLine("Fire detected");
         return true;
 
@@ -54,13 +53,9 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region  Fields and properties
     public Position Position { get; set; }
     public Guid ID { get; set; }
-    public bool On; 
-    public UnregisterAgent UnregisterAgentHandle { get; set; }
     private GridLayer _layer;
-    
     [PropertyDescription(Name = "locX")]
     public int LocX { get; set; }
-    
     [PropertyDescription(Name = "locY")]
     public int LocY { get; set; }
 

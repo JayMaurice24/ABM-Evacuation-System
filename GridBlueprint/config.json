@@ -25,6 +25,10 @@
       "file": "Resources/AlarmLocations.csv"
     },
     {
+      "name": "Smoke",
+      "count": 1
+    },
+    {
       "name": "AgentType1",
       "count": 20
     },

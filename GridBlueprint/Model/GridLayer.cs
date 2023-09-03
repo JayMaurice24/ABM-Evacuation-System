@@ -34,6 +34,7 @@ public class GridLayer : RasterLayer
         ExitEnvironment = new SpatialHashEnvironment<Exits>(Width, Height);
         FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
         AlarmEnvironment = new SpatialHashEnvironment<Alarm>(Width, Height);
+        SmokeEnvironment = new SpatialHashEnvironment<Smoke>(Width, Height);
         
         AgentManager = layerInitData.Container.Resolve<IAgentManager>();
         Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
@@ -68,6 +69,7 @@ public class GridLayer : RasterLayer
         var entityManager = Container.Resolve<IEntityManager>();
         HelperAgents = AgentManager.Spawn<HelperAgent, GridLayer>().ToList();
         Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
+        Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
         Alarms = AgentManager.Spawn<Alarm, GridLayer>().ToList();
 
         var westExit = new Exits();
@@ -160,12 +162,14 @@ public class GridLayer : RasterLayer
     public SpatialHashEnvironment<ComplexAgent> ComplexAgentEnvironment { get; set; }
     public SpatialHashEnvironment<Exits> ExitEnvironment { get; set; }
     public SpatialHashEnvironment<Fire> FireEnvironment { get; set; }
+    public SpatialHashEnvironment<Smoke> SmokeEnvironment { get; set; }
     public SpatialHashEnvironment<Alarm> AlarmEnvironment { get; set; }
     
     /// <summary>
     ///     A collection that holds the SimpleAgent instances
     /// </summary>
     public List<Fire> Fires { get; private set; }
+    public List<Smoke> Smokes { get; private set; }
     public List<Alarm> Alarms { get; private set; }
     /// <summary>
     ///     A collection that holds the ComplexAgent instances

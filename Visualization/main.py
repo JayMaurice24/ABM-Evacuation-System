@@ -278,9 +278,13 @@ class Visualization:
                              ((x - self.WORLD_SIZE[0]) * scale_x + scale_x, (y - self.WORLD_SIZE[1]) * scale_y),
                              ((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y + scale_y),
                              line_width)
+                elif type_key == 3:
+                    pygame.draw.rect(surface, GRAY,
+                             pygame.Rect((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y,
+                                         scale_x, scale_y))
                 else:
                     font = pygame.font.Font(None, 30)
-                    text_surface = font.render(str(type_key-2), True, AGENT_COLORS[type_key % len(AGENT_COLORS)])
+                    text_surface = font.render(str(type_key-3), True, AGENT_COLORS[type_key % len(AGENT_COLORS)])
                     text_rect = text_surface.get_rect(center=((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2,
                                                        (y - self.WORLD_SIZE[1]) * scale_y + scale_y / 2))
                     surface.blit(text_surface, text_rect)

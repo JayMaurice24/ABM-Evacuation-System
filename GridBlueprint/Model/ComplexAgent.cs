@@ -23,8 +23,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     { 
         Layer = layer;
         TickCount = (int)layer.GetCurrentTick();
-        Group = null;
-        Leader = null;
 
     }
 
@@ -85,7 +83,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
         if (!IsCellOccupied(_path.Current))
         {
-            Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);  
+            Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current,1);  
         }
 
         if (!Position.Equals(Goal)) return;
@@ -101,7 +99,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             _path = Layer.FindPath(Position, Goal).GetEnumerator();
             _tripInProgress = true;
             if (!_path.MoveNext()) return;
-            Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);
+            Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
             if (!Position.Equals(Goal)) return;
             Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
             RemoveFromSimulation();
@@ -283,32 +281,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             this.IsLeader = true;
         }
     }
-    private void SelectLeader()
-    {
-        // Find the closest agent to the exit as the leader for each group
-        var leader = this;
-        foreach (var agent in Group)
-        {
-            if (agent.IsLeader) continue;
-
-            var minDistance = CalculateDistance(agent.Position, agent.Goal);
-            foreach (var otherAgent in Group)
-            {
-                if (otherAgent == this || otherAgent.IsLeader) return;
-
-                double distance = CalculateDistance(otherAgent.Position, otherAgent.Goal);
-                if (distance < minDistance && otherAgent.Pushiness >= 0 ){
-                    minDistance = distance;
-                    leader = otherAgent;
-                }
-                else
-                {
-                    leader = this;
-                }
-            }
-        }
-        leader.IsLeader = true;
-    }
     private Vector2 CalculateSocialForce()
     {
         Vector2 totalForce = Vector2.Zero;
@@ -381,115 +353,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
                 }
             }
     }
-   /*
-    
-    private void MoveTogether(List<ComplexAgent> group)
-    {
-        if (group.Count > 0)
-        {
-            Vector2 centerOfMass = new Vector2(0, 0);
-
-            // Calculate the center of mass of the group
-            foreach (ComplexAgent agent in group)
-            {
-                centerOfMass += new Vector2(agent.Position.X, agent.Position.Y);
-            }
-            centerOfMass /= group.Count;
-
-            // Calculate the vector towards the center of mass
-            Vector2 cohesionVector = centerOfMass - new Vector2(Position.X, Position.Y);
-            cohesionVector = cohesionVector.Normalized(); // Normalize for consistent movement speed
-
-            // Update agent's position to move towards the center of mass
-            Vector2 newPosition = new Vector2(Position.X, Position.Y) + cohesionVector * Speed;
-            if (IsPositionValid(newPosition)) // Check if the new position is valid
-            {
-                Position = new Position((int)newPosition.X, (int)newPosition.Y);
-                _layer.ComplexAgentEnvironment.MoveTo(this, Position);
-                Console.WriteLine($"{GetType().Name} moved to a new cell: {Position}");
-            }
-        }
-    }
-
-    private bool IsPositionValid(Vector2 position)
-    {
-        return 0 <= position.X && position.X < _layer.Width &&
-               0 <= position.Y && position.Y < _layer.Height &&
-               _layer.IsRoutable((int)position.X, (int)position.Y);
-    }
-
-    public void Tick()
-    {
-        // ... (existing code)
-
-        if (_layer.Ring)
-        {
-            if (_layer.GetCurrentTick() > RiskLevel)
-            {
-                // ... (existing code)
-
-                // Perform group interactions
-                List<ComplexAgent> group = GetAgentsInProximity(); // Get agents within interaction radius
-                MoveTogether(group); // Move together with agents in the same group
-            }
-            else
-            {
-                MoveRandomly();
-            }
-        }
-        else
-        {
-            MoveRandomly();
-        }
-    }
-
-    // ... (existing code)
-}
-
-private List<ComplexAgent> GetAgentsInProximity()
-{
-    List<ComplexAgent> agentsInProximity = new List<ComplexAgent>();
-
-    foreach (var agent in _layer.ComplexAgents)
-    {
-        if (agent != this) // Exclude the current agent
-        {
-            double distance = CalculateDistance(Position, agent.Position);
-            if (distance <= InteractionRadius) // Adjust InteractionRadius to your needs
-            {
-                agentsInProximity.Add(agent);
-            }
-        }
-    }
-
-    return agentsInProximity;
-}
-
-     // Calculate the center of mass
-        Vector2 centerOfMass = CalculateCenterOfMass(group);
-
-        // Calculate cohesion vector
-        Vector2 cohesionVector = centerOfMass - new Vector2(Position.X, Position.Y);
-        cohesionVector = cohesionVector.Normalize(); // Normalize to maintain direction
-
-        // Calculate desired velocity
-        Vector2 desiredVelocity = cohesionVector * Speed; // Calculate desired velocity
-
-        // Calculate steering force
-        Vector2 steering = desiredVelocity - currentVelocity; // Calculate steering force
-
-        // Calculate new velocity
-        Vector2 newVelocity = currentVelocity + steering; // Calculate new velocity
-
-        // Update agent's position using new velocity
-        Vector2 newPosition = new Vector2(Position.X, Position.Y) + newVelocity;
-        if (IsPositionValid(newPosition)) // Check if the new position is valid
-        {
-            Position = new Position((int)newPosition.X, (int)newPosition.Y);
-            _layer.ComplexAgentEnvironment.MoveTo(this, Position);
-            Console.WriteLine($"{GetType().Name} moved to a new cell: {Position}");
-            
-    */
     private ComplexAgent GetNearestObstacle()
     {
         ComplexAgent nearestObstacle = null;

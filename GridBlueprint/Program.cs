@@ -15,6 +15,7 @@ internal static class Program
         description.AddLayer<GridLayer>();
         description.AddAgent<Fire, GridLayer>();
         description.AddAgent<Alarm, GridLayer>();
+        description.AddAgent<Smoke, GridLayer>();
         description.AddAgent<AgentType1, GridLayer>();
         description.AddAgent<AgentType2, GridLayer>();
         description.AddAgent<AgentType3, GridLayer>();

@@ -47,13 +47,15 @@ public class AgentType1 : ComplexAgent
                     Goal = distExit < distStairs ? Exit : Stairs;
                     Console.WriteLine($"Agent {GetType().GUID} moving towards exit");
                     FirstAct = true;
-                    MakeAgentLead();
+                    if(!IsLeader && !IsInGroup) MakeAgentLead();
                 }
                 if (IsLeader)
                 {
                         FormGroup(this);
                         MoveTowardsGoalLow();
-                        Console.WriteLine($"Agent {GetType().GUID} is leading group");
+                        Console.WriteLine(Group.Count > 1
+                            ? $"Agent {GetType().GUID} is leading group"
+                            : $"Agent {GetType().GUID} can lead group");
                 }
                 else if (IsInGroup && !IsLeader)
                 {
@@ -66,6 +68,7 @@ public class AgentType1 : ComplexAgent
                     if (TickCount % Speed != 0) return;
                     MoveTowardsGoalLow();
                     Console.WriteLine($"Agent {GetType().GUID} is moving alone");
+                    
                 }
                 
             }
@@ -76,7 +79,27 @@ public class AgentType1 : ComplexAgent
         }
         else
         {
-            MoveRandomly();
+            switch (IsLeader)
+            {
+                case false when !IsInGroup:
+                    MakeAgentLead();
+                    MoveRandomly();
+                    break;
+                case true:
+                    MoveRandomly();
+                    FormGroup(this);
+                    break;
+                default:
+                {
+                    if (IsInGroup && !IsLeader)
+                    {
+                        MoveTowardsGroupLeader();
+                    }
+
+                    break;
+                }
+            }
+            Console.WriteLine($"Agent {GetType().GUID} moving randomly");
         }
         
     }
