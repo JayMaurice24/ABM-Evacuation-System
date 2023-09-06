@@ -70,7 +70,7 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     }
     
     /// <summary>
-    /// Causes Health Damage to agent, everytime they inhale smoke; 
+    /// Causes Health Damage to agents, everytime they inhale smoke; 
     /// </summary>
     private void Damage()
     {

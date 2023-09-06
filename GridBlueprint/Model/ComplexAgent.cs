@@ -253,7 +253,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         {
             foreach (var agent in potentialGroupMembers)
             {
-                if (agent.CollaborationFactor > 0.5)
+                if (agent.CollaborationFactor > 0.5 && !agent.IsInGroup && !agent.IsLeader)
                 {
                     agent.IsInGroup = true;
                     agent.Leader = leader;
@@ -277,10 +277,9 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             closestAgent = agent;
         }
 
-        if (closestAgent == this)
-        {
-            this.IsLeader = true;
-        }
+        if (closestAgent != this) return;
+        this.IsLeader = true;
+        this.IsInGroup = true;
     }
  
 
@@ -302,7 +301,8 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     {
         if (!IsInGroup || IsLeader) return;
         var socialForce = SocialForceModel.CalculateSocialForce(Leader, this, Leader.Group);
-        var obstacleAvoidanceForce = SocialForceModel.CalculateObstacleAvoidanceForce(this);
+        var nearestObstacle = GetNearestObstacle();
+        var obstacleAvoidanceForce = SocialForceModel.CalculateObstacleAvoidanceForce(this, nearestObstacle);
         var netForce = socialForce + obstacleAvoidanceForce;
 
         UpdateVelocity(netForce);
@@ -325,7 +325,12 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         return Distance.Chebyshev(new[] { coords1.X, coords1.Y }, new[] { coords2.X, coords2.Y }); 
 
     }
-
+    private ComplexAgent GetNearestObstacle()
+    {
+        return Layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
+    }
+    
     /// <summary>
     /// Changes the agent's travel direction when they're in close proximity to the fire 
     /// </summary>

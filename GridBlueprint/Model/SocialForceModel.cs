@@ -20,11 +20,9 @@ public abstract class SocialForceModel
         return (from groupMember in @group where groupMember != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - groupMember.Position.X), (float)(agent.Position.Y - groupMember.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, groupMember.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
     }
 
-    public static Vector2 CalculateObstacleAvoidanceForce(ComplexAgent agent)
+    public static Vector2 CalculateObstacleAvoidanceForce(ComplexAgent agent, ComplexAgent nearestObstacle)
     {
         var obstacleAvoidanceForce = Vector2.Zero;
-
-        var nearestObstacle = GetNearestObstacle(agent);
 
         if (nearestObstacle == null) return obstacleAvoidanceForce;
         var awayFromObstacle = Vector2.Normalize(new Vector2((float)(agent.Position.X - nearestObstacle.Position.X),
@@ -35,31 +33,14 @@ public abstract class SocialForceModel
 
         return obstacleAvoidanceForce;
     }
-
-    private static ComplexAgent GetNearestObstacle(ComplexAgent agent)
-    {
-        ComplexAgent nearestObstacle = null;
-        var shortestDistance = double.MaxValue;
-
-        foreach (var otherAgent in Layer.ComplexAgentEnvironment.Entities)
-        {
-            if (agent == otherAgent) continue; // Assuming you have an IsObstacle property in ComplexAgent
-            var distance = CalculateDistance(agent.Position, otherAgent.Position);
-            if (!(distance < shortestDistance)) continue;
-            shortestDistance = distance;
-            nearestObstacle = agent;
-        }
-
-        return nearestObstacle;
-    }
+    
 
     private static double CalculateDistance(Position coords1, Position coords2)
     {
         return Distance.Chebyshev(new[] { coords1.X, coords1.Y }, new[] { coords2.X, coords2.Y }); 
 
     }
-
-    public static GridLayer Layer;
+    
     private static readonly Random Rand = new();
     private static readonly double AttractiveForceMultiplier = Rand.NextDouble();
     private static readonly int RepulsiveForceMultiplier = Rand.Next(1, 10);

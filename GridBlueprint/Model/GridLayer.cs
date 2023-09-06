@@ -37,7 +37,7 @@ public class GridLayer : RasterLayer
         SmokeEnvironment = new SpatialHashEnvironment<Smoke>(Width, Height);
         
         AgentManager = layerInitData.Container.Resolve<IAgentManager>();
-        SpawnAgents();
+        Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
         Agent2 = AgentManager.Spawn<AgentType2, GridLayer>().ToList();
         Agent3 = AgentManager.Spawn<AgentType3, GridLayer>().ToList();
         Agent4 = AgentManager.Spawn<AgentType4, GridLayer>().ToList();
@@ -118,13 +118,16 @@ public class GridLayer : RasterLayer
         }
     }
 
+    
     private void SpawnAgents()
     {
-        Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
-        for (var i = 0; i <= 10; i++)
+        for (var a = 1; a <= 18; a++)
         {
-            var agent = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
-            Agent1.AddRange(agent);
+            for (var i = 0; i <= 10; i++)
+            {
+                var agent = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
+                Agent1.AddRange(agent);
+            }
         }
     }
     public Position FindRandomPosition()
@@ -175,7 +178,6 @@ public class GridLayer : RasterLayer
     /// <summary>
     ///     A collection that holds the ComplexAgent instances
     /// </summary>
-
     public List<AgentType1> Agent1 { get; private set; }
     public List<AgentType2> Agent2 { get; private set; }
     public List<AgentType3> Agent3 { get; private set; }
