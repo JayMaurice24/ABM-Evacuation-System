@@ -242,7 +242,10 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
         return nearestExit;
     }
-
+    /// <summary>
+    /// agent with leadership skills forms a group
+    /// </summary>
+    /// <param name="leader"></param>
     protected void FormGroup(ComplexAgent leader)
     {
         var potentialGroupMembers = Layer.ComplexAgentEnvironment.Explore(Position, radius: 5).ToList();
@@ -260,20 +263,18 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
     }
-
+    /// <summary>
+    /// Identifies if an agent can lead a group
+    /// </summary>
     protected void MakeAgentLead()
     {
         var agents = Layer.ComplexAgentEnvironment.Explore(Position, radius: 5).ToList();
         var lead = this.Leadership;
         var closestAgent = this;
         if(!(agents.Count > 1)) return;
-        foreach (var agent in agents)
+        foreach (var agent in from agent in agents let agentLead = agent.Leadership where agentLead > lead select agent)
         {
-            var agentLead = agent.Leadership; 
-            if (agentLead > lead)
-            {
-                closestAgent = agent; 
-            }
+            closestAgent = agent;
         }
 
         if (closestAgent == this)
@@ -281,45 +282,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             this.IsLeader = true;
         }
     }
-    private Vector2 CalculateSocialForce()
-    {
-        Vector2 totalForce = Vector2.Zero;
-        if (IsInGroup)
-        {
-            Vector2 attractiveForce = Vector2.Normalize(new Vector2((float)(Leader.Position.X - Position.X),(float)(Leader.Position.Y - Position.Y) )) * (float)_attractiveForceMultiplier;
-
-            totalForce += attractiveForce;
-
-            foreach (var groupMember in Leader.Group)
-            {
-                if (groupMember != this)
-                {
-                    Vector2 repulsiveForce = Vector2.Normalize(new Vector2((float)(Position.X - groupMember.Position.X),(float)(Position.Y - groupMember.Position.Y) ))
-                                            * _repulsiveForceMultiplier / (float)CalculateDistance(Position, groupMember.Position);
-                    totalForce += repulsiveForce;
-                }
-            }
-        }
-
-        return totalForce;
-    }
-
-    private Vector2 CalculateObstacleAvoidanceForce()
-    {
-        Vector2 obstacleAvoidanceForce = Vector2.Zero;
-
-        var nearestObstacle = GetNearestObstacle();
-
-        if (nearestObstacle != null)
-        {
-            Vector2 awayFromObstacle = Vector2.Normalize(new Vector2((float)(Position.X - nearestObstacle.Position.X), (float)(Position.Y - nearestObstacle.Position.Y)))
-                                       * _obstacleAvoidanceMultiplier
-                                       / (float)CalculateDistance(Position, nearestObstacle.Position);
-            obstacleAvoidanceForce += awayFromObstacle;
-        }
-
-        return obstacleAvoidanceForce;
-    }
+ 
 
     private void UpdateVelocity(Vector2 netForce)
     {
@@ -332,10 +295,14 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             _currentVelocity = Vector2.Normalize(_currentVelocity) * MaxSpeed;
         }
     }
+    /// <summary>
+    /// Agent follows group leader
+    /// </summary>
     protected void MoveTowardsGroupLeader()
     {
-        var socialForce = CalculateSocialForce();
-        var obstacleAvoidanceForce = CalculateObstacleAvoidanceForce();
+        if (!IsInGroup || IsLeader) return;
+        var socialForce = SocialForceModel.CalculateSocialForce(Leader, this, Leader.Group);
+        var obstacleAvoidanceForce = SocialForceModel.CalculateObstacleAvoidanceForce(this);
         var netForce = socialForce + obstacleAvoidanceForce;
 
         UpdateVelocity(netForce);
@@ -344,34 +311,10 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         var newX = Position.X + _currentVelocity.X;
         var newY = Position.Y + _currentVelocity.Y;
 
-            if (0 <= newX && newX < Layer.Width && 0 <= newY && newY < Layer.Height)
-            {
-                if (Layer.IsRoutable(newX, newY) && !IsCellOccupied(new Position(newX, newY)))
-                {
-                    Position = new Position(newX, newY);
-                    Layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY));
-                }
-            }
-    }
-    private ComplexAgent GetNearestObstacle()
-    {
-        ComplexAgent nearestObstacle = null;
-        double shortestDistance = double.MaxValue;
-
-        foreach (var agent in Layer.ComplexAgentEnvironment.Entities)
-        {
-            if (agent != this) // Assuming you have an IsObstacle property in ComplexAgent
-            {
-                double distance = CalculateDistance(Position, agent.Position);
-                if (distance < shortestDistance)
-                {
-                    shortestDistance = distance;
-                    nearestObstacle = agent;
-                }
-            }
-        }
-
-        return nearestObstacle;
+        if (!(0 <= newX) || !(newX < Layer.Width) || !(0 <= newY) || !(newY < Layer.Height)) return;
+        if (!Layer.IsRoutable(newX, newY) || IsCellOccupied(new Position(newX, newY))) return;
+        Position = new Position(newX, newY);
+        Layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY));
     }
     
     /// <summary>
@@ -393,36 +336,29 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         var fire = Layer.FireEnvironment.Entities.MinBy(flame =>
             Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
 
-        if (fire != null)
+        if (fire == null) return position;
         {
-            if (position.Equals(fire.Position))
+            if (!position.Equals(fire.Position)) return position;
+            foreach (var next in Directions)
             {
-                foreach (var next in Directions)
+                var newX = Position.X + next.X;
+                var newY = Position.Y + next.Y;
+
+                if (!(0 <= newX) || !(newX < Layer.Width) || !(0 <= newY) || !(newY < Layer.Height) ||
+                    !Layer.IsRoutable(newX, newY) || AvoidFire()) continue;
+                var nextCell = Layer.FireEnvironment.Entities.FirstOrDefault(flame =>
+                    Distance.Chebyshev(new[] { newX, newY }, new[] { flame.Position.X, flame.Position.Y }) <=
+                    1.0);
+
+                if (nextCell == null)
                 {
-                    var newX = Position.X + next.X;
-                    var newY = Position.Y + next.Y;
+                    return new Position(newX, newY);
 
-                    if (0 <= newX && newX < Layer.Width && 0 <= newY && newY < Layer.Height &&
-                        Layer.IsRoutable(newX, newY) && AvoidFire() == false)
-                    {
-                        var nextCell = Layer.FireEnvironment.Entities.FirstOrDefault(flame =>
-                            Distance.Chebyshev(new[] { newX, newY }, new[] { flame.Position.X, flame.Position.Y }) <=
-                            1.0);
-
-                        if (nextCell == null)
-                        {
-                            return new Position(newX, newY);
-
-                        }
-                    }
                 }
             }
-
-           
         }
         return position;
     }
-
     
     
     /// <summary>
@@ -431,20 +367,15 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <returns></returns>
     private bool AvoidFire()
     {
-        var fire = Layer.FireEnvironment.Explore(Position, radius: 1); 
-        
-        foreach (var flame in fire)
-        {
-            if (Distance.Chebyshev(new []{Position.X, Position.Y}, new []{flame.Position.X, flame.Position.Y}) <= 2.0)
-            {
-                return true;
-            }
-        }
+        var fire = Layer.FireEnvironment.Explore(Position, radius: 1);
 
-        return false; 
+        return fire.Any(flame => Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }) <= 2.0);
     }
-
-    protected bool Perception()
+    /// <summary>
+    /// Sees Fire Run
+    /// </summary>
+    /// <returns></returns>
+    protected bool FirePerception()
     {
         var fire = Layer.FireEnvironment.Entities.MinBy(flame =>
             Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
@@ -518,15 +449,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         var agents = Layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
             Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { agent.Position.X, agent.Position.Y }));
 
-        if (agents != null)
-        {
-            if (targetPosition.Equals(agents.Position))
-            {
-                return true; 
-            }
-        }
-        
-        return false;
+        return agents != null && targetPosition.Equals(agents.Position);
     }
     
 
@@ -574,20 +497,32 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <param name="position"></param>
     /// <returns></returns>
     private ComplexAgent GetAgentAt(Position position)
-        {
-            // Iterate through the list of agents in the environment
-            foreach (var agent in Layer.ComplexAgentEnvironment.Entities)
-            {
-                if (agent != this && agent.Position.Equals(position))
-                {
-                    return agent; // Return the agent found at the specified position
-                }
-            }
-    
-            return null; // No agent found at the specified position
-        }
-    
+    {
+        // Iterate through the list of agents in the environment
+        return Layer.ComplexAgentEnvironment.Entities.FirstOrDefault(agent => agent != this && agent.Position.Equals(position));
+    }
 
+    private ComplexAgent FindAgentsInNeed()
+    {
+        var nearbyAgents = Layer.ComplexAgentEnvironment.Explore(Position, radius: 5).ToList();
+        foreach(var agent in nearbyAgents)
+        {
+            if (!agent.IsConscious)
+            {
+                return agent; 
+            }
+        }
+
+        return this; 
+    }
+
+    protected void HelpAgent()
+    {
+        if (Health > 50 && Empathy > 0.5 && Strength > 0.5)
+        {
+            var helped = FindAgentsInNeed();
+        }
+    }
     #endregion
 
     #region Fields and Properties
@@ -614,19 +549,21 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     protected int RiskLevel { get; set;}
     protected List<ComplexAgent> Group { get; set; }
     protected int Pushiness { get; set; }
-    protected int Health;
+    public int Health;
     protected bool IsLeader { get; set; }
     protected int Speed { get; set; }
     protected ComplexAgent Leader { get; set; }
+    protected ComplexAgent Helper { get; set; }
     protected int TickCount;
     protected bool IsInGroup;
     protected bool FirstAct;
     private const int MaxSpeed = 10;
     protected double CollaborationFactor { get; set; }
     protected double Leadership { get; set; }
-    private readonly double _attractiveForceMultiplier = Rand.NextDouble();
-    private readonly int _repulsiveForceMultiplier = Rand.Next(1, 10);
-    private readonly int _obstacleAvoidanceMultiplier = Rand.Next(1, 10);
+    protected bool IsConscious { get; set; }
+    protected double Strength { get; set; }
+    protected double Empathy { get; set; }
+
     private Vector2 _currentVelocity = Vector2.Zero;
     #endregion
 }

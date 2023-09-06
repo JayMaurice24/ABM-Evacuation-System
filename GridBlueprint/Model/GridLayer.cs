@@ -37,7 +37,7 @@ public class GridLayer : RasterLayer
         SmokeEnvironment = new SpatialHashEnvironment<Smoke>(Width, Height);
         
         AgentManager = layerInitData.Container.Resolve<IAgentManager>();
-        Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
+        SpawnAgents();
         Agent2 = AgentManager.Spawn<AgentType2, GridLayer>().ToList();
         Agent3 = AgentManager.Spawn<AgentType3, GridLayer>().ToList();
         Agent4 = AgentManager.Spawn<AgentType4, GridLayer>().ToList();
@@ -55,15 +55,6 @@ public class GridLayer : RasterLayer
         Agent16 = AgentManager.Spawn<AgentType16, GridLayer>().ToList();
         Agent17 = AgentManager.Spawn<AgentType17, GridLayer>().ToList();
         Agent18 = AgentManager.Spawn<AgentType18, GridLayer>().ToList();
-        Agent19 = AgentManager.Spawn<AgentType19, GridLayer>().ToList();
-        Agent20 = AgentManager.Spawn<AgentType20, GridLayer>().ToList();
-        Agent21 = AgentManager.Spawn<AgentType21, GridLayer>().ToList();
-        Agent22 = AgentManager.Spawn<AgentType22, GridLayer>().ToList();
-        Agent23 = AgentManager.Spawn<AgentType23, GridLayer>().ToList();
-        Agent24 = AgentManager.Spawn<AgentType24, GridLayer>().ToList();
-        Agent25 = AgentManager.Spawn<AgentType25, GridLayer>().ToList();
-        Agent26 = AgentManager.Spawn<AgentType26, GridLayer>().ToList();
-        Agent27 = AgentManager.Spawn<AgentType27, GridLayer>().ToList();
         
        
         var entityManager = Container.Resolve<IEntityManager>();
@@ -124,6 +115,16 @@ public class GridLayer : RasterLayer
                 return true;
             default:
                 return false;
+        }
+    }
+
+    private void SpawnAgents()
+    {
+        Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
+        for (var i = 0; i <= 10; i++)
+        {
+            var agent = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
+            Agent1.AddRange(agent);
         }
     }
     public Position FindRandomPosition()
@@ -193,24 +194,13 @@ public class GridLayer : RasterLayer
     public List<AgentType16> Agent16 { get; private set; }
     public List<AgentType17> Agent17 { get; private set; }
     public List<AgentType18> Agent18 { get; private set; }
-    public List<AgentType19> Agent19 { get; private set; }
-    public List<AgentType20> Agent20 { get; private set; }
-    
-    public List<AgentType21> Agent21 { get; private set; }
-    public List<AgentType22> Agent22 { get; private set; }
-    public List<AgentType23> Agent23 { get; private set; }
-    public List<AgentType24> Agent24 { get; private set; }
-    
-    public List<AgentType25> Agent25 { get; private set; }
-    public List<AgentType26> Agent26 { get; private set; }
-    
-    public List<AgentType27> Agent27 { get; private set; }
-    
-
+    private readonly int _numAgent1 = Rand.Next(1, 20);
+    private static readonly Random Rand = new Random();
     public List<HelperAgent> HelperAgents { get; private set; }
 
     public IAgentManager AgentManager { get; private set; }
     public bool FireStarted { get; set; } = false;
+    public bool SmokeSpread { get; set; } = false;
     public bool Ring { get; set; } = false;
     public IEnumerable<ComplexAgent> ComplexAgents { get; set; }
     public bool FirstAct;

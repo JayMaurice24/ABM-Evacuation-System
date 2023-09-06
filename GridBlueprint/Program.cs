@@ -13,9 +13,6 @@ internal static class Program
         // Create a new model description and add model components to it
         var description = new ModelDescription();
         description.AddLayer<GridLayer>();
-        description.AddAgent<Fire, GridLayer>();
-        description.AddAgent<Alarm, GridLayer>();
-        description.AddAgent<Smoke, GridLayer>();
         description.AddAgent<AgentType1, GridLayer>();
         description.AddAgent<AgentType2, GridLayer>();
         description.AddAgent<AgentType3, GridLayer>();
@@ -34,15 +31,9 @@ internal static class Program
         description.AddAgent<AgentType16, GridLayer>();
         description.AddAgent<AgentType17, GridLayer>();
         description.AddAgent<AgentType18, GridLayer>();
-        description.AddAgent<AgentType19, GridLayer>();
-        description.AddAgent<AgentType20, GridLayer>();
-        description.AddAgent<AgentType21, GridLayer>();
-        description.AddAgent<AgentType22, GridLayer>();
-        description.AddAgent<AgentType23, GridLayer>();
-        description.AddAgent<AgentType24, GridLayer>();
-        description.AddAgent<AgentType25, GridLayer>();
-        description.AddAgent<AgentType26, GridLayer>();
-        description.AddAgent<AgentType27, GridLayer>();
+        description.AddAgent<Fire, GridLayer>();
+        description.AddAgent<Alarm, GridLayer>();
+        description.AddAgent<Smoke, GridLayer>();
         
         
         

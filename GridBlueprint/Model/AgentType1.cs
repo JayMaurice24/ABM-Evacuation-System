@@ -14,18 +14,22 @@ public class AgentType1 : ComplexAgent
     {
         Layer = layer;
         Position = Layer.FindRandomPosition();
-        Directions = CreateMovementDirectionsList(); 
-        Layer.ComplexAgentEnvironment.Insert(this);
+        Directions = CreateMovementDirectionsList();
         RiskLevel = Behaviour.LowRisk();
         Speed = Behaviour.LowSpeed();
         Pushiness = 0;
         FirstAct = false;
         Leadership = Rand.NextDouble();
+        Empathy = Rand.NextDouble();
         CollaborationFactor = Rand.NextDouble();
-        Group = new List<ComplexAgent>();
-        Leader = null;
+        Health = Rand.Next(30, 100);
+        Strength = Rand.NextDouble();
+        IsConscious = true;
         IsLeader = false;
         IsInGroup = false;
+        Group = new List<ComplexAgent>();
+        Leader = null;
+        Layer.ComplexAgentEnvironment.Insert(this);
     }
     
     #endregion

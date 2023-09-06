@@ -19,7 +19,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
         _layer = layer;
         _startSpread = _rand.Next(10, 20);
         _directions = MovementDirections.CreateMovementDirectionsList(); 
-        _expand = _rand.Next(20, 30);
+        _expand = _rand.Next(10, 20);
         _spreadCounter = 0; 
     }
 
@@ -30,30 +30,28 @@ public class Fire : IAgent<GridLayer>, IPositionable
     
     public void Tick()
     {
-        if (_startSpread >= (int)_layer.GetCurrentTick())
+        if (_startSpread > (int)_layer.GetCurrentTick()) return;
+        if (!_layer.FireStarted)
         {
-            if (!_layer.FireStarted)
-            {
-                Position = _layer.FindRandomPosition();
-                _layer.FireEnvironment.Insert(this);
-                _layer.FireStarted = true;
+            Position = _layer.FindRandomPosition();
+            _layer.FireEnvironment.Insert(this);
+            _layer.FireStarted = true;
 
+        }
+        else
+        {
+            if (_spreadCounter == _expand)
+            {
+                Spread();
+                _expand = _rand.Next(10, 20);
+                _spreadCounter = 0;
             }
             else
             {
-                if (_spreadCounter == _expand)
-                {
-                    Spread();
-                    Kill();
-                    _expand = _rand.Next(20, 30);
-                    _spreadCounter = 0;
-                }
-                else
-                {
-                    _spreadCounter++;
-                }
-
+                _spreadCounter++;
+                HurtAgent();
             }
+
         }
     }
 
@@ -87,7 +85,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
             Console.WriteLine("Fire spread to: {0}", position);
         }
 
-        private void Kill ()
+        private void HurtAgent ()
         {
             var agent = _layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
                 Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));

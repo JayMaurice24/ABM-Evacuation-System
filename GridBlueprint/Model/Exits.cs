@@ -5,6 +5,7 @@ namespace GridBlueprint.Model;
 
 public class Exits : IAgent<GridLayer>, IPositionable
 {
+    
     public Position Position { get; set; }
     public bool IsOpen { get; private set;}
     private bool IsLocked { get; set;}

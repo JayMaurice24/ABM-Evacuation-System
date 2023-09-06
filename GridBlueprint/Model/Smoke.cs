@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
+using Mars.Numerics;
 
 namespace GridBlueprint.Model;
 
@@ -15,7 +16,6 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     {
         _layer = layer;
         Directions = MovementDirections.CreateMovementDirectionsList();
-        Positioned = false;
     }
 
     
@@ -26,18 +26,19 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     public void Tick()
     {
         if (!_layer.FireStarted || (_layer.GetCurrentTick() % 3) != 0) return;
-        if (!Positioned)
+        if (!_layer.SmokeSpread)
         {
             var fire = _layer.FireEnvironment.Explore().Take(1).First();
             var cell = Directions[_rand.Next(Directions.Count)];
             Position = new Position(fire.Position.X + cell.X, fire.Position.Y + cell.Y);
             Spread();
-            Positioned = true; 
+            _layer.SmokeSpread = true; 
         }
         else
         {
             Spread();
         }
+        Damage();
     }
     
     #endregion
@@ -61,19 +62,26 @@ public class Smoke : IAgent<GridLayer>, IPositionable
 
     private void ExpandSmoke(Position position)
     {
-        var agent = _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent =>
+       _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent =>
         {
             agent.Position = position;
-        }).Take(1).First();
-        _layer.SmokeEnvironment.Insert(agent);
+        });
         Console.WriteLine("Smoke spread to: {0}", position);
     }
-
-    /*
-    private void UpdateSmoke()
+    
+    /// <summary>
+    /// Causes Health Damage to agent, everytime they inhale smoke; 
+    /// </summary>
+    private void Damage()
     {
+        var agent = _layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
+        if (agent == null) return;
+        var targetDistance = (int) Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray);
+        if (targetDistance <= 1 && Position.Equals(agent.Position)) agent.Health--;
         
-    }*/
+    }
+    
 
     #endregion
     #region Fields & Properties
@@ -86,7 +94,6 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     private readonly Random _rand = new Random();
     private List<Position> Directions { get; set; }
     private GridLayer _layer;
-    private bool Positioned { get; set; }
 
     #endregion
 
