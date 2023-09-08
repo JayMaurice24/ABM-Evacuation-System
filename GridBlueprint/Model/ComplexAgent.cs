@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Mars.Components.Agents;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -89,7 +90,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         if (!Position.Equals(Goal)) return;
         if (Layer.Stairs.Contains(Goal))
         {
-            Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
+            Console.WriteLine($"Agent {ID} has reached exit {Goal}");
             RemoveFromSimulation();
             _tripInProgress = false;
         }
@@ -101,13 +102,14 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             if (!_path.MoveNext()) return;
             Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, 1);
             if (!Position.Equals(Goal)) return;
-            Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
+            Console.WriteLine($"Agent {ID} has reached exit {Goal}");
             RemoveFromSimulation();
             _tripInProgress = false;
         }
 
     }
-    
+   
+
    /// <summary>
    /// Agent Moves towards goal with Medium Aggression 
    /// </summary>
@@ -130,9 +132,11 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             var otherAgent = GetAgentAt(Position);
             if (otherAgent != null)
             {
-                if (otherAgent.Pushiness < Pushiness)
+                if (otherAgent.Pushiness <= Pushiness && otherAgent.Strength < Strength)
                 {
                     PushAgent(otherAgent);
+                    Console.WriteLine($"Agent {otherAgent.ID} has been pushed by {ID}");
+                    
                 }
             }
         }
@@ -142,7 +146,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
         if (Layer.Stairs.Contains(Goal))
         {
-            Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
+            Console.WriteLine($"Agent {ID} has reached exit {Goal}");
             RemoveFromSimulation();
             _tripInProgress = false;
         }
@@ -154,7 +158,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             if (!_path.MoveNext()) return;
             Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);
             if (!Position.Equals(Goal)) return;
-            Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
+            Console.WriteLine($"Agent {ID} has reached exit {Goal}");
             RemoveFromSimulation();
             _tripInProgress = false;
         }
@@ -182,6 +186,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             if (otherAgent != null)
             {
                 PushAgent(otherAgent);
+                Console.WriteLine($"Agent {otherAgent.ID} has been pushed by {ID}");
             }
         }
         else{
@@ -190,7 +195,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
         if (Layer.Stairs.Contains(Goal))
         {
-            Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
+            Console.WriteLine($"Agent {ID} has reached exit {Goal}");
             RemoveFromSimulation();
             _tripInProgress = false;
         }
@@ -202,7 +207,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             if (!_path.MoveNext()) return;
             Layer.ComplexAgentEnvironment.MoveTo(this, _path.Current, Speed);
             if (!Position.Equals(Goal)) return;
-            Console.WriteLine($"ComplexAgent {ID} reached goal {Goal}");
+            Console.WriteLine($"Agent {ID} has reached exit {Goal}");
             RemoveFromSimulation();
             _tripInProgress = false;
         }
@@ -266,7 +271,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// <summary>
     /// Identifies if an agent can lead a group
     /// </summary>
-    protected void MakeAgentLead()
+    protected void DetermineLeader()
     {
         var agents = Layer.ComplexAgentEnvironment.Explore(Position, radius: 5).ToList();
         var lead = this.Leadership;
@@ -313,8 +318,17 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
 
         if (!(0 <= newX) || !(newX < Layer.Width) || !(0 <= newY) || !(newY < Layer.Height)) return;
         if (!Layer.IsRoutable(newX, newY) || IsCellOccupied(new Position(newX, newY))) return;
-        Position = new Position(newX, newY);
-        Layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY));
+        if (AvoidFire())
+        {
+            Position = ChangeDirection(new Position(newX, newY));
+            Layer.ComplexAgentEnvironment.MoveTo(this, new Position(Position.X, Position.Y));
+        }
+        else
+        {
+            Position = new Position(newX, newY);
+            Layer.ComplexAgentEnvironment.MoveTo(this, new Position(newX, newY)); 
+        }
+     
     }
     
     /// <summary>
@@ -340,7 +354,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     {
         var fire = Layer.FireEnvironment.Entities.MinBy(flame =>
             Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
-
         if (fire == null) return position;
         {
             if (!position.Equals(fire.Position)) return position;
@@ -358,6 +371,7 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
                 if (nextCell == null)
                 {
                     return new Position(newX, newY);
+                   
 
                 }
             }
@@ -365,14 +379,13 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
         return position;
     }
     
-    
     /// <summary>
     /// Checks if the agent is in close proximity to the fire
     /// </summary>
     /// <returns></returns>
     private bool AvoidFire()
     {
-        var fire = Layer.FireEnvironment.Explore(Position, radius: 1);
+        var fire = Layer.FireEnvironment.Explore(Position, radius: 5);
 
         return fire.Any(flame => Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }) <= 2.0);
     }
@@ -380,14 +393,6 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     /// Sees Fire Run
     /// </summary>
     /// <returns></returns>
-    protected bool FirePerception()
-    {
-        var fire = Layer.FireEnvironment.Entities.MinBy(flame =>
-            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
-        
-        return  ViewRange(Position.X, Position.Y, fire.Position.X, fire.Position.Y);
-    }
-
     private bool ViewRange(double agent1X, double agent1Y, double agent2X, double agent2Y)
     {
         switch (agent1X)
@@ -518,16 +523,41 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
 
-        return this; 
+        return null; 
     }
 
+    protected void MovingWithHelp()
+    {
+        Position = Helper.Position;
+        Layer.ComplexAgentEnvironment.MoveTo(this, new Position(Helper.Position.X, Helper.Position.Y));
+    }
+
+    protected void GetExit()
+    {
+        Exit = FindNearestExit(Layer.Exits);
+        Stairs = ClosestStairs(Layer.Stairs);
+        var distStairs = CalculateDistance(Position, Stairs);
+        var distExit = CalculateDistance(Position, Exit);
+        Goal = distExit < distStairs ? Exit : Stairs;
+        Console.WriteLine($"Agent {ID} moving towards exit");
+        FoundExit = true;
+    }
     protected void HelpAgent()
     {
         if (Health > 50 && Empathy > 0.5 && Strength > 0.5)
         {
             var helped = FindAgentsInNeed();
+            if (helped != null)
+            {
+                Goal = helped.Position;
+                FoundDistressedAgent = true;
+                Helped = helped;
+                Helper.Helped = this; 
+                Console.WriteLine($"Agent{ID} is going to help Agent {helped.ID}");
+            }
         }
     }
+    
     #endregion
 
     #region Fields and Properties
@@ -557,12 +587,18 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
     public int Health;
     protected bool IsLeader { get; set; }
     protected int Speed { get; set; }
+    protected bool Helping { get; set; }
+    protected bool FoundHelp { get; set; }
     protected ComplexAgent Leader { get; set; }
     protected ComplexAgent Helper { get; set; }
+    protected ComplexAgent Helped { get; set; }
     protected int TickCount;
     protected bool IsInGroup;
     protected bool FirstAct;
+    protected bool FoundExit; 
     private const int MaxSpeed = 10;
+    protected bool ReachedDistressedAgent { get; set; }
+    protected bool FoundDistressedAgent { get; set; }
     protected double CollaborationFactor { get; set; }
     protected double Leadership { get; set; }
     protected bool IsConscious { get; set; }

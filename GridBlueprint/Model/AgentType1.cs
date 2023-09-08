@@ -31,7 +31,7 @@ public class AgentType1 : ComplexAgent
         Leader = null;
         Layer.ComplexAgentEnvironment.Insert(this);
     }
-    
+
     #endregion
 
     #region Tick
@@ -42,74 +42,104 @@ public class AgentType1 : ComplexAgent
         {
             if (RiskLevel > TickCount)
             {
-                if (!FirstAct)
+                if (IsConscious)
                 {
-                    Exit = FindNearestExit(Layer.Exits);
-                    Stairs = ClosestStairs(Layer.Stairs);
-                    var distStairs = CalculateDistance(Position, Stairs);
-                    var distExit = CalculateDistance(Position, Exit);
-                    Goal = distExit < distStairs ? Exit : Stairs;
-                    Console.WriteLine($"Agent {ID} moving towards exit");
-                    FirstAct = true;
-                    if(!IsLeader && !IsInGroup) MakeAgentLead();
-                }
-                if (IsLeader)
-                {
-                        FormGroup(this);
+                    if (!FoundExit)
+                    {
+                        GetExit();
+                        if (!IsLeader && !IsInGroup) DetermineLeader();
+                    }
+
+                    if (!FoundDistressedAgent)
+                    {
+                        if (IsLeader)
+                        {
+                            FormGroup(this);
+                            MoveTowardsGoalLow();
+                            Console.WriteLine(Group.Count > 1
+                                ? $"Agent {ID} is leading group"
+                                : $"Agent {ID} can lead group");
+                        }
+                        else if (IsInGroup && !IsLeader)
+                        {
+                            MoveTowardsGroupLeader();
+                            Console.WriteLine($"Agent {ID} moving in group");
+                        }
+
+                        else
+                        {
+                            MoveTowardsGoalLow();
+                            Console.WriteLine($"Agent {ID} is moving alone");
+
+                        }
+
+                        HelpAgent();
+                    }
+                    else if (Helping)
+                    {
                         MoveTowardsGoalLow();
-                        Console.WriteLine(Group.Count > 1
-                            ? $"Agent {ID} is leading group"
-                            : $"Agent {ID} can lead group");
+                        Console.WriteLine($"Agent {ID} is carrying agent {Helped.ID}");
+                    }
+                    else
+                    {
+                        if (ReachedDistressedAgent)
+                        {
+                            GetExit();
+                        }
+                        else
+                        {
+                            MoveTowardsGoalLow();
+                        }
+                    }
+
                 }
-                else if (IsInGroup && !IsLeader)
-                {
-                        MoveTowardsGroupLeader();
-                        Console.WriteLine($"Agent {ID} moving in group");
-                }
-                    
                 else
                 {
-                    if (TickCount % Speed != 0) return;
-                    MoveTowardsGoalLow();
-                    Console.WriteLine($"Agent {ID} is moving alone");
-                    
+                    if (Position.Equals(Helper.Position))
+                    {
+                        FoundHelp = true;
+                    }
+                    else if (FoundHelp)
+                    {
+                        MovingWithHelp();
+                    }
                 }
-                
+
+                {
+                    MoveRandomly();
+                }
             }
             else
             {
-                MoveRandomly();
-            }
-        }
-        else
-        {
-            switch (IsLeader)
-            {
-                case false when !IsInGroup:
-                    MakeAgentLead();
-                    MoveRandomly();
-                    break;
-                case true:
-                    MoveRandomly();
-                    FormGroup(this);
-                    break;
-                default:
+                switch (IsLeader)
                 {
-                    if (IsInGroup && !IsLeader)
+                    case false when !IsInGroup:
+                        DetermineLeader();
+                        ;
+                        MoveRandomly();
+                        break;
+                    case true:
+                        MoveRandomly();
+                        FormGroup(this);
+                        break;
+                    default:
                     {
-                        MoveTowardsGroupLeader();
+                        if (IsInGroup && !IsLeader)
+                        {
+                            MoveTowardsGroupLeader();
+                        }
+
+                        break;
                     }
-
-                    break;
                 }
+
+                Console.WriteLine($"Agent {GetType().GUID} moving randomly");
             }
-            Console.WriteLine($"Agent {GetType().GUID} moving randomly");
+
         }
-        
+
+
+        #endregion
+
     }
-
-
-    #endregion
-
-
 }

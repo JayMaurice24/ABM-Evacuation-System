@@ -265,11 +265,11 @@ class Visualization:
                 x = entity["x"]
                 y = entity["y"]
 
-                if type_key == 28:
+                if type_key == 19:
                     pygame.draw.rect(surface, ORANGE,
                              pygame.Rect((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y,
                                          scale_x, scale_y))
-                elif type_key == 29:
+                elif type_key == 20:
                     pygame.draw.line(surface, BLUE_LIGHT,
                              ((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y),
                              ((x - self.WORLD_SIZE[0]) * scale_x + scale_x, (y - self.WORLD_SIZE[1]) * scale_y + scale_y),
@@ -278,7 +278,7 @@ class Visualization:
                              ((x - self.WORLD_SIZE[0]) * scale_x + scale_x, (y - self.WORLD_SIZE[1]) * scale_y),
                              ((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y + scale_y),
                              line_width)
-                elif type_key == 30:
+                elif type_key == 21:
                     pygame.draw.rect(surface, GRAY,
                              pygame.Rect((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y,
                                          scale_x, scale_y))

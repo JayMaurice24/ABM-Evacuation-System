@@ -19,7 +19,17 @@ public abstract class SocialForceModel
 
         return (from groupMember in @group where groupMember != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - groupMember.Position.X), (float)(agent.Position.Y - groupMember.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, groupMember.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
     }
+    
+    public static Vector2 CalculateSocialForceSolo(Position goal, ComplexAgent agent, List <ComplexAgent> nearbyAgents)
+    {
+        var totalForce = Vector2.Zero;
+        var attractiveForce = Vector2.Normalize(new Vector2((float)(goal.X - agent.Position.X),
+            (float)(goal.Y - agent.Position.Y))) * (float)AttractiveForceMultiplier;
 
+        totalForce += attractiveForce;
+
+        return (from otherAgent in @nearbyAgents where otherAgent != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - otherAgent.Position.X), (float)(agent.Position.Y - otherAgent.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, otherAgent.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
+    }
     public static Vector2 CalculateObstacleAvoidanceForce(ComplexAgent agent, ComplexAgent nearestObstacle)
     {
         var obstacleAvoidanceForce = Vector2.Zero;
