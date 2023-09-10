@@ -18,7 +18,7 @@ public class AgentType1 : ComplexAgent
         RiskLevel = Behaviour.LowRisk();
         Speed = Behaviour.LowSpeed();
         Pushiness = 0;
-        FirstAct = false;
+        FoundExit = false;
         Leadership = Rand.NextDouble();
         Empathy = Rand.NextDouble();
         CollaborationFactor = Rand.NextDouble();
@@ -29,6 +29,8 @@ public class AgentType1 : ComplexAgent
         IsInGroup = false;
         Group = new List<ComplexAgent>();
         Leader = null;
+        Helper = null;
+        Helped = null; 
         Layer.ComplexAgentEnvironment.Insert(this);
     }
 
@@ -84,6 +86,7 @@ public class AgentType1 : ComplexAgent
                     {
                         if (ReachedDistressedAgent)
                         {
+                            OfferHelp();
                             GetExit();
                         }
                         else
@@ -95,51 +98,39 @@ public class AgentType1 : ComplexAgent
                 }
                 else
                 {
-                    if (Position.Equals(Helper.Position))
-                    {
-                        FoundHelp = true;
-                    }
-                    else if (FoundHelp)
-                    {
-                        MovingWithHelp();
-                    }
-                }
-
-                {
-                    MoveRandomly();
+                    if (FoundHelp) MovingWithHelp();
                 }
             }
-            else
-            {
-                switch (IsLeader)
-                {
-                    case false when !IsInGroup:
-                        DetermineLeader();
-                        ;
-                        MoveRandomly();
-                        break;
-                    case true:
-                        MoveRandomly();
-                        FormGroup(this);
-                        break;
-                    default:
+        }
+        else {
+                    switch (IsLeader)
                     {
-                        if (IsInGroup && !IsLeader)
+                        case false when !IsInGroup:
+                            DetermineLeader();
+                            ;
+                            MoveRandomly();
+                            break;
+                        case true:
+                            MoveRandomly();
+                            FormGroup(this);
+                            break;
+                        default:
                         {
-                            MoveTowardsGroupLeader();
+                            if (IsInGroup && !IsLeader)
+                            {
+                                MoveTowardsGroupLeader();
+                            }
+
+                            break;
                         }
-
-                        break;
                     }
-                }
 
-                Console.WriteLine($"Agent {GetType().GUID} moving randomly");
-            }
-
+                    Console.WriteLine($"Agent {GetType().GUID} moving randomly");
         }
 
-
-        #endregion
-
     }
+
+
+            #endregion
+
 }

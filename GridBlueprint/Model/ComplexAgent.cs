@@ -557,6 +557,12 @@ public class ComplexAgent : IAgent<GridLayer>, IPositionable
             }
         }
     }
+
+    protected void OfferHelp()
+    {
+        Helped.FoundHelp = true;
+        Helped.Helper = this; 
+    }
     
     #endregion
 

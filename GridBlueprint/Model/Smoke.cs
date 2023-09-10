@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using Mars.Common.Core.Collections;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
@@ -62,10 +64,14 @@ public class Smoke : IAgent<GridLayer>, IPositionable
 
     private void ExpandSmoke(Position position)
     {
-       _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent =>
+        if (_layer != null)
         {
-            agent.Position = position;
-        });
+            Debug.Assert(_layer != null, nameof(_layer) + " != null");
+            var first = _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent => { agent.Position = position; })
+                .Take(1).First();
+            _layer.SmokeEnvironment.Insert(first); 
+        }
+
         Console.WriteLine("Smoke spread to: {0}", position);
     }
     
