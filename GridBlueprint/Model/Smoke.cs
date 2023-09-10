@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mars.Common.Core.Collections;
 using Mars.Interfaces.Agents;
@@ -27,20 +28,20 @@ public class Smoke : IAgent<GridLayer>, IPositionable
 
     public void Tick()
     {
-        if (!_layer.FireStarted || (_layer.GetCurrentTick() % 3) != 0) return;
-        if (!_layer.SmokeSpread)
+        if (_layer.FireStarted && !_layer.SmokeSpread)
         {
-            var fire = _layer.FireEnvironment.Explore().Take(1).First();
+            var firstFire = _layer.FireLocations[0];
             var cell = Directions[_rand.Next(Directions.Count)];
-            Position = new Position(fire.Position.X + cell.X, fire.Position.Y + cell.Y);
+            Position = new Position(firstFire.X + cell.X, firstFire.Y + cell.Y );
             Spread();
             _layer.SmokeSpread = true; 
         }
         else
         {
-            Spread();
+            if (_rand.NextDouble()>= 0.2) Spread();
+            Damage();
         }
-        Damage();
+       
     }
     
     #endregion
@@ -62,17 +63,11 @@ public class Smoke : IAgent<GridLayer>, IPositionable
         }
     }
 
+    [SuppressMessage("ReSharper.DPA", "DPA0004: Closure object allocation", MessageId = "size: 51MB")]
     private void ExpandSmoke(Position position)
     {
-        if (_layer != null)
-        {
-            Debug.Assert(_layer != null, nameof(_layer) + " != null");
-            var first = _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent => { agent.Position = position; })
-                .Take(1).First();
-            _layer.SmokeEnvironment.Insert(first); 
-        }
-
-        Console.WriteLine("Smoke spread to: {0}", position);
+            _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent => { agent.Position = position; }).Take(1).First();
+            Console.WriteLine("Smoke spread to: {0}", position);
     }
     
     /// <summary>

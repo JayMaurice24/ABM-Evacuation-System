@@ -79,6 +79,7 @@ public class GridLayer : RasterLayer
         };
 
         Exits = exitLocations;
+        FireLocations = new List<Position>();
         
         
         List<Position> stairLocation = new List<Position>()
@@ -146,8 +147,51 @@ public class GridLayer : RasterLayer
         }
         return Position.CreatePosition(x, y); 
     }
+
+    public string Room(Position coordinate)
+    {
+        switch (coordinate.X)
+        {
+            case > 1 and < 19 when coordinate.Y is > 50 and < 87: //Coral
+                return "Coral Seminar room";
+            case > 21 and < 54 when coordinate.Y is > 52 and < 84: //West
+                return "Undergraduate West labs";
+            case > 65 and < 100 when coordinate.Y is > 52 and < 84: //East
+                return "Undergraduate East labs";
+            case > 102 and < 120 when coordinate.Y is > 42 and < 87: //Braae
+                return "Braae labs";
+            case > 44 and < 120 when coordinate.Y is > 1 and < 15: //CSHons
+                return "CS Hons lab";
+            case > 77 and < 86 when coordinate.Y is > 41 and < 45: //FBathroom
+                return "Female Bathroom"; 
+            case > 86 and < 94 when coordinate.Y is > 38 and < 45: //FBathroom2
+                return "Female Bathroom"; 
+            case > 77 and < 86 when coordinate.Y is > 32 and < 36: //MBathroom 
+                return "Male Bathroom";
+            case > 86 and < 94 when coordinate.Y is > 32 and < 38: //MBathroom2 
+                return "Male Bathroom";
+            case > 44 and < 63 when coordinate.Y is > 15 and < 32: //Atrium
+                return "Atrium Seminar room";
+            case > 96 and < 120 when coordinate.Y is > 16 and < 32: //SysDev
+                return "SysDev Seminar room";
+            case > 14 and < 102 when coordinate.Y is > 46 and < 50: //Passage1
+                return "Corridor";
+            case > 50 and < 53 when coordinate.Y is > 51 and < 70: //Passage2
+                return "Corridor";
+            case > 56 and < 65 when coordinate.Y is > 45 and < 68: //Passage3
+                return "Corridor";
+            case > 63 and < 94 when coordinate.Y is > 26 and < 31: //Passage4
+                return "Corridor";
+            case > 63 and < 94 when coordinate.Y is > 15 and < 19: //Passage5
+                return "Corridor";
+            case > 63 and < 73 when coordinate.Y is > 19 and < 31: //Passage6
+                return "Corridor";
+            default:
+                return "In Passage";
+        }
+    }
     
-    
+
     #endregion
     
    
@@ -196,6 +240,7 @@ public class GridLayer : RasterLayer
     public List<AgentType16> Agent16 { get; private set; }
     public List<AgentType17> Agent17 { get; private set; }
     public List<AgentType18> Agent18 { get; private set; }
+    public List<Position> FireLocations { get; set; }
     private readonly int _numAgent1 = Rand.Next(1, 20);
     private static readonly Random Rand = new Random();
     public List<HelperAgent> HelperAgents { get; private set; }

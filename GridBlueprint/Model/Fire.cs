@@ -18,45 +18,38 @@ public class Fire : IAgent<GridLayer>, IPositionable
     public void Init(GridLayer layer)
     {
         _layer = layer;
-        _startSpread = _rand.Next(10, 20);
-        _directions = MovementDirections.CreateMovementDirectionsList(); 
-        _expand = _rand.Next(10, 20);
-        _spreadCounter = 0; 
+        _directions = MovementDirections.CreateMovementDirectionsList();
+        Position = _layer.FindRandomPosition();
+        _layer.FireEnvironment.Insert(this);
     }
 
 
     #endregion
 
     #region Tick
-    
+
     public void Tick()
     {
-        if (_startSpread > (int)_layer.GetCurrentTick()) return;
         if (!_layer.FireStarted)
         {
-            Position = _layer.FindRandomPosition();
-            _layer.FireEnvironment.Insert(this);
+            Console.WriteLine($"Fire started in the {_layer.Room(Position)}");
+            _layer.FireLocations.Add(Position);
             _layer.FireStarted = true;
 
         }
         else
         {
-            if (_spreadCounter == _expand)
+            if (_rand.NextDouble() >= 0.6)
             {
                 Spread();
-                _expand = _rand.Next(10, 20);
-                _spreadCounter = 0;
             }
-            else
-            {
-                _spreadCounter++;
-                HurtAgent();
-            }
+
+            HurtAgent();
 
         }
     }
 
-        #endregion
+    #endregion
         #region Methods
         /// <summary>
         /// Spreads fire across a radius 
@@ -82,7 +75,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
                 {
                     agent.Position = position;
                 })
-                .Do(agent => _layer.FireEnvironment.Insert(agent)).Take(1).First();
+                .Take(1).First();
+            _layer.FireEnvironment.Insert(flame);
 
             Console.WriteLine("Fire spread to: {0}", position);
         }
