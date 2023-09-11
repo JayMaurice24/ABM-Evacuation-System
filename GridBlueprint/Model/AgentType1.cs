@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Mars.Components.Agents;
 
 namespace GridBlueprint.Model;
 
 /// <summary>
-/// Agent With Low Risk, Low Speed and Low Aggression
+/// Agent With Low Risk, Low Aggression and Low Speed
 /// </summary>
 public class AgentType1 : ComplexAgent
 {
@@ -15,10 +16,9 @@ public class AgentType1 : ComplexAgent
         Layer = layer;
         Position = Layer.FindRandomPosition();
         Directions = CreateMovementDirectionsList();
-        RiskLevel = Behaviour.LowRisk();
-        Speed = Behaviour.LowSpeed();
-        Pushiness = 0;
-        FoundExit = false;
+        RiskLevel = Characteristics.LowRisk();
+        Speed = Characteristics.LowSpeed();
+        Aggression = 0;
         Leadership = Rand.NextDouble();
         Empathy = Rand.NextDouble();
         CollaborationFactor = Rand.NextDouble();
@@ -42,9 +42,10 @@ public class AgentType1 : ComplexAgent
     {
         if (Layer.Ring)
         {
-            if (RiskLevel > TickCount)
+            if (RiskLevel <= TickCount) return;
+            switch (IsConscious)
             {
-                if (IsConscious)
+                case true:
                 {
                     if (!FoundExit)
                     {
@@ -59,19 +60,19 @@ public class AgentType1 : ComplexAgent
                             FormGroup(this);
                             MoveTowardsGoalLow();
                             Console.WriteLine(Group.Count > 1
-                                ? $"Agent {ID} is leading group"
-                                : $"Agent {ID} can lead group");
+                                ? $"{GetType().Name}  {ID} is leading group"
+                                : $"{GetType().Name}  {ID} can lead group");
                         }
                         else if (IsInGroup && !IsLeader)
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine($"Agent {ID} moving in group");
+                            Console.WriteLine($" {GetType().Name} Agent {ID} moving in group");
                         }
 
                         else
                         {
                             MoveTowardsGoalLow();
-                            Console.WriteLine($"Agent {ID} is moving alone");
+                            Console.WriteLine($" {GetType().Name} Agent {ID} is moving alone");
 
                         }
 
@@ -80,7 +81,7 @@ public class AgentType1 : ComplexAgent
                     else if (Helping)
                     {
                         MoveTowardsGoalLow();
-                        Console.WriteLine($"Agent {ID} is carrying agent {Helped.ID}");
+                        Console.WriteLine($"{GetType().Name} t {ID} is carrying agent {Helped.ID}");
                     }
                     else
                     {
@@ -95,11 +96,15 @@ public class AgentType1 : ComplexAgent
                         }
                     }
 
+                    Consciousness();
+                    break;
                 }
-                else
-                {
-                    if (FoundHelp) MovingWithHelp();
-                }
+                case false when FoundHelp:
+                    MovingWithHelp();
+                    break;
+                case false:
+                    Console.WriteLine($"{GetType().Name} {ID} is Unconscious");
+                    break;
             }
         }
         else {

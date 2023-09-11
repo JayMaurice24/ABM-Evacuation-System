@@ -19,7 +19,10 @@ public class Fire : IAgent<GridLayer>, IPositionable
     {
         _layer = layer;
         _directions = MovementDirections.CreateMovementDirectionsList();
-        Position = _layer.FindRandomPosition();
+        if (!_layer.FireStarted)
+        {
+            Position = _layer.FindRandomPosition();
+        }
         _layer.FireEnvironment.Insert(this);
     }
 
@@ -71,12 +74,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
     
         private void SpreadFromPosition(Position position)
         {
-            var flame = _layer.AgentManager.Create<Fire, GridLayer>(null, agent =>
-                {
-                    agent.Position = position;
-                })
-                .Take(1).First();
-            _layer.FireEnvironment.Insert(flame);
+             Position = _layer.FindRandomPosition();
 
             Console.WriteLine("Fire spread to: {0}", position);
         }

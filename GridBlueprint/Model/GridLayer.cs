@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mars.Common.Core.Random;
+using Mars.Components.Agents;
 using Mars.Components.Environments;
 using Mars.Components.Layers;
 using Mars.Core.Data;
+using Mars.Interfaces.Agents;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
@@ -37,27 +39,6 @@ public class GridLayer : RasterLayer
         SmokeEnvironment = new SpatialHashEnvironment<Smoke>(Width, Height);
         
         AgentManager = layerInitData.Container.Resolve<IAgentManager>();
-        Agent1 = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
-        Agent2 = AgentManager.Spawn<AgentType2, GridLayer>().ToList();
-        Agent3 = AgentManager.Spawn<AgentType3, GridLayer>().ToList();
-        Agent4 = AgentManager.Spawn<AgentType4, GridLayer>().ToList();
-        Agent5 = AgentManager.Spawn<AgentType5, GridLayer>().ToList();
-        Agent6 = AgentManager.Spawn<AgentType6, GridLayer>().ToList();
-        Agent7 = AgentManager.Spawn<AgentType7, GridLayer>().ToList();
-        Agent8 = AgentManager.Spawn<AgentType8, GridLayer>().ToList();
-        Agent9 = AgentManager.Spawn<AgentType9, GridLayer>().ToList();
-        Agent10 = AgentManager.Spawn<AgentType10, GridLayer>().ToList();
-        Agent11 = AgentManager.Spawn<AgentType11, GridLayer>().ToList();
-        Agent12 = AgentManager.Spawn<AgentType12, GridLayer>().ToList();
-        Agent13 = AgentManager.Spawn<AgentType13, GridLayer>().ToList();
-        Agent14 = AgentManager.Spawn<AgentType14, GridLayer>().ToList();
-        Agent15 = AgentManager.Spawn<AgentType15, GridLayer>().ToList();
-        Agent16 = AgentManager.Spawn<AgentType16, GridLayer>().ToList();
-        Agent17 = AgentManager.Spawn<AgentType17, GridLayer>().ToList();
-        Agent18 = AgentManager.Spawn<AgentType18, GridLayer>().ToList();
-        
-       
-        var entityManager = Container.Resolve<IEntityManager>();
         HelperAgents = AgentManager.Spawn<HelperAgent, GridLayer>().ToList();
         Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
         Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
@@ -91,6 +72,7 @@ public class GridLayer : RasterLayer
             new Position(74, 29)
         };
         Stairs = stairLocation;
+        SpawnAgents();
         return initLayer;
     }
 
@@ -122,12 +104,69 @@ public class GridLayer : RasterLayer
     
     private void SpawnAgents()
     {
-        for (var a = 1; a <= 18; a++)
+        for (var x = 1; x <= 18; x++)
         {
-            for (var i = 0; i <= 10; i++)
+            var numAgents = Rand.Next(1, 10);
+            for (var i = 0; i <= numAgents; i++)
             {
-                var agent = AgentManager.Spawn<AgentType1, GridLayer>().ToList();
-                Agent1.AddRange(agent);
+                switch (x)
+                {
+                    case 1:
+                        Agent1.AddRange(AgentManager.Spawn<AgentType1, GridLayer>().ToList());
+                        break;
+                    case 2:
+                        Agent2.AddRange(AgentManager.Spawn<AgentType2, GridLayer>().ToList());
+                        break;
+                    case 3:
+                        Agent3.AddRange(AgentManager.Spawn<AgentType3, GridLayer>().ToList());
+                        break;
+                    case 4:
+                        Agent4.AddRange(AgentManager.Spawn<AgentType4, GridLayer>().ToList());
+                        break;
+                    case 5:
+                        Agent5.AddRange(AgentManager.Spawn<AgentType5, GridLayer>().ToList());
+                        break;
+                    case 6:
+                        Agent6.AddRange(AgentManager.Spawn<AgentType6, GridLayer>().ToList());
+                        break;
+                    case 7:
+                        Agent7.AddRange(AgentManager.Spawn<AgentType7, GridLayer>().ToList());
+                        break;
+                    case 8:
+                        Agent8.AddRange(AgentManager.Spawn<AgentType8, GridLayer>().ToList());
+                        break;
+                    case 9:
+                        Agent9.AddRange(AgentManager.Spawn<AgentType9, GridLayer>().ToList());
+                        break;
+                    case 10:
+                        Agent10.AddRange(AgentManager.Spawn<AgentType10, GridLayer>().ToList());
+                        break;
+                    case 11:
+                        Agent11.AddRange(AgentManager.Spawn<AgentType11, GridLayer>().ToList());
+                        break;
+                    case 12:
+                        Agent12.AddRange(AgentManager.Spawn<AgentType12, GridLayer>().ToList());
+                        break;
+                    case 13:
+                        Agent13.AddRange(AgentManager.Spawn<AgentType13, GridLayer>().ToList());
+                        break;
+                    case 14:
+                        Agent14.AddRange(AgentManager.Spawn<AgentType14, GridLayer>().ToList());
+                        break;
+                    case 15:
+                        Agent15.AddRange(AgentManager.Spawn<AgentType15, GridLayer>().ToList());
+                        break;
+                    case 16:
+                        Agent16.AddRange(AgentManager.Spawn<AgentType16, GridLayer>().ToList());
+                        break;
+                    case 17:
+                        Agent17.AddRange(AgentManager.Spawn<AgentType17, GridLayer>().ToList());
+                        break;
+                    case 18:
+                        Agent18.AddRange(AgentManager.Spawn<AgentType18, GridLayer>().ToList());
+                        break;
+
+                }
             }
         }
     }
@@ -219,29 +258,30 @@ public class GridLayer : RasterLayer
     public List<Fire> Fires { get; private set; }
     public List<Smoke> Smokes { get; private set; }
     public List<Alarm> Alarms { get; private set; }
+
     /// <summary>
     ///     A collection that holds the ComplexAgent instances
     /// </summary>
-    public List<AgentType1> Agent1 { get; private set; }
-    public List<AgentType2> Agent2 { get; private set; }
-    public List<AgentType3> Agent3 { get; private set; }
-    public List<AgentType4> Agent4 { get; private set; }
-    public List<AgentType5> Agent5 { get; private set; }
-    public List<AgentType6> Agent6 { get; private set; }
-    public List<AgentType7> Agent7 { get; private set; }
-    public List<AgentType8> Agent8{ get; private set; }
-    public List<AgentType9> Agent9 { get; private set; }
-    public List<AgentType10> Agent10 { get; private set; }
-    public List<AgentType11> Agent11 { get; private set; }
-    public List<AgentType12> Agent12 { get; private set; }
-    public List<AgentType13> Agent13 { get; private set; }
-    public List<AgentType14> Agent14 { get; private set; }
-    public List<AgentType15> Agent15 { get; private set; }
-    public List<AgentType16> Agent16 { get; private set; }
-    public List<AgentType17> Agent17 { get; private set; }
-    public List<AgentType18> Agent18 { get; private set; }
+    private List<AgentType1> Agent1 { get; set; } = new List<AgentType1>();
+    private List<AgentType2> Agent2 { get; set; } = new List<AgentType2>();
+    private List<AgentType3> Agent3 { get; set; } = new List<AgentType3>();
+    private List<AgentType4> Agent4 { get; set; } = new List<AgentType4>();
+    private List<AgentType5> Agent5 { get; set; } = new List<AgentType5>();
+    private List<AgentType6> Agent6 { get; set; } = new List<AgentType6>();
+    private List<AgentType7> Agent7 { get; set; } = new List<AgentType7>();
+    private List<AgentType8> Agent8 { get; set; } = new List<AgentType8>();
+    private List<AgentType9> Agent9 { get; set; } = new List<AgentType9>();
+    private List<AgentType10> Agent10 { get; set; } = new List<AgentType10>();
+    private List<AgentType11> Agent11 { get; set; } = new List<AgentType11>();
+    private List<AgentType12> Agent12 { get; set; } = new List<AgentType12>();
+    private List<AgentType13> Agent13 { get; set; } = new List<AgentType13>();
+    private List<AgentType14> Agent14 { get; set; } = new List<AgentType14>();
+    private List<AgentType15> Agent15 { get; set; } = new List<AgentType15>();
+    private List<AgentType16> Agent16 { get; set; } = new List<AgentType16>();
+    private List<AgentType17> Agent17 { get; set; } = new List<AgentType17>();
+    private List<AgentType18> Agent18 { get; set; } = new List<AgentType18>(); 
     public List<Position> FireLocations { get; set; }
-    private readonly int _numAgent1 = Rand.Next(1, 20);
+    private int _numAgents;
     private static readonly Random Rand = new Random();
     public List<HelperAgent> HelperAgents { get; private set; }
 

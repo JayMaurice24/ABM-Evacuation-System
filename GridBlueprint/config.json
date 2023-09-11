@@ -30,119 +30,39 @@
     },
     {
       "name": "AgentType1",
-      "count": 30
+      "count": 1
     },
     {
       "name": "AgentType2",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType3",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType4",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType5",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType6",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType7",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType8",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType9",
-      "count": 0
-    },
-    {
-      "name": "AgentType9",
-      "count": 0
-    },
-    {
-      "name": "AgentType9",
-      "count": 0
-    },
-    {
-      "name": "AgentType10",
-      "count": 0
-    },
-    {
-      "name": "AgentType11",
-      "count": 0
-    },
-    {
-      "name": "AgentType12",
-      "count": 0
-    },
-    {
-      "name": "AgentType13",
-      "count": 0
-    },
-    {
-      "name": "AgentType14",
-      "count": 0
-    },
-    {
-      "name": "AgentType15",
-      "count": 0
-    },
-    {
-      "name": "AgentType16",
-      "count": 0
-    },
-    {
-      "name": "AgentType17",
-      "count": 0
-    },
-    {
-      "name": "AgentType18",
-      "count": 0
-    },
-    {
-      "name": "AgentType19",
-      "count": 0
-    },
-    {
-      "name": "AgentType20",
-      "count": 0
-    },
-    {
-      "name": "AgentType21",
-      "count": 0
-    },
-    {
-      "name": "AgentType22",
-      "count": 0
-    },
-    {
-      "name": "AgentType23",
-      "count": 0
-    },
-    {
-      "name": "AgentType24",
-      "count": 0
-    },
-    {
-      "name": "AgentType25",
-      "count": 0
-    },
-    {
-      "name": "AgentType26",
-      "count": 0
-    },
-    {
-      "name": "AgentType27",
-      "count": 0
+      "count": 1
     },
     {
       "name": "AgentType10",

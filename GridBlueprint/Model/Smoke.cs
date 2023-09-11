@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Mars.Common.Core.Collections;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
@@ -26,28 +24,30 @@ public class Smoke : IAgent<GridLayer>, IPositionable
 
     #region Tick
 
+    [SuppressMessage("ReSharper.DPA", "DPA0000: DPA issues")]
     public void Tick()
     {
         if (_layer.FireStarted && !_layer.SmokeSpread)
         {
             var firstFire = _layer.FireLocations[0];
             var cell = Directions[_rand.Next(Directions.Count)];
-            Position = new Position(firstFire.X + cell.X, firstFire.Y + cell.Y );
+            Position = new Position(firstFire.X + cell.X, firstFire.Y + cell.Y);
             Spread();
-            _layer.SmokeSpread = true; 
+            _layer.SmokeSpread = true;
         }
-        else
+        else if (_layer.SmokeSpread)
         {
-            if (_rand.NextDouble()>= 0.2) Spread();
+            if (_rand.NextDouble() >= 0.4) Spread();
             Damage();
+
         }
-       
     }
-    
+
     #endregion
 
     #region Methods
     
+    [SuppressMessage("ReSharper.DPA", "DPA0002: Excessive memory allocations in SOH", MessageId = "type: <DoImpl>d__7`1[GridBlueprint.Model.Smoke]")]
     private void Spread()
     {
         var randomDirection = _rand.Next(1, Directions.Count);
@@ -58,28 +58,23 @@ public class Smoke : IAgent<GridLayer>, IPositionable
             var newY = Position.Y + cell.Y;
             if (!(0 <= newX) || !(newX < _layer.Width) || !(0 <= newY) || !(newY < _layer.Height)) continue;
             if (_layer.IsRoutable(newX, newY)){
-                ExpandSmoke(new Position(newX, newY));
+                _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent => { agent.Position = new Position(newX, newY); }).Take(1).First();
             }
         }
     }
-
-    [SuppressMessage("ReSharper.DPA", "DPA0004: Closure object allocation", MessageId = "size: 51MB")]
-    private void ExpandSmoke(Position position)
-    {
-            _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent => { agent.Position = position; }).Take(1).First();
-            Console.WriteLine("Smoke spread to: {0}", position);
-    }
+    
     
     /// <summary>
     /// Causes Health Damage to agents, everytime they inhale smoke; 
     /// </summary>
+    [SuppressMessage("ReSharper.DPA", "DPA0000: DPA issues")]
     private void Damage()
     {
         var agent = _layer.ComplexAgentEnvironment.Entities.MinBy(agent =>
             Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
         if (agent == null) return;
         var targetDistance = (int) Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray);
-        if (targetDistance <= 1 && Position.Equals(agent.Position)) agent.Health--;
+        if (targetDistance <= 1 && Position.Equals(agent.Position)){ agent.Health--; Console.WriteLine($"{agent.GetType().Name} {agent.ID} Inhaled Smoke");}
         
     }
     
@@ -91,7 +86,6 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     public Guid ID { get; set; }
     public Position Position { get; set; }
     private float Density { get; set; }
-    private float Speed { get; set; }
     private readonly Random _rand = new Random();
     private List<Position> Directions { get; set; }
     private GridLayer _layer;

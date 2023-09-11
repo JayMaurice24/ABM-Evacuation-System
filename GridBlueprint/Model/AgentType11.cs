@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 
 namespace GridBlueprint.Model;
 
 /// <summary>
-/// Agent With Medium Risk, Low Speed and Medium Aggression
+/// Agent With Medium Risk,  Medium Aggression and High Speed 
 /// </summary>
 public class AgentType11: ComplexAgent
 {
@@ -13,13 +14,26 @@ public class AgentType11: ComplexAgent
     {
         Layer = layer;
         Position = Layer.FindRandomPosition();
-        Directions = CreateMovementDirectionsList(); 
+        Directions = CreateMovementDirectionsList();
+        RiskLevel = Characteristics.MediumRisk();
+        Speed = Characteristics.HighSpeed();
+        Aggression = 1;
+        FoundExit = false;
+        Leadership = Rand.NextDouble();
+        Empathy = Rand.NextDouble();
+        CollaborationFactor = Rand.NextDouble();
+        Health = Rand.Next(30, 100);
+        Strength = Rand.NextDouble();
+        IsConscious = true;
+        IsLeader = false;
+        IsInGroup = false;
+        Group = new List<ComplexAgent>();
+        Leader = null;
+        Helper = null;
+        Helped = null; 
         Layer.ComplexAgentEnvironment.Insert(this);
-        RiskLevel = Behaviour.MediumRisk();
-        Speed = Behaviour.LowSpeed();
-        Pushiness = 0; 
     }
-    
+
     #endregion
 
     #region Tick
@@ -28,52 +42,100 @@ public class AgentType11: ComplexAgent
     {
         if (Layer.Ring)
         {
-            if (RiskLevel > TickCount)
+            if (RiskLevel <= TickCount) return;
+            switch (IsConscious)
             {
-                if (!FirstAct)
+                case true:
                 {
-                    Exit = FindNearestExit(Layer.Exits);
-                    Stairs = ClosestStairs(Layer.Stairs);
-                    var distStairs = CalculateDistance(Position, Stairs);
-                    var distExit = CalculateDistance(Position, Exit);
-                    Goal = distExit < distStairs ? Exit : Stairs;
-                    Console.WriteLine($"Agent moving towards exit");
-                    FirstAct = true;
-                }
-                if (IsInGroup)
-                {
-                    if (IsLeader)
+                    if (!FoundExit)
+                    {
+                        GetExit();
+                        if (!IsLeader && !IsInGroup) DetermineLeader();
+                    }
+
+                    if (!FoundDistressedAgent)
+                    {
+                        if (IsLeader)
+                        {
+                            FormGroup(this);
+                            MoveTowardsGoalMedium();
+                            Console.WriteLine(Group.Count > 1
+                                ? $"{GetType().Name}  {ID} is leading group"
+                                : $"{GetType().Name}  {ID} can lead group");
+                        }
+                        else if (IsInGroup && !IsLeader)
+                        {
+                            MoveTowardsGroupLeader();
+                            Console.WriteLine($" {GetType().Name} Agent {ID} moving in group");
+                        }
+
+                        else
+                        {
+                            MoveTowardsGoalMedium();
+                            Console.WriteLine($" {GetType().Name} Agent {ID} is moving alone");
+
+                        }
+
+                        HelpAgent();
+                    }
+                    else if (Helping)
                     {
                         MoveTowardsGoalLow();
+                        Console.WriteLine($"{GetType().Name} t {ID} is carrying agent {Helped.ID}");
                     }
                     else
                     {
-                        MoveTowardsGroupLeader();
+                        if (ReachedDistressedAgent)
+                        {
+                            OfferHelp();
+                            GetExit();
+                        }
+                        else
+                        {
+                            MoveTowardsGoalMedium();
+                        }
                     }
-                    
-                    Console.WriteLine($"Agent moving in group");
+
+                    Consciousness();
+                    break;
                 }
-                else
-                {
-                    if (TickCount % Speed != 0) return;
-                    MoveTowardsGoalLow();
-                }
-                
-            }
-            else
-            {
-                MoveRandomly();
+                case false when FoundHelp:
+                    MovingWithHelp();
+                    break;
+                case false:
+                    Console.WriteLine($"{GetType().Name} {ID} is Unconscious");
+                    break;
             }
         }
-        else
-        {
-            MoveRandomly();
+        else {
+                    switch (IsLeader)
+                    {
+                        case false when !IsInGroup:
+                            DetermineLeader();
+                            ;
+                            MoveRandomly();
+                            break;
+                        case true:
+                            MoveRandomly();
+                            FormGroup(this);
+                            break;
+                        default:
+                        {
+                            if (IsInGroup && !IsLeader)
+                            {
+                                MoveTowardsGroupLeader();
+                            }
+
+                            break;
+                        }
+                    }
+
+                    Console.WriteLine($"Agent {GetType().GUID} moving randomly");
         }
-        
+
     }
 
 
-    #endregion
-
+            #endregion
 
 }
