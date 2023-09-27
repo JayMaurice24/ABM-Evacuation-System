@@ -1,0 +1,104 @@
+{
+  "globals": {
+    "startTime": "2022-03-01T05:00",
+    "deltaTUnit": "seconds",
+    "deltaT": 1,
+    "output": "csv",
+    "pythonVisualization": true
+  },
+  "layers": [
+    {
+      "name": "GridLayer",
+      "file": "Resources/HTF.csv",
+      "pythonVisualization": true
+    }
+  ],
+  "agents": [
+    {
+      "name": "Fire",
+      "count": 1
+    },
+    {
+      "name": "Alarm",
+      "count": 22,
+      "file": "Resources/AlarmLocations.csv"
+    },
+    {
+      "name": "Smoke",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType1",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType2",
+      "count": 1
+    },
+    
+    {
+      "name": "EvacueeType3",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType4",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType5",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType6",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType7",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType8",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType9",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType10",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType11",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType12",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType13",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType14",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType15",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType16",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType17",
+      "count": 1
+    },
+    {
+      "name": "EvacueeType18",
+      "count":  1
+    },
+  ]
+}
