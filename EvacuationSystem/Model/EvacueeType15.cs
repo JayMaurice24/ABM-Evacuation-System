@@ -45,7 +45,13 @@ public class EvacueeType15: Evacuee
 
    public override void Tick()
     {
-        if (!Layer.Ring && RiskLevel < Layer.GetCurrentTick()) return;
+        if(!EvacueeHasStartedMoving)
+        {
+            if (Layer.GetCurrentTick() < 2) return; 
+            if (!Layer.Ring) return;
+            if (RiskLevel < Layer.GetCurrentTick() || Perception(Position, Layer.FireLocations[0]))return;
+            EvacueeHasStartedMoving = true;
+        }
         if (!FoundExit)
         {
             Goal = FindNearestExit(Layer.PossibleGoal);
@@ -55,6 +61,7 @@ public class EvacueeType15: Evacuee
         }
         else
         {
+            if((int)Layer.GetCurrentTick()%Speed !=0 )return;
             if (!IsConscious)
             {
                 if (FoundHelp)
@@ -82,27 +89,28 @@ public class EvacueeType15: Evacuee
                     if (AgentForgotItem)
                     {
                         ReturnForItem();
+                        Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}(Is returning for item)");
                     }
                     else
                     {
                         if (IsLeader)
                         {
                             FormGroup(this);
-                            MoveTowardsGoalHigh();
+                            EvacuateHigh();
                             Console.WriteLine(Group.Count > 1
-                                ? $"{GetType().Name}  {ID} is leading group"
-                                : $"{GetType().Name}  {ID} can lead group");
+                                ? $"{GetType().Name}  {ID} has moved to cell {Position} (Is leading group)"
+                                : $"{GetType().Name}  {ID} has moved to cell {Position} (Can lead group)");
                         }
                         else if (IsInGroup && !IsLeader)
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine($" {GetType().Name} Agent {ID} moving in group");
+                            Console.WriteLine($" {GetType().Name} {ID} has moved to cell {Position} (Is moving in group)");
                         }
 
                         else
                         {
-                            MoveTowardsGoalHigh();
-                            Console.WriteLine($" {GetType().Name} Agent {ID} is moving alone");
+                            EvacuateHigh();
+                            Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}  (Is moving alone)");
 
                         }
                     }
@@ -111,27 +119,25 @@ public class EvacueeType15: Evacuee
                 }
                 else if (Helping)
                 {
-                    MoveTowardsGoalLow();
-                    Console.WriteLine($"{GetType().Name} t {ID} is carrying agent {Helped.ID}");
+                    EvacuateHigh();
+                    Console.WriteLine($"{GetType().Name}{ID} has moved to cell {Position} (is carrying agent {Helped.ID})");
                 }
                 else
                 {
                     if (ReachedDistressedAgent)
                     {
                         OfferHelp();
-                        Console.WriteLine($"{GetType().Name} {ID} Has reached {Helped.GetType().Name} {Helped.ID} and is moving towards exit");
+                        Console.WriteLine($"{GetType().Name} {ID} Has reached at cell {Position} {Helped.GetType().Name} {Helped.ID} and is now heading exit");
                         Goal = FindNearestExit(Layer.PossibleGoal);
                     }
                     else
                     {
-                        MoveTowardsGoalHigh();
-                    }
+                        EvacuateHigh();                    }
                 }
 
                 Consciousness();
             }
         }
     }
-    #endregion
-
+   #endregion
 }

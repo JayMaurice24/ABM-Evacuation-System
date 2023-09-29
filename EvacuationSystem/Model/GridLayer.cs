@@ -70,7 +70,8 @@ public class GridLayer : RasterLayer
         Stairs.AddRange(BackStairs);
         PossibleGoal = Exits;
         PossibleGoal.AddRange(Stairs);
-        SpawnAgents();
+        Agent1 = AgentManager.Spawn<EvacueeType1, GridLayer>().ToList();
+        //SpawnAgents();
         Directions = MovementDirections.CreateMovementDirectionsList();
         return initLayer;
     }
@@ -245,8 +246,8 @@ public class GridLayer : RasterLayer
     /// <summary>
     ///     The environment of the ComplexAgent agents
     /// </summary>
-    public SpatialHashEnvironment<Evacuee> EvacueeEnvironment { get; set; }
-    public SpatialHashEnvironment<Fire> FireEnvironment { get; set; }
+    public SpatialHashEnvironment<Evacuee> EvacueeEnvironment { get; private set; }
+    public SpatialHashEnvironment<Fire> FireEnvironment { get; private set; }
     public SpatialHashEnvironment<Smoke> SmokeEnvironment { get; set; }
     public SpatialHashEnvironment<Alarm> AlarmEnvironment { get; set; }
  
@@ -256,8 +257,8 @@ public class GridLayer : RasterLayer
     public List<Smoke> Smokes { get; private set; }
     public List<Alarm> Alarms { get; private set; }
     public List<Position> PossibleGoal {get; private set; }
+    public bool SeeFire { get; set; }
 
-  
     private List<EvacueeType1> Agent1 { get; set; } = new List<EvacueeType1>();
     private List<EvacueeType2> Agent2 { get; set; } = new List<EvacueeType2>();
     private List<EvacueeType3> Agent3 { get; set; } = new List<EvacueeType3>();

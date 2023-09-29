@@ -46,7 +46,13 @@ public class EvacueeType8 : Evacuee
 
 public override void Tick()
     {
-        if (!Layer.Ring && RiskLevel < Layer.GetCurrentTick()) return;
+        if(!EvacueeHasStartedMoving)
+        {
+            if (Layer.GetCurrentTick() < 2) return; 
+            if (!Layer.Ring) return;
+            if (RiskLevel < Layer.GetCurrentTick() || Perception(Position, Layer.FireLocations[0]))return;
+            EvacueeHasStartedMoving = true;
+        }
         if (!FoundExit)
         {
             Goal = FindNearestExit(Layer.PossibleGoal);
@@ -56,6 +62,7 @@ public override void Tick()
         }
         else
         {
+            if((int)Layer.GetCurrentTick()%Speed !=0 )return;
             if (!IsConscious)
             {
                 if (FoundHelp)
@@ -74,7 +81,6 @@ public override void Tick()
                     if(Rand.NextDouble() > 0.7){
                         AgentForgotItem = true;
                         Console.WriteLine($"{GetType().Name} {ID} Has forgotten an item and is heading back");
-                        
                     }
                     
                 }
@@ -83,27 +89,28 @@ public override void Tick()
                     if (AgentForgotItem)
                     {
                         ReturnForItem();
+                        Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}(Is returning for item)");
                     }
                     else
                     {
                         if (IsLeader)
                         {
                             FormGroup(this);
-                            MoveTowardsGoalMedium();
+                            EvacuateMedium();
                             Console.WriteLine(Group.Count > 1
-                                ? $"{GetType().Name}  {ID} is leading group"
-                                : $"{GetType().Name}  {ID} can lead group");
+                                ? $"{GetType().Name}  {ID} has moved to cell {Position} (Is leading group)"
+                                : $"{GetType().Name}  {ID} has moved to cell {Position} (Can lead group)");
                         }
                         else if (IsInGroup && !IsLeader)
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine($" {GetType().Name} Agent {ID} moving in group");
+                            Console.WriteLine($" {GetType().Name} {ID} has moved to cell {Position} (Is moving in group)");
                         }
 
                         else
                         {
-                            MoveTowardsGoalMedium();
-                            Console.WriteLine($" {GetType().Name} Agent {ID} is moving alone");
+                            EvacuateMedium();
+                            Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}  (Is moving alone)");
 
                         }
                     }
@@ -112,20 +119,20 @@ public override void Tick()
                 }
                 else if (Helping)
                 {
-                    MoveTowardsGoalLow();
-                    Console.WriteLine($"{GetType().Name} t {ID} is carrying agent {Helped.ID}");
+                    EvacuateMedium();
+                    Console.WriteLine($"{GetType().Name}{ID} has moved to cell {Position} (is carrying agent {Helped.ID})");
                 }
                 else
                 {
                     if (ReachedDistressedAgent)
                     {
                         OfferHelp();
-                        Console.WriteLine($"{GetType().Name} {ID} Has reached {Helped.GetType().Name} {Helped.ID} and is moving towards exit");
+                        Console.WriteLine($"{GetType().Name} {ID} Has reached at cell {Position} {Helped.GetType().Name} {Helped.ID} and is now heading exit");
                         Goal = FindNearestExit(Layer.PossibleGoal);
                     }
                     else
                     {
-                        MoveTowardsGoalLow();
+                        EvacuateMedium();
                     }
                 }
 
@@ -133,5 +140,5 @@ public override void Tick()
             }
         }
     }
-    #endregion
+#endregion
 }

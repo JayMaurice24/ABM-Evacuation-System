@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Mars.Common;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
@@ -36,7 +37,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     /// </summary>
     public virtual void Tick()
     {
-          MoveRandomly();
+        
         }
 
     #endregion
@@ -47,7 +48,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
    /// <summary>
    /// Agents Move towards goal with Low aggression 
    /// </summary>
-    protected void MoveTowardsGoalLow()
+    protected void EvacuateLow()
     {
         if (!_tripInProgress)
         {
@@ -68,10 +69,9 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         if (!IsCellOccupied(_path.Current))
         {
             Layer.EvacueeEnvironment.MoveTo(this, _path.Current,1);
-            Console.WriteLine($"{this.GetType().Name} {ID} has moved to cell {_path.Current}");
         }
         if (!Position.Equals(Goal)) return;
-        if (Goal.Equals(OriginalPosition))
+        if (AgentForgotItem && Goal.Equals(OriginalPosition))
         {
             Console.WriteLine($"{this.GetType().Name} {ID} has Found Item and is heading to the exit");
             AgentForgotItem = false;
@@ -97,7 +97,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
    /// <summary>
    /// Agent Moves towards goal with Medium Aggression 
    /// </summary>
-    protected void MoveTowardsGoalMedium()
+    protected void EvacuateMedium()
     {
         if (!_tripInProgress)
         {
@@ -155,7 +155,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
    /// <summary>
    /// Agent moves towards goal with high aggression 
    /// </summary>
-    protected void MoveTowardsGoalHigh()
+    protected void EvacuateHigh()
     {
         if (!_tripInProgress)
         {
@@ -206,6 +206,8 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             _path = Layer.FindPath(Position, Goal).GetEnumerator();
         }
     }
+
+
    
 
    /// <summary>
@@ -256,8 +258,8 @@ protected Position FindNearestExit(List<Position> targets)
         }
 
         if (closestAgent != this) return;
-        this.IsLeader = true;
-        this.IsInGroup = true;
+        IsLeader = true;
+        IsInGroup = true;
     }
  
 
@@ -286,20 +288,21 @@ protected Position FindNearestExit(List<Position> targets)
         UpdateVelocity(netForce);
 
         // Update position based on new velocity
-        var newX = Position.X + _currentVelocity.X;
-        var newY = Position.Y + _currentVelocity.Y;
+        var newX = Math.Round(Position.X + _currentVelocity.X, MidpointRounding.AwayFromZero);
+        var newY = Math.Round(Position.Y + _currentVelocity.Y, MidpointRounding.AwayFromZero);
 
         if (!(0 <= newX) || !(newX < Layer.Width) || !(0 <= newY) || !(newY < Layer.Height)) return;
         if (!Layer.IsRoutable(newX, newY) || IsCellOccupied(new Position(newX, newY))) return;
         if (AvoidFire())
         {
-            Position = ChangeDirection(new Position(newX, newY));
-            Layer.EvacueeEnvironment.MoveTo(this, new Position(Position.X, Position.Y));
+            var target = ChangeDirection(new Position(newX, newY));
+            var directionToLeader = PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, target.X, target.Y);
+            Layer.EvacueeEnvironment.MoveTowards(this, directionToLeader, 1);
         }
         else
         {
-            Position = new Position(newX, newY);
-            Layer.EvacueeEnvironment.MoveTo(this, new Position(newX, newY)); 
+            var directionToLeader = PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, newX, newY);
+            Layer.EvacueeEnvironment.MoveTowards(this, directionToLeader, 1);
         }
      
     }
@@ -314,8 +317,11 @@ protected Position FindNearestExit(List<Position> targets)
     }
     private Evacuee GetNearestObstacle()
     {
-        return Layer.EvacueeEnvironment.Entities.MinBy(agent =>
+        var nearest = Layer.EvacueeEnvironment.Entities.MinBy(agent =>
             Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
+
+        if (nearest != this && nearest != null) return nearest;
+        return null;
     }
     
     /// <summary>
@@ -354,22 +360,19 @@ protected Position FindNearestExit(List<Position> targets)
                         Goal = ex;
                         break;
                     }
-                    ChangingDirection = true;
                 }
                 else if (Layer.FrontStairs.Contains(Goal))
                 {
                     Goal = FindNearestExit(Layer.BackStairs);
-                    ChangingDirection = true;
                 }
                 else if (Layer.BackStairs.Contains(Goal))
                 {
                     Goal = FindNearestExit(Layer.FrontStairs); 
-                    ChangingDirection = true;
+                   
                 }
                 else
                 {
-                    Goal = FindNearestExit(Layer.PossibleGoal); 
-                    ChangingDirection = true;
+                    Goal = FindNearestExit(Layer.PossibleGoal);
                 }
                 
             }
@@ -403,59 +406,33 @@ protected Position FindNearestExit(List<Position> targets)
         return agents != null && targetPosition.Equals(agents.Position);
     }
     
-    private bool ViewRange(double agent1X, double agent1Y, double agent2X, double agent2Y)
+    protected bool Perception(Position agent1, Position agent2 )
     {
-        switch (agent1X)
+        switch (agent1.X)
         {
-            case > 1 and < 19 when agent1Y is > 50 and < 87 && agent2X is > 1 and < 19 && agent2Y is > 50 and < 87: //Coral
-            case > 21 and < 54 when agent1Y is > 52 and < 84 && agent2X is > 21 and < 54 && agent2Y is > 52 and < 84: //West 
-            case > 65 and < 100 when agent1Y is > 52 and < 84 && agent2X is > 65 and < 100 && agent2Y is > 52 and < 84: //East
-            case > 102 and < 120 when agent1Y is > 42 and < 87 && agent2X is > 102 and < 120 && agent2Y is > 42 and < 87: //Braae
-            case > 44 and < 120 when agent1Y is > 1 and < 15 && agent2X is > 44 and < 120  && agent2Y is > 1 and < 15: //CSHons 
-            case > 77 and < 86 when agent1Y is > 41 and < 45 && agent2X is > 77 and < 86 && agent2Y is > 41 and < 45: //FBathroom
-            case > 86 and < 94 when agent1Y is > 38 and < 45 && agent2X is > 86 and < 94 && agent2Y is > 38 and < 45: //FBathroom2
-            case > 77 and < 86 when agent1Y is > 32 and < 36 && agent2X is > 77 and < 86 && agent2Y is > 32 and < 36: //MBathroom 
-            case > 86 and < 94 when agent1Y is > 32 and < 38 && agent2X is > 86 and < 94 && agent2Y is > 32 and < 38: //MBathroom2 
-            case > 44 and < 63 when agent1Y is > 15 and < 32 && agent2X is > 44 and < 63 && agent2Y is > 15 and < 32: //Atrium
-            case > 96 and < 120 when agent1Y is > 16 and < 32 && agent2X is > 96 and < 120 && agent2Y is > 16 and < 32: //SysDev
-            case > 14 and < 102 when agent1Y is > 46 and < 50 && agent2X is > 14 and < 102 && agent2Y is > 46 and < 50: //Passage1
-            case > 50 and < 53 when agent1Y is > 51 and < 70 && agent2X is > 50 and < 53 && agent2Y is > 51 and < 70: //Passage2
-            case > 56 and < 65 when agent1Y is > 45 and < 68 && agent2X is > 56 and < 65 && agent2Y is > 45 and < 68: //Passage3
-            case > 63 and < 94 when agent1Y is > 26 and < 31 && agent2X is > 63 and < 94 && agent2Y is > 26 and < 31: //Passage4
-            case > 63 and < 94 when agent1Y is > 15 and < 19 && agent2X is > 63 and < 94 && agent2Y is > 15 and < 19: //Passage5
-            case > 63 and < 73 when agent1Y is > 19 and < 31 && agent2X is > 63 and < 94 && agent2Y is > 19 and < 31: //Passage6
+            case > 1 and < 19 when agent1.Y is > 50 and < 87 && agent2.X is > 1 and < 19 && agent2.Y is > 50 and < 87: //Coral
+            case > 21 and < 54 when agent1.Y is > 52 and < 84 && agent2.X is > 21 and < 54 && agent2.Y is > 52 and < 84: //West 
+            case > 65 and < 100 when agent1.Y is > 52 and < 84 && agent2.X is > 65 and < 100 && agent2.Y is > 52 and < 84: //East
+            case > 102 and < 120 when agent1.Y is > 42 and < 87 && agent2.X is > 102 and < 120 && agent2.Y is > 42 and < 87: //Braae
+            case > 44 and < 120 when agent1.Y is > 1 and < 15 && agent2.X is > 44 and < 120  && agent2.Y is > 1 and < 15: //CSHons 
+            case > 77 and < 86 when agent1.Y is > 41 and < 45 && agent2.X is > 77 and < 86 && agent2.Y is > 41 and < 45: //FBathroom
+            case > 86 and < 94 when agent1.Y is > 38 and < 45 && agent2.X is > 86 and < 94 && agent2.Y is > 38 and < 45: //FBathroom2
+            case > 77 and < 86 when agent1.Y is > 32 and < 36 && agent2.X is > 77 and < 86 && agent2.Y is > 32 and < 36: //MBathroom 
+            case > 86 and < 94 when agent1.Y is > 32 and < 38 && agent2.X is > 86 and < 94 && agent2.Y is > 32 and < 38: //MBathroom2 
+            case > 44 and < 63 when agent1.Y is > 15 and < 32 && agent2.X is > 44 and < 63 && agent2.Y is > 15 and < 32: //Atrium
+            case > 96 and < 120 when agent1.Y is > 16 and < 32 && agent2.X is > 96 and < 120 && agent2.Y is > 16 and < 32: //SysDev
+            case > 14 and < 102 when agent1.Y is > 46 and < 50 && agent2.X is > 14 and < 102 && agent2.Y is > 46 and < 50: //Passage1
+            case > 50 and < 53 when agent1.Y is > 51 and < 70 && agent2.X is > 50 and < 53 && agent2.Y is > 51 and < 70: //Passage2
+            case > 56 and < 65 when agent1.Y is > 45 and < 68 && agent2.X is > 56 and < 65 && agent2.Y is > 45 and < 68: //Passage3
+            case > 63 and < 94 when agent1.Y is > 26 and < 31 && agent2.X is > 63 and < 94 && agent2.Y is > 26 and < 31: //Passage4
+            case > 63 and < 94 when agent1.Y is > 15 and < 19 && agent2.X is > 63 and < 94 && agent2.Y is > 15 and < 19: //Passage5
+            case > 63 and < 73 when agent1.Y is > 19 and < 31 && agent2.X is > 63 and < 94 && agent2.Y is > 19 and < 31: //Passage6
+                if (Layer.SeeFire) return true;
+                Console.WriteLine($"{GetType().Name} {ID} has spotted the fire and alerted everyone else");
+                Layer.SeeFire = true;
                 return true;
             default:
                 return false;
-        }
-    }
-/// <summary>
-/// Agents Move Randomly before tick
-/// </summary>
-    protected void MoveRandomly()
-    {
-        var nextDirection = Layer.Directions[Rand.Next(Layer.Directions.Count)];
-        var newX = Position.X + nextDirection.X;
-        var newY = Position.Y + nextDirection.Y;
-        
-        // Check if chosen move is within the bounds of the grid
-        if (0 <= newX && newX < Layer.Width && 0 <= newY && newY < Layer.Height)
-        {
-            // Check if chosen move goes to a cell that is routable
-            if (Layer.IsRoutable(newX, newY))
-            {
-                Position = new Position(newX, newY);
-                Layer.EvacueeEnvironment.MoveTo(this, new Position(newX, newY));
-                Console.WriteLine($"{GetType().Name} moved to a new cell: {Position}");
-            }
-            else
-            {
-                Console.WriteLine($"{GetType().Name} tried to move to a blocked cell: ({newX}, {newY})");
-            }
-        }
-        else
-        {
-            Console.WriteLine($"{GetType().Name} tried to leave the world: ({newX}, {newY})");
         }
     }
 
@@ -468,13 +445,13 @@ protected void ReturnForItem()
     switch (Aggression)
     {
         case 0: 
-            MoveTowardsGoalLow();
+            EvacuateLow();
             break;
         case 1:
-            MoveTowardsGoalMedium();
+            EvacuateMedium();
             break;
         case 2:
-            MoveTowardsGoalHigh();
+            EvacuateHigh();
             break;
     }
 }
@@ -545,13 +522,191 @@ protected void ReturnForItem()
     {
         if (Health <= 50 || !(Empathy > 0.5) || !(Strength > 0.5)) return;
         var helped = FindAgentsInNeed();
-        if (helped == null) return;
+        if (helped is not { Helper: null }) return;
         Goal = helped.Position;
         FoundDistressedAgent = true;
-        Helped = helped;
-        Helper.Helped = this; 
-        Console.WriteLine($"Agent{ID} is going to help Agent {helped.ID}");
+        if (IsInGroup)
+        {
+            if (UpdateGroupStatus())
+            {
+                ReturningWithGroupToHelp = true;
+                if (IsLeader)
+                {
+                    Helped = helped;
+                    helped.Helper = this; 
+                    Console.WriteLine($"{GetType().Name}  {ID} is going to help Agent {helped.ID} with group");
+                }
+                else
+                {
+                    foreach (var agent in Leader.Group)
+                    {
+                        agent.Helped = helped;
+                        Console.WriteLine($"{GetType().Name}  {ID}is going to help Agent {helped.ID} with group");
+                    }
+                    
+                }
+            }
+            else
+            {
+                Helped = helped;
+                helped.Helper = this;
+                Console.WriteLine($"{GetType().Name}  {ID} is going to help Agent {helped.ID}");
+            }
+        }
+        else
+        {
+            Helped = helped;
+            helped.Helper = this;
+            Console.WriteLine($"{GetType().Name}  {ID}is going to help Agent {helped.ID}");
+        }
+
+        helped.FoundHelp = true;
+
     }
+
+    protected bool UpdateGroupStatus()
+    {
+        if (IsLeader)
+        {
+            if (Rand.NextDouble() > 0.5)
+            {
+                if (Group.Count < 3)
+                {
+                    foreach (var agent in Group)
+                    {
+                        agent.IsInGroup = false;
+                        agent.Leader = null;
+                    }
+                }
+                else
+                {
+                    var newLeader = this;
+                    foreach (var agent in from agent in Group
+                             let agentLead = agent.Leadership
+                             where agentLead > this.Leadership && agent != this
+                             select agent)
+                    {
+                        newLeader = agent;
+                    }
+
+                    newLeader.IsLeader = true;
+                    foreach (var a in Group)
+                    {
+                        a.Leader = newLeader;
+                        Group.Remove(a);
+                    }
+
+                    IsInGroup = false;
+                    IsLeader = false;
+                    
+                }
+                return false;
+            }
+
+            var newGroup = new List<Evacuee>();
+            foreach (var agent in Group)
+            {
+                if (Rand.NextDouble()> 0.5)
+                {
+                    if (FoundDistressedAgent)
+                    {
+                        agent.ReturningWithGroupToHelp = true;  
+                        agent.FoundDistressedAgent = true; 
+                    }
+                    else
+                    {
+                        agent.ReturningWithGroupForItem = true;   
+                    }
+                }
+                else
+                {
+                    newGroup.Add(agent);
+                    Group.Remove(agent);
+                }
+            }
+
+            Evacuee newLead = null; 
+            foreach (var agent in from agent in newGroup let agentLead = agent.Leadership where agentLead > Leadership select agent)
+            {
+                newLead = agent;
+            }
+
+            if (newLead != null)
+            {
+                newLead.IsLeader = true;
+                newLead.Goal = Goal; 
+                foreach (var agent in newGroup)
+                {
+                    newLead.Group.Add(agent);
+                    agent.Leader = newLead;
+                }
+            }
+            return true;
+
+        }
+
+        if (Rand.NextDouble() > 0.5)
+        {
+            IsInGroup = false;
+            Leader.Group.Remove(this);
+            Leader = null;
+            return false;
+        }
+        {
+            var newGroup = new List<Evacuee>();
+            foreach (var agent in Group)
+            {
+                if (Rand.NextDouble()> 0.5)
+                {
+                    if (FoundDistressedAgent)
+                    {
+                        agent.ReturningWithGroupToHelp = true;   
+                        agent.FoundDistressedAgent = true; 
+                    }
+                    else
+                    {
+                        agent.ReturningWithGroupForItem = true;   
+                    }
+                        
+                }
+                else
+                {
+                    newGroup.Add(agent);
+                    Group.Remove(agent);
+                }
+            }
+
+            Evacuee newLead = null; 
+            foreach (var agent in from agent in newGroup let agentLead = agent.Leadership where agentLead > Leadership select agent)
+            {
+                newLead = agent;
+            }
+
+            if (newLead != null)
+            {
+                newLead.IsLeader = true;
+                newLead.Goal = Goal; 
+                foreach (var agent in newGroup)
+                {
+                    newLead.Group.Add(agent);
+                    agent.Leader = newLead;
+                }
+            }
+            Leader.Goal = OriginalPosition; 
+            if (FoundDistressedAgent)
+            {
+                Leader.ReturningWithGroupToHelp = true; 
+                Leader.FoundDistressedAgent = true; 
+            }
+            else
+            {
+                Leader.ReturningWithGroupForItem = true;
+            }
+
+            return true;
+        }
+    }
+    
 
     protected void OfferHelp()
     {
@@ -574,15 +729,14 @@ protected void ReturnForItem()
     public Guid ID { get; set; }
    
     public Position Position { get; set; }
-    
-    [PropertyDescription(Name = "MaxTripDistance")]
-    public double MaxTripDistance { get; set; }
-    
-    [PropertyDescription(Name = "AgentExploreRadius")]
 
-    public UnregisterAgent UnregisterAgentHandle { get; set; }
 
-    private bool ChangingDirection { get; set; }
+    protected bool ForgotOnce { get; set; }
+
+
+
+    protected UnregisterAgent UnregisterAgentHandle { get; set; }
+
     protected static GridLayer Layer;
     protected Position Goal; 
     private bool _tripInProgress;
@@ -602,15 +756,18 @@ protected void ReturnForItem()
     protected Evacuee Helper { get; set; }
     protected Evacuee Helped { get; set; }
     protected bool IsInGroup;
-    protected bool FoundExit; 
-    private const int MaxSpeed = 10;
-    protected bool AgentForgotItem;
+    protected bool FoundExit;
+    private const int MaxSpeed = 2;
+    protected bool AgentForgotItem { get; set; }
+    protected bool ReturningWithGroupForItem { get; set; }
+    protected bool ReturningWithGroupToHelp { get; set; }
     protected bool ReachedDistressedAgent { get; set; }
     protected bool FoundDistressedAgent { get; set; }
     protected double CollaborationFactor { get; set; }
     protected double Leadership { get; set; }
     private bool Returning { set; get; }
     protected bool IsConscious { get; set; }
+    protected bool EvacueeHasStartedMoving { get; set; }
     protected double Strength { get; set; }
     protected double Empathy { get; set; }
 

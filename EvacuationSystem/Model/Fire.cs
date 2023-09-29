@@ -37,8 +37,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
         if (!_layer.FireStarted)
         {
             Console.WriteLine($"Fire started in the {_layer.Room(Position)}");
-            _layer.FireLocations.Add(Position);
             _layer.FireStarted = true;
+            _layer.FireLocations.Add(Position);
 
         }
         else

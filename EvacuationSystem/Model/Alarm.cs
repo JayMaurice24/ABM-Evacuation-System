@@ -21,7 +21,7 @@ public class Alarm : IAgent<GridLayer>, IPositionable
     #region Tick
         public void Tick()
         {
-            if (!_layer.Ring)
+            if (!_layer.Ring &&  _layer.FireLocations != null)
             {
                 _layer.Ring = DetectFire();
             }

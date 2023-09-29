@@ -19,12 +19,23 @@ public abstract class SocialForceModel
 
         return (from groupMember in @group where groupMember != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - groupMember.Position.X), (float)(agent.Position.Y - groupMember.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, groupMember.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
     }
+    public static Vector2 CalculateSocialForceSolo(Position goal, Evacuee agent, List <Evacuee> group)
+    {
+        var totalForce = Vector2.One;
+        var attractiveForce = Vector2.Normalize(new Vector2((float)(goal.X - agent.Position.X),
+            (float)(goal.Y - agent.Position.Y))) * (float)AttractiveForceMultiplier;
+
+        totalForce += attractiveForce;
+
+        return (from groupMember in @group where groupMember != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - groupMember.Position.X), (float)(agent.Position.Y - groupMember.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, groupMember.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
+    }
     
     public static Vector2 CalculateObstacleAvoidanceForce(Evacuee agent, Evacuee nearestObstacle)
     {
         var obstacleAvoidanceForce = Vector2.Zero;
 
-        if (nearestObstacle == null) return obstacleAvoidanceForce;
+        if (nearestObstacle is null) return obstacleAvoidanceForce;
+        Console.WriteLine("is not null");
         var awayFromObstacle = Vector2.Normalize(new Vector2((float)(agent.Position.X - nearestObstacle.Position.X),
                                    (float)(agent.Position.Y - nearestObstacle.Position.Y)))
                                * ObstacleAvoidanceMultiplier
