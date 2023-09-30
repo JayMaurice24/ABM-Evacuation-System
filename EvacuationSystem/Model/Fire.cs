@@ -90,9 +90,9 @@ public class Fire : IAgent<GridLayer>, IPositionable
                 Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
             if (agent == null) return;
             var targetDistance = (int) Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray);
-            if (targetDistance <= 1)
+            if (targetDistance <= 2)
             {
-                agent.RemoveFromSimulation();
+                agent.Health -= 10;
             }
         }
     

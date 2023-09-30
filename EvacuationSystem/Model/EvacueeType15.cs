@@ -135,7 +135,7 @@ public class EvacueeType15: Evacuee
                         EvacuateHigh();                    }
                 }
 
-                Consciousness();
+                UpdateHealthStatus();
             }
         }
     }

@@ -4,9 +4,7 @@ using System.Linq;
 using System.Numerics;
 using Mars.Common;
 using Mars.Interfaces.Agents;
-using Mars.Interfaces.Annotations;
 using Mars.Interfaces.Environments;
-using Mars.Interfaces.Layers;
 using Mars.Numerics;
 
 namespace EvacuationSystem.Model;
@@ -58,17 +56,86 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             
         }
         if (!_path.MoveNext()) return;
-        if (AvoidFire())
+        if (AvoidFire(_path.Current))
         {
             var next = ChangeDirection(_path.Current);
             Layer.EvacueeEnvironment.MoveTo(this, next, 1);
             _path = Layer.FindPath(Position, Goal).GetEnumerator();
             return;
-
         }
         if (!IsCellOccupied(_path.Current))
         {
             Layer.EvacueeEnvironment.MoveTo(this, _path.Current,1);
+        }
+        if (IsLeader)
+        {
+            switch (ReturningWithGroupForItem)
+            {
+                case true when AgentForgotItem:
+                    Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (Is returning for item and group is following)");
+                    break;
+                case true:
+                    Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (Group member forgot Item & Leader is returning with them)");
+                    break;
+                default:
+                {
+                    if(ReturningWithGroupToHelp)
+                    {
+                        if (Helping)
+                        {
+                            Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (Is returning for item and group is following)");
+                        }
+                        else if (ReachedDistressedAgent)
+                        {
+                            Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (Is carrying agent  {Helped.ID} )");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (Is returning to help {Helped.ID} With group)");
+                        }
+                    }
+                    else
+                    { if (Group.Count == 0)
+                        {
+                            Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (Is Moving alone)");
+                            IsLeader = false;
+                            IsInGroup = false;
+                        }
+                        else
+                        {
+                            Console.WriteLine($"{GetType().Name}  {ID} has moved to cell {Position} (is leading group)");
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (AgentForgotItem)
+            {
+                Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}(Is returning for item)");
+            }
+            else if (FoundDistressedAgent)
+            {
+                if (Helping)
+                {
+                    Console.WriteLine($"{GetType().Name}{ID} has moved to cell {Position} (is carrying agent {Helped.ID})");
+                }
+                else if (ReachedDistressedAgent)
+                {
+                    Console.WriteLine($"{GetType().Name} {ID} Has reached at cell {Position} {Helped.GetType().Name} {Helped.ID} and is now heading exit");
+                }
+                else
+                {
+                    Console.WriteLine($"{GetType().Name} {ID} Has moved to cell {Position} and is going to help {Helped.GetType().Name} {Helped.ID}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}  (Is moving alone)");
+            }
         }
         if (!Position.Equals(Goal)) return;
         if (AgentForgotItem && Goal.Equals(OriginalPosition))
@@ -82,7 +149,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         else if (Layer.Stairs.Contains(Goal))
         {
             Console.WriteLine($"{this.GetType().Name} {ID} has reached exit {Goal}");
-            RemoveFromSimulation();
+            Layer.RemoveFromSimulation(this);
         }
         else
         {
@@ -107,7 +174,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             
         }
         if (!_path.MoveNext()) return;
-        if (AvoidFire())
+        if (AvoidFire(_path.Current))
         {
             var next = ChangeDirection(_path.Current);
             Layer.EvacueeEnvironment.MoveTo(this, next, 1);
@@ -143,7 +210,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         else if (Layer.Stairs.Contains(Goal))
         {
             Console.WriteLine($"Agent {ID} has reached exit {Goal}");
-            RemoveFromSimulation();
+            Layer.RemoveFromSimulation(this);
             _tripInProgress = false;
         }
         else{
@@ -166,7 +233,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         }
 
         if (!_path.MoveNext()) return;
-        if (AvoidFire())
+        if (AvoidFire(_path.Current))
         {
             var next = ChangeDirection(_path.Current);
             Layer.EvacueeEnvironment.MoveTo(this, next, 1);
@@ -198,7 +265,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         else if (Layer.Stairs.Contains(Goal))
         {
             Console.WriteLine($"{this.GetType().Name} {ID} has reached exit {Goal}");
-            RemoveFromSimulation();
+            Layer.RemoveFromSimulation(this);
             _tripInProgress = false;
         }
         else{
@@ -293,16 +360,32 @@ protected Position FindNearestExit(List<Position> targets)
 
         if (!(0 <= newX) || !(newX < Layer.Width) || !(0 <= newY) || !(newY < Layer.Height)) return;
         if (!Layer.IsRoutable(newX, newY) || IsCellOccupied(new Position(newX, newY))) return;
-        if (AvoidFire())
+        if (AvoidFire(_path.Current))
         {
             var target = ChangeDirection(new Position(newX, newY));
-            var directionToLeader = PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, target.X, target.Y);
-            Layer.EvacueeEnvironment.MoveTowards(this, directionToLeader, 1);
+            Layer.EvacueeEnvironment.MoveTo(this, target, 1);
+            Position = target;
         }
         else
         {
-            var directionToLeader = PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, newX, newY);
-            Layer.EvacueeEnvironment.MoveTowards(this, directionToLeader, 1);
+            var target = new Position(newX, newY);
+            Layer.EvacueeEnvironment.MoveTo(this, target, 1);
+            Position = target;
+        }
+
+        if (ReturningWithGroupForItem)
+        {
+            Console.WriteLine(AgentForgotItem
+                ? $" {GetType().Name} {ID} has moved to cell {Position} (Is returning for item with group)"
+                : $"{GetType().Name} {ID} has moved to cell {Position} (Group member forgot Item & Member is returning with them)");
+        }
+        else if (ReturningWithGroupToHelp)
+        {
+            Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position} (Is Helping {Helped.GetType().Name}  {Helped.ID} with group)");
+        }
+        else
+        {
+            Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position} (Is moving in group)");
         }
      
     }
@@ -340,8 +423,6 @@ protected Position FindNearestExit(List<Position> targets)
         {
             return position;
         }
-        var originalHeading = Layer.Directions.IndexOf(_path.Current);
-
         foreach (var next in Layer.Directions)
         {
             var newX = Position.X + next.X;
@@ -351,7 +432,7 @@ protected Position FindNearestExit(List<Position> targets)
             if (!(0 <= newX) || !(newX < Layer.Width) || !(0 <= newY) || !(newY < Layer.Height) ||
                 !Layer.IsRoutable(newX, newY) || !Layer.FireLocations.Contains(nextCell)) continue;
             // If the new direction is opposite to the original heading (180-degree turn), change goals to the south exit
-            if (Math.Abs(Layer.Directions.IndexOf(next) - originalHeading) == 4)
+            if ((int)PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, newX, newY) == 180)
             {
                 if (Layer.Exits.Contains(Goal))
                 {
@@ -379,17 +460,15 @@ protected Position FindNearestExit(List<Position> targets)
 
             return nextCell;
         }
-
         return position;
     }
     /// <summary>
     /// Checks if the agent is in close proximity to the fire
     /// </summary>
     /// <returns></returns>
-    private bool AvoidFire()
+    private bool AvoidFire(Position target)
     {
-        var fire = Layer.FireEnvironment.Explore(Position, radius: 5);
-        return fire.Any(flame => Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }) <= 2.0);
+        return Layer.FireLocations.Contains(target);
     }
     
     
@@ -459,11 +538,7 @@ protected void ReturnForItem()
 /// <summary>
     ///     Removes this agent from the simulation and, by extension, from the visualization.
     /// </summary>
-    public void RemoveFromSimulation()
-    {
-        Layer.EvacueeEnvironment.Remove(this);
-        UnregisterAgentHandle.Invoke(Layer, this);
-    }
+    
     /// <summary>
     /// Push other agents out the way
     /// </summary>
@@ -570,7 +645,7 @@ protected void ReturnForItem()
         {
             if (Rand.NextDouble() > 0.5)
             {
-                if (Group.Count < 3)
+                if (Group.Count == 1)
                 {
                     foreach (var agent in Group)
                     {
@@ -580,20 +655,27 @@ protected void ReturnForItem()
                 }
                 else
                 {
-                    var newLeader = this;
-                    foreach (var agent in from agent in Group
-                             let agentLead = agent.Leadership
-                             where agentLead > this.Leadership && agent != this
-                             select agent)
+                    Evacuee newLeader = null;
+                    foreach (var agent in Group)
                     {
-                        newLeader = agent;
+                        foreach (var a in Group)
+                        {
+                            newLeader = agent.Leadership > a.Leadership ? agent : a;
+                        }
                     }
 
-                    newLeader.IsLeader = true;
-                    foreach (var a in Group)
+                    if (newLeader != null)
                     {
-                        a.Leader = newLeader;
-                        Group.Remove(a);
+                        newLeader.IsLeader = true;
+                        if (Group != null)
+                            foreach (var a in Group)
+                            {
+                                a.Leader = newLeader;
+                                newLeader.Group.Add(a);
+                                Group.Remove(a);
+                            }
+
+                        newLeader.Goal = FindNearestExit(Layer.PossibleGoal);
                     }
 
                     IsInGroup = false;
@@ -602,46 +684,66 @@ protected void ReturnForItem()
                 }
                 return false;
             }
-
-            var newGroup = new List<Evacuee>();
-            foreach (var agent in Group)
+            
+            if (Group.Count<1) return false;
             {
-                if (Rand.NextDouble()> 0.5)
+                var newGroup = new List<Evacuee>();
+                foreach (var agent in Group)
                 {
-                    if (FoundDistressedAgent)
+                    if (Rand.NextDouble() > 0.5)
                     {
-                        agent.ReturningWithGroupToHelp = true;  
-                        agent.FoundDistressedAgent = true; 
+                        if (FoundDistressedAgent)
+                        {
+                            agent.ReturningWithGroupToHelp = true;
+                            agent.FoundDistressedAgent = true;
+                        }
+                        else
+                        {
+                            agent.ReturningWithGroupForItem = true;
+                        }
                     }
                     else
                     {
-                        agent.ReturningWithGroupForItem = true;   
+                        newGroup.Add(agent);
+                        Group.Remove(agent);
                     }
                 }
-                else
+                
+                if (newGroup.Count < 1) return true;
+                if (newGroup.Count == 1)
                 {
-                    newGroup.Add(agent);
-                    Group.Remove(agent);
+                    var agent = newGroup[0];
+                    agent.IsInGroup = false;
+                    agent.Leader = null;
+                    agent.Goal = FindNearestExit(Layer.PossibleGoal);
+                    Console.WriteLine($"{agent.GetType().Name} {ID} Has left group and is moving alone");
+                }
+                {
+                    Evacuee newLead = null;
+                    foreach (var agent in from agent in newGroup
+                             let agentLead = agent.Leadership
+                             where agentLead > Leadership
+                             select agent)
+                    {
+                        newLead = agent;
+                    }
+
+                    if (newLead == null) return true;
+                    {
+                        newLead.IsLeader = true;
+                        newLead.Goal = Goal;
+                        foreach (var agent in newGroup)
+                        {
+                            newLead.Group.Add(agent);
+                            agent.Leader = newLead;
+                        }
+
+                        newLead.Goal = FindNearestExit(Layer.PossibleGoal);
+                        Console.WriteLine($"Group has been split");
+                    }
                 }
             }
-
-            Evacuee newLead = null; 
-            foreach (var agent in from agent in newGroup let agentLead = agent.Leadership where agentLead > Leadership select agent)
-            {
-                newLead = agent;
-            }
-
-            if (newLead != null)
-            {
-                newLead.IsLeader = true;
-                newLead.Goal = Goal; 
-                foreach (var agent in newGroup)
-                {
-                    newLead.Group.Add(agent);
-                    agent.Leader = newLead;
-                }
-            }
-            return true;
+            return Group.Count>0;
 
         }
 
@@ -710,16 +812,30 @@ protected void ReturnForItem()
 
     protected void OfferHelp()
     {
-        Helped.FoundHelp = true;
-        Helped.Helper = this; 
+        if (Helped.Health != 0)
+        {
+            Helped.FoundHelp = true;
+            Helped.Helper = this;
+            Helping = true;
+        }
+        else
+        {
+            Console.WriteLine($"{Helped.GetType().Name} {Helped.ID} Has been found dead");
+            FoundDistressedAgent = false;
+            Helped = null;
+        }
+       
     }
 
-    protected void Consciousness()
+    protected void UpdateHealthStatus()
     {
         if (Health <= 5)
         {
             IsConscious = false; 
         }
+        if (Health != 0) return;
+        Console.WriteLine($"{GetType().Name} {ID} Has been killed in the simulation");
+        Layer.RemoveFromSimulation(this);
     }
 
     #endregion
@@ -732,10 +848,6 @@ protected void ReturnForItem()
 
 
     protected bool ForgotOnce { get; set; }
-
-
-
-    protected UnregisterAgent UnregisterAgentHandle { get; set; }
 
     protected static GridLayer Layer;
     protected Position Goal; 

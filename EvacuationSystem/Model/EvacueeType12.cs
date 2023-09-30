@@ -129,7 +129,7 @@ public class EvacueeType12: Evacuee
                     }
                 }
 
-                Consciousness();
+                UpdateHealthStatus();
             }
         }
     }

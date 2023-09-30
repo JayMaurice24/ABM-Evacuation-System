@@ -169,6 +169,12 @@ public class GridLayer : RasterLayer
             }
         }
     }
+    public void RemoveFromSimulation(Evacuee agent)
+    {
+        if (agent == null) return;
+        EvacueeEnvironment.Remove(agent);
+        //UnregisterAgentHandle.Invoke(this, agent);
+    }
     public Position FindRandomPosition()
     {
         var random = RandomHelper.Random;
@@ -279,6 +285,8 @@ public class GridLayer : RasterLayer
     private List<EvacueeType18> Agent18 { get; set; } = new List<EvacueeType18>(); 
     
     public List<Position> FireLocations { get; set; }
+    protected UnregisterAgent UnregisterAgentHandle { get; set; }
+    public RegisterAgent RegisterAgentHandle { get; set; }
     private int _numAgents;
     private static readonly Random Rand = new Random();
     public IAgentManager AgentManager { get; private set; }
@@ -288,3 +296,4 @@ public class GridLayer : RasterLayer
     
     #endregion
 }
+

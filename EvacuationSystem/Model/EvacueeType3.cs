@@ -138,7 +138,7 @@ public class EvacueeType3 : Evacuee
                     }
                 }
 
-                Consciousness();
+                UpdateHealthStatus();
             }
         }
     }

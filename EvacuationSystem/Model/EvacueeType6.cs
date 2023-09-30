@@ -137,7 +137,7 @@ public override void Tick()
                     }
                 }
 
-                Consciousness();
+                UpdateHealthStatus();
             }
         }
     }

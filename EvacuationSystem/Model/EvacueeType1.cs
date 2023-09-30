@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Mars.Components.Agents;
-
 namespace EvacuationSystem.Model;
 
 /// <summary>
@@ -70,24 +68,23 @@ public class EvacueeType1 : Evacuee
                     MovingWithHelp();
                 }
                 else
-                {
-                    Console.WriteLine($"{GetType().Name} {ID} is Unconscious");
+                { 
+                    Console.WriteLine($"{GetType().Name} {ID} is Unconscious at cell {Position}");
                 }
             }
             else
             {
-                if (DelayTime < Layer.GetCurrentTick() && !ForgotOnce)
+                if (DelayTime == Layer.GetCurrentTick() && !ForgotOnce)
                 {
                     if (Rand.NextDouble() > 0.7)
                     {
                         Console.WriteLine($"{GetType().Name} {ID} Has forgotten an item and is heading back");
                         AgentForgotItem = true;
+                        if(IsInGroup) ReturningWithGroupForItem = UpdateGroupStatus();
                         ForgotOnce = true;
-                        if(IsInGroup)ReturningWithGroupForItem = UpdateGroupStatus();
+                        return;
                     }
-
                 }
-
                 if (!FoundDistressedAgent)
                 {
                     if (AgentForgotItem)
@@ -97,21 +94,15 @@ public class EvacueeType1 : Evacuee
                             if (IsLeader)
                             {
                                 EvacuateLow();
-                                Console.WriteLine(
-                                    $"{GetType().Name}  {ID} has moved to cell {Position} (Is returning for item and group is following)");
                             }
                             else if (IsInGroup && !IsLeader)
                             {
                                 MoveTowardsGroupLeader();
-                                Console.WriteLine(
-                                    $" {GetType().Name} {ID} has moved to cell {Position} (Is returning for item with group)");
                             }
                         }
                         else
                         {
                             ReturnForItem();
-                            Console.WriteLine(
-                                $"{GetType().Name} {ID} has moved to cell {Position}(Is returning for item)");
                         }
                     }
                     else if (ReturningWithGroupForItem)
@@ -119,14 +110,12 @@ public class EvacueeType1 : Evacuee
                         if (IsLeader)
                         {
                             EvacuateLow();
-                            Console.WriteLine(
-                                $"{GetType().Name}  {ID} has moved to cell {Position} (Group member forgot Item & Leader is returning with them)");
+                           
                         }
                         else if (IsInGroup && !IsLeader)
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine(
-                                $" {GetType().Name} {ID} has moved to cell {Position} (Group member forgot Item & Member is returning with them)");
+                           
                         }
 
                     }
@@ -136,22 +125,15 @@ public class EvacueeType1 : Evacuee
                         {
                             FormGroup(this);
                             EvacuateLow();
-                            Console.WriteLine(Group.Count > 0
-                                ? $"{GetType().Name}  {ID} has moved to cell {Position} (Is leading group)"
-                                : $"{GetType().Name}  {ID} has moved to cell {Position} (Can lead group)");
                         }
                         else if (IsInGroup && !IsLeader)
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine(
-                                $" {GetType().Name} {ID} has moved to cell {Position} (Is moving in group)");
                         }
 
                         else
                         {
                             EvacuateLow();
-                            Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}  (Is moving alone)");
-
                         }
                     }
 
@@ -165,27 +147,20 @@ public class EvacueeType1 : Evacuee
                         {
                             if (Helping)
                             {
-                                    EvacuateLow();
-                                    Console.WriteLine(
-                                    $"{GetType().Name}  {ID} has moved to cell {Position} (Is returning for item and group is following)");
+                                EvacuateLow();
                             }
                             else if (ReachedDistressedAgent)
                             {
                                 OfferHelp();
-                                Console.WriteLine(
-                                    $"{GetType().Name}  {ID} has moved to cell {Position} (Is carrying agent  {Helped.ID} )");
                             }
                             else
                             {
                                 EvacuateLow();
-                                Console.WriteLine(
-                                    $"{GetType().Name}  {ID} has moved to cell {Position} (Is returning to help {Helped.ID} With group)");
                             }
                         }
                         else
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine($" {GetType().Name} {ID} has moved to cell {Position} (Is Helping {Helped.GetType().Name}  {Helped.ID} with group)");
                         }
                     }
                     else
@@ -193,14 +168,12 @@ public class EvacueeType1 : Evacuee
                         if (Helping)
                         {
                             EvacuateLow();
-                            Console.WriteLine($"{GetType().Name}{ID} has moved to cell {Position} (is carrying agent {Helped.ID})");
                         }
                         else
                         {
                             if (ReachedDistressedAgent)
                             {
                                 OfferHelp();
-                                Console.WriteLine($"{GetType().Name} {ID} Has reached at cell {Position} {Helped.GetType().Name} {Helped.ID} and is now heading exit");
                                 Goal = FindNearestExit(Layer.PossibleGoal);
                             }
                             else
@@ -211,7 +184,7 @@ public class EvacueeType1 : Evacuee
                        
                     }
                 }
-                Consciousness();
+                UpdateHealthStatus();
             }
         }
     }
