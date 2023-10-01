@@ -35,7 +35,6 @@ public abstract class SocialForceModel
         var obstacleAvoidanceForce = Vector2.Zero;
 
         if (nearestObstacle is null) return obstacleAvoidanceForce;
-        Console.WriteLine("is not null");
         var awayFromObstacle = Vector2.Normalize(new Vector2((float)(agent.Position.X - nearestObstacle.Position.X),
                                    (float)(agent.Position.Y - nearestObstacle.Position.Y)))
                                * ObstacleAvoidanceMultiplier

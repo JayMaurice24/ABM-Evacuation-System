@@ -43,15 +43,16 @@ public class EvacueeType16: Evacuee
 
     #region Tick
 
-public override void Tick()
+ public override void Tick()
     {
-        if(!EvacueeHasStartedMoving)
+        if (!EvacueeHasStartedMoving)
         {
-            if (Layer.GetCurrentTick() < 2) return; 
+            if (Layer.GetCurrentTick() < 2) return;
             if (!Layer.Ring) return;
-            if (RiskLevel < Layer.GetCurrentTick() || Perception(Position, Layer.FireLocations[0]))return;
+            if (RiskLevel < Layer.GetCurrentTick() || Perception(Position, Layer.FireLocations[0])) return;
             EvacueeHasStartedMoving = true;
         }
+
         if (!FoundExit)
         {
             Goal = FindNearestExit(Layer.PossibleGoal);
@@ -61,7 +62,7 @@ public override void Tick()
         }
         else
         {
-            if((int)Layer.GetCurrentTick()%Speed !=0 )return;
+            //if ((int)Layer.GetCurrentTick() % Speed != 0) return;
             if (!IsConscious)
             {
                 if (FoundHelp)
@@ -69,76 +70,126 @@ public override void Tick()
                     MovingWithHelp();
                 }
                 else
-                {
-                    Console.WriteLine($"{GetType().Name} {ID} is Unconscious");
+                { 
+                    Console.WriteLine($"{GetType().Name} {ID} is Unconscious at cell {Position}");
                 }
             }
             else
             {
-                if (DelayTime < Layer.GetCurrentTick())
+                if (DelayTime == Layer.GetCurrentTick() && !ForgotOnce)
                 {
-                    if(Rand.NextDouble() > 0.7){
-                        AgentForgotItem = true;
+                    if (Rand.NextDouble() > 0.7)
+                    {
                         Console.WriteLine($"{GetType().Name} {ID} Has forgotten an item and is heading back");
-                        
+                        AgentForgotItem = true;
+                        if(IsInGroup) UpdateGroupStatus();
+                        ForgotOnce = true;
+                        return;
                     }
-                    
                 }
                 if (!FoundDistressedAgent)
                 {
                     if (AgentForgotItem)
                     {
-                        ReturnForItem();
-                        Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}(Is returning for item)");
+                        if (ReturningWithGroupForItem)
+                        {
+                            if (IsLeader)
+                            {
+                                Evacuate();
+                            }
+                            else if (IsInGroup && !IsLeader)
+                            {
+                                MoveTowardsGroupLeader();
+                            }
+                        }
+                        else
+                        {
+                            ReturnForItem();
+                        }
+                    }
+                    else if (ReturningWithGroupForItem)
+                    {
+                        if (IsLeader)
+                        {
+                            Evacuate();
+                           
+                        }
+                        else if (IsInGroup && !IsLeader)
+                        {
+                            MoveTowardsGroupLeader();
+                           
+                        }
+
                     }
                     else
                     {
                         if (IsLeader)
                         {
                             FormGroup(this);
-                            EvacuateLow();
-                            Console.WriteLine(Group.Count > 1
-                                ? $"{GetType().Name}  {ID} has moved to cell {Position} (Is leading group)"
-                                : $"{GetType().Name}  {ID} has moved to cell {Position} (Can lead group)");
+                            Evacuate();
                         }
                         else if (IsInGroup && !IsLeader)
                         {
                             MoveTowardsGroupLeader();
-                            Console.WriteLine($" {GetType().Name} {ID} has moved to cell {Position} (Is moving in group)");
                         }
 
                         else
                         {
-                            EvacuateLow();
-                            Console.WriteLine($"{GetType().Name} {ID} has moved to cell {Position}  (Is moving alone)");
-
+                            Evacuate();
                         }
                     }
 
                     HelpAgent();
                 }
-                else if (Helping)
-                {
-                    EvacuateLow();
-                    Console.WriteLine($"{GetType().Name}{ID} has moved to cell {Position} (is carrying agent {Helped.ID})");
-                }
                 else
                 {
-                    if (ReachedDistressedAgent)
+                    if (ReturningWithGroupToHelp)
                     {
-                        OfferHelp();
-                        Console.WriteLine($"{GetType().Name} {ID} Has reached at cell {Position} {Helped.GetType().Name} {Helped.ID} and is now heading exit");
-                        Goal = FindNearestExit(Layer.PossibleGoal);
+                        if (IsLeader)
+                        {
+                            if (Helping)
+                            {
+                                Evacuate();
+                            }
+                            else if (ReachedDistressedAgent)
+                            {
+                                OfferHelp();
+                            }
+                            else
+                            {
+                                Evacuate();
+                            }
+                        }
+                        else
+                        {
+                            MoveTowardsGroupLeader();
+                        }
                     }
                     else
                     {
-                        EvacuateLow();
+                        if (Helping)
+                        {
+                            Evacuate();
+                        }
+                        else
+                        {
+                            if (ReachedDistressedAgent)
+                            {
+                                OfferHelp();
+                                Goal = FindNearestExit(Layer.PossibleGoal);
+                            }
+                            else
+                            {
+                                Evacuate();
+                            }
+                        }
+                       
                     }
                 }
-
                 UpdateHealthStatus();
             }
         }
     }
-#endregion
+
+    #endregion
 }

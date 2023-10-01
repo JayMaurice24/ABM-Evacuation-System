@@ -70,8 +70,7 @@ public class GridLayer : RasterLayer
         Stairs.AddRange(BackStairs);
         PossibleGoal = Exits;
         PossibleGoal.AddRange(Stairs);
-        Agent1 = AgentManager.Spawn<EvacueeType1, GridLayer>().ToList();
-        //SpawnAgents();
+        SpawnAgents();
         Directions = MovementDirections.CreateMovementDirectionsList();
         return initLayer;
     }
@@ -263,8 +262,7 @@ public class GridLayer : RasterLayer
     public List<Smoke> Smokes { get; private set; }
     public List<Alarm> Alarms { get; private set; }
     public List<Position> PossibleGoal {get; private set; }
-    public bool SeeFire { get; set; }
-
+   
     private List<EvacueeType1> Agent1 { get; set; } = new List<EvacueeType1>();
     private List<EvacueeType2> Agent2 { get; set; } = new List<EvacueeType2>();
     private List<EvacueeType3> Agent3 { get; set; } = new List<EvacueeType3>();
@@ -287,9 +285,10 @@ public class GridLayer : RasterLayer
     public List<Position> FireLocations { get; set; }
     protected UnregisterAgent UnregisterAgentHandle { get; set; }
     public RegisterAgent RegisterAgentHandle { get; set; }
-    private int _numAgents;
     private static readonly Random Rand = new Random();
     public IAgentManager AgentManager { get; private set; }
+    
+    public bool SeeFire { get; set; }
     public bool FireStarted { get; set; }
     public bool SmokeSpread { get; set; }
     public bool Ring { get; set; }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
@@ -17,6 +16,7 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     {
         _layer = layer;
         Directions = MovementDirections.CreateMovementDirectionsList();
+        Density = _rand.NextDouble();
     }
 
     
@@ -32,11 +32,12 @@ public class Smoke : IAgent<GridLayer>, IPositionable
             Position = new Position(firstFire.X + cell.X, firstFire.Y + cell.Y);
             _layer.SmokeSpread = true;
             Spread();
+            Damage();
         }
         else if (_layer.SmokeSpread)
         {
-            if (_rand.NextDouble() <= 0.4);
-            Spread();
+            if (_rand.NextDouble() <= 0.4)Spread();
+            Damage();
         }
     }
 
@@ -53,9 +54,12 @@ public class Smoke : IAgent<GridLayer>, IPositionable
             var newX = Position.X + cell.X;
             var newY = Position.Y + cell.Y;
             if (!(0 <= newX) || !(newX < _layer.Width) || !(0 <= newY) || !(newY < _layer.Height)) continue;
-            if (_layer.IsRoutable(newX, newY)){
-                _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent => { agent.Position = new Position(newX,newY); });
-            }
+            if (!_layer.IsRoutable(newX, newY)) continue;
+           var smoke = _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent =>
+            {
+                agent.Position = new Position(newX, newY);
+            }).Take(1).First();
+           _layer.Smokes.Add(smoke);
         }
     }
     
@@ -68,11 +72,19 @@ public class Smoke : IAgent<GridLayer>, IPositionable
         var agent = _layer.EvacueeEnvironment.Entities.MinBy(agent =>
             Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
         if (agent == null) return;
-        var targetDistance = (int) Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray);
-        if (targetDistance <= 1 && Position.Equals(agent.Position))
+        if (!Position.Equals(agent.Position)) return;
+        switch (Density)
         {
-            agent.Health--;
-        } //Console.WriteLine($"{agent.GetType().Name} {agent.ID} Inhaled Smoke");}
+            case > 0.7:
+                agent.Health-=5;
+                break;
+            case < 0.4:
+                agent.Health-=2;
+                break;
+            default:
+                agent.Health--;
+                break;
+        }
     }
     
 
@@ -82,7 +94,7 @@ public class Smoke : IAgent<GridLayer>, IPositionable
     
     public Guid ID { get; set; }
     public Position Position { get; set; }
-    private float Density { get; set; }
+    private double Density { get; set; }
     private readonly Random _rand = new Random();
     private List<Position> Directions { get; set; }
     private GridLayer _layer;

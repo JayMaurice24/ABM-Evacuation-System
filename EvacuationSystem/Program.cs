@@ -31,10 +31,10 @@ internal static class Program
         description.AddAgent<EvacueeType16, GridLayer>();
         description.AddAgent<EvacueeType17, GridLayer>();
         description.AddAgent<EvacueeType18, GridLayer>();
-        description.AddAgent<Smoke, GridLayer>();
-        
         description.AddAgent<Fire, GridLayer>();
         description.AddAgent<Alarm, GridLayer>();
+        description.AddAgent<Smoke, GridLayer>();
+        
         
         
         // Load the simulation configuration from a JSON configuration file

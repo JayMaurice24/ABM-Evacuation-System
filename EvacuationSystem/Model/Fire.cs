@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Mars.Common.Core.Collections;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
@@ -80,7 +78,12 @@ public class Fire : IAgent<GridLayer>, IPositionable
         private void SpreadFromPosition(Position position)
         {
             _layer.FireLocations.Add(position);
-            _layer.AgentManager.Spawn<Fire, GridLayer>(null, agent => { agent.Position = position; });
+            var flame = _layer.AgentManager.Spawn<Fire, GridLayer>(null, agent =>
+            {
+                agent.Position = position;
+            }).Take(1).First();
+            _layer.Fires.Add(flame);
+           
             Console.WriteLine("Fire spread to: {0}", position);
         }
 

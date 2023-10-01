@@ -22,7 +22,6 @@ public class EvacueeType1 : Evacuee
         CollaborationFactor = Rand.NextDouble();
         Health = Rand.Next(30, 100);
         Strength = Rand.NextDouble();
-        DelayTime = Rand.Next(30, 60);
         IsConscious = true;
         FoundExit = false;
         FoundDistressedAgent = false;
@@ -49,9 +48,13 @@ public class EvacueeType1 : Evacuee
             if (!Layer.Ring) return;
             if (RiskLevel < Layer.GetCurrentTick() || Perception(Position, Layer.FireLocations[0])) return;
             EvacueeHasStartedMoving = true;
+            if (Rand.NextDouble() > 0.5) //Chance of Agent forgetting an item
+            {
+                DelayTime = Rand.Next(30, 60);
+            }
         }
 
-        if (!FoundExit)
+        if (!FoundExit) //finds nearest exit to the agent
         {
             Goal = FindNearestExit(Layer.PossibleGoal);
             Console.WriteLine($"Agent {ID} moving towards exit");
@@ -60,7 +63,7 @@ public class EvacueeType1 : Evacuee
         }
         else
         {
-            //if ((int)Layer.GetCurrentTick() % Speed != 0) return;
+            if ((int)Layer.GetCurrentTick() % Speed != 0) return; //Agent moves every few seconds
             if (!IsConscious)
             {
                 if (FoundHelp)
@@ -80,7 +83,7 @@ public class EvacueeType1 : Evacuee
                     {
                         Console.WriteLine($"{GetType().Name} {ID} Has forgotten an item and is heading back");
                         AgentForgotItem = true;
-                        if(IsInGroup) ReturningWithGroupForItem = UpdateGroupStatus();
+                        if(IsInGroup) UpdateGroupStatus();
                         ForgotOnce = true;
                         return;
                     }
@@ -93,7 +96,7 @@ public class EvacueeType1 : Evacuee
                         {
                             if (IsLeader)
                             {
-                                EvacuateLow();
+                                Evacuate();
                             }
                             else if (IsInGroup && !IsLeader)
                             {
@@ -109,7 +112,7 @@ public class EvacueeType1 : Evacuee
                     {
                         if (IsLeader)
                         {
-                            EvacuateLow();
+                            Evacuate();
                            
                         }
                         else if (IsInGroup && !IsLeader)
@@ -123,8 +126,8 @@ public class EvacueeType1 : Evacuee
                     {
                         if (IsLeader)
                         {
-                            FormGroup(this);
-                            EvacuateLow();
+                            FormGroup();
+                            Evacuate();
                         }
                         else if (IsInGroup && !IsLeader)
                         {
@@ -133,7 +136,7 @@ public class EvacueeType1 : Evacuee
 
                         else
                         {
-                            EvacuateLow();
+                            Evacuate();
                         }
                     }
 
@@ -147,7 +150,7 @@ public class EvacueeType1 : Evacuee
                         {
                             if (Helping)
                             {
-                                EvacuateLow();
+                                Evacuate();
                             }
                             else if (ReachedDistressedAgent)
                             {
@@ -155,7 +158,7 @@ public class EvacueeType1 : Evacuee
                             }
                             else
                             {
-                                EvacuateLow();
+                                Evacuate();
                             }
                         }
                         else
@@ -167,7 +170,7 @@ public class EvacueeType1 : Evacuee
                     {
                         if (Helping)
                         {
-                            EvacuateLow();
+                            Evacuate();
                         }
                         else
                         {
@@ -178,7 +181,7 @@ public class EvacueeType1 : Evacuee
                             }
                             else
                             {
-                                EvacuateLow();
+                                Evacuate();
                             }
                         }
                        
