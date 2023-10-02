@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Mars.Components.Agents;
+using Mars.Interfaces.Agents;
+
 namespace EvacuationSystem.Model;
 
 /// <summary>
@@ -26,7 +29,7 @@ public class EvacueeType1 : Evacuee
         FoundExit = false;
         FoundDistressedAgent = false;
         Helping = false; 
-        AgentForgotItem = false;
+        AgentReturningForItem = false;
         IsLeader = false;
         IsInGroup = false;
         Group = new List<Evacuee>();
@@ -42,22 +45,22 @@ public class EvacueeType1 : Evacuee
 
     public override void Tick()
     {
-        if (!EvacueeHasStartedMoving)
+        if (!EvacueeHasStartedMoving) 
         {
-            if (Layer.GetCurrentTick() < 2) return;
+            if (Layer.GetCurrentTick() < 2) return; 
             if (!Layer.Ring) return;
             if (RiskLevel < Layer.GetCurrentTick() || Perception(Position, Layer.FireLocations[0])) return;
             EvacueeHasStartedMoving = true;
             if (Rand.NextDouble() > 0.5) //Chance of Agent forgetting an item
             {
                 DelayTime = Rand.Next(30, 60);
+                ForgotAnItem = true;
             }
         }
-
         if (!FoundExit) //finds nearest exit to the agent
         {
             Goal = FindNearestExit(Layer.PossibleGoal);
-            Console.WriteLine($"Agent {ID} moving towards exit");
+            Console.WriteLine($"{GetType().Name}{ID} is heading towards the exit");
             FoundExit = true;
             DetermineLeader();
         }
@@ -77,69 +80,45 @@ public class EvacueeType1 : Evacuee
             }
             else
             {
-                if (DelayTime == Layer.GetCurrentTick() && !ForgotOnce)
-                {
-                    if (Rand.NextDouble() > 0.7)
+                if (DelayTime == Layer.GetCurrentTick() && ForgotAnItem) {
+                    if (Rand.NextDouble() > 0.7) //Chance of Returning for Item
                     {
-                        Console.WriteLine($"{GetType().Name} {ID} Has forgotten an item and is heading back");
-                        AgentForgotItem = true;
-                        if(IsInGroup) UpdateGroupStatus();
-                        ForgotOnce = true;
+                        AgentReturningForItem = true;
+                        if (IsInGroup)
+                        {
+                            UpdateGroupStatus();
+                        }
+                        else
+                        {
+                            Goal = OriginalPosition;
+                            Console.WriteLine($"{GetType().Name} {ID} Has forgotten an item and is heading back");
+                        }
                         return;
                     }
                 }
                 if (!FoundDistressedAgent)
                 {
-                    if (AgentForgotItem)
+                    if (IsLeader)
                     {
-                        if (ReturningWithGroupForItem)
+                        if(!ReturningWithGroupForItem) FormGroup();
+                        Evacuate();
+                    }
+                    else if (IsInGroup && !IsLeader)
+                    {
+                        if (!LeaderHasReachedExit)
                         {
-                            if (IsLeader)
-                            {
-                                Evacuate();
-                            }
-                            else if (IsInGroup && !IsLeader)
-                            {
-                                MoveTowardsGroupLeader();
-                            }
+                            MoveTowardsGroupLeader();
                         }
                         else
                         {
-                            ReturnForItem();
-                        }
-                    }
-                    else if (ReturningWithGroupForItem)
-                    {
-                        if (IsLeader)
-                        {
                             Evacuate();
-                           
                         }
-                        else if (IsInGroup && !IsLeader)
-                        {
-                            MoveTowardsGroupLeader();
-                           
-                        }
-
+                        
                     }
                     else
                     {
-                        if (IsLeader)
-                        {
-                            FormGroup();
-                            Evacuate();
-                        }
-                        else if (IsInGroup && !IsLeader)
-                        {
-                            MoveTowardsGroupLeader();
-                        }
-
-                        else
-                        {
-                            Evacuate();
-                        }
+                        Evacuate();
                     }
-
                     HelpAgent();
                 }
                 else
@@ -187,6 +166,7 @@ public class EvacueeType1 : Evacuee
                        
                     }
                 }
+                DetermineLeader();
                 UpdateHealthStatus();
             }
         }

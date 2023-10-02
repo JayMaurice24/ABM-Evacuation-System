@@ -19,17 +19,7 @@ public abstract class SocialForceModel
 
         return (from groupMember in @group where groupMember != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - groupMember.Position.X), (float)(agent.Position.Y - groupMember.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, groupMember.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
     }
-    public static Vector2 CalculateSocialForceSolo(Position goal, Evacuee agent, List <Evacuee> group)
-    {
-        var totalForce = Vector2.One;
-        var attractiveForce = Vector2.Normalize(new Vector2((float)(goal.X - agent.Position.X),
-            (float)(goal.Y - agent.Position.Y))) * (float)AttractiveForceMultiplier;
 
-        totalForce += attractiveForce;
-
-        return (from groupMember in @group where groupMember != agent select Vector2.Normalize(new Vector2((float)(agent.Position.X - groupMember.Position.X), (float)(agent.Position.Y - groupMember.Position.Y))) * RepulsiveForceMultiplier / (float)CalculateDistance(agent.Position, groupMember.Position)).Aggregate(totalForce, (current, repulsiveForce) => current + repulsiveForce);
-    }
-    
     public static Vector2 CalculateObstacleAvoidanceForce(Evacuee agent, Evacuee nearestObstacle)
     {
         var obstacleAvoidanceForce = Vector2.Zero;
@@ -43,7 +33,6 @@ public abstract class SocialForceModel
 
         return obstacleAvoidanceForce;
     }
-    
 
     private static double CalculateDistance(Position coords1, Position coords2)
     {
@@ -52,7 +41,7 @@ public abstract class SocialForceModel
     }
     
     private static readonly Random Rand = new();
-    private static readonly double AttractiveForceMultiplier = Rand.NextDouble();
-    private static readonly int RepulsiveForceMultiplier = Rand.Next(1, 10);
-    private static readonly int ObstacleAvoidanceMultiplier = Rand.Next(1, 10);
+    private static readonly double AttractiveForceMultiplier = 0.5;
+    private static readonly int RepulsiveForceMultiplier = 5;
+    private static readonly int ObstacleAvoidanceMultiplier = 5;
 }
