@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
-using Mars.Numerics;
 
 namespace EvacuationSystem.Model;
 
@@ -32,12 +31,10 @@ public class Smoke : IAgent<GridLayer>, IPositionable
             Position = new Position(firstFire.X + cell.X, firstFire.Y + cell.Y);
             _layer.SmokeSpread = true;
             Spread();
-            Damage();
         }
         else if (_layer.SmokeSpread)
         {
             if (_rand.NextDouble() <= 0.4)Spread();
-            Damage();
         }
     }
 
@@ -55,38 +52,12 @@ public class Smoke : IAgent<GridLayer>, IPositionable
             var newY = Position.Y + cell.Y;
             if (!(0 <= newX) || !(newX < _layer.Width) || !(0 <= newY) || !(newY < _layer.Height)) continue;
             if (!_layer.IsRoutable(newX, newY)) continue;
-           var smoke = _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent =>
+            _layer.AgentManager.Spawn<Smoke, GridLayer>(null, agent =>
             {
                 agent.Position = new Position(newX, newY);
             }).Take(1).First();
-           _layer.Smokes.Add(smoke);
         }
     }
-    
-    
-    /// <summary>
-    /// Causes Health Damage to agents, everytime they inhale smoke; 
-    /// </summary>
-    private void Damage()
-    {
-        var agent = _layer.EvacueeEnvironment.Entities.MinBy(agent =>
-            Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
-        if (agent == null) return;
-        if (!Position.Equals(agent.Position)) return;
-        switch (Density)
-        {
-            case > 0.7:
-                agent.Health-=5;
-                break;
-            case < 0.4:
-                agent.Health-=2;
-                break;
-            default:
-                agent.Health--;
-                break;
-        }
-    }
-    
 
     #endregion
     #region Fields & Properties

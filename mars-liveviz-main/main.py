@@ -1,7 +1,8 @@
 import _thread as thread
+import csv
 import json
 import time
-
+import upsidedown 
 import pygame
 from pygame import RESIZABLE, DOUBLEBUF, HWSURFACE
 from websocket import create_connection, WebSocketConnectionClosedException
@@ -33,7 +34,6 @@ RASTER_COLORS = {
 }
 UNKNOWN_RASTER = WHITE
 AGENT_COLORS = [GREEN, YELLOW, RED]
-VECTOR_COLORS = [RED, WHITE, BLUE, ORANGE, YELLOW]
 
 # WINDOW_SIZE = 800, 800
 
@@ -44,10 +44,10 @@ class Visualization:
 
         self.programIcon = pygame.image.load('icon.png')
         pygame.display.set_icon(self.programIcon)
-        self.exit_colors = {}
+
         self.clock = pygame.time.Clock()
-        self.WINDOW_SIZE = [1440, 960]
-        self.WORLD_SIZE = 0, 0, 100, 100  # used for scaling
+        self.WINDOW_SIZE = [1200, 880]
+        self.WORLD_SIZE = 0, 0, 119, 87  # used for scaling
         self.BORDER_WIDTH_PIXEL = -20
         self.font = pygame.font.Font('freesansbold.ttf', 12)
         self.text = self.font.render('Tick: 0', True, YELLOW)
@@ -67,9 +67,9 @@ class Visualization:
         self.line_features = []
         self.ring_features = []
         self.polygon_features = []
-        self.raster_metadata = {}
+        self.raster_metadata = []
         self.tick_display = [False, 0, 1000]
-        self.fps = 60
+        self.fps = 360
         self.run = True
         self.uri = "ws://127.0.0.1:4567/vis"
         self.ws = None
@@ -124,7 +124,7 @@ class Visualization:
                 self.ws = None
                 return
 
-            #print(message)
+            # print(message)
             data = json.loads(message)
 
             self.l.acquire_write()
@@ -136,31 +136,15 @@ class Visualization:
             if "entities" in data:
                 entities_points = data["entities"]
                 self.entities[data['t']] = entities_points
-                if "Exits" in entities_points: 
-                    self.update_exit_states(entities_points["Exits"])
             if "worldSize" in data:
                 world_data = data["worldSize"]
                 if world_data["maxX"] > 0:
                     self.WORLD_SIZE = world_data["minX"], world_data["minY"], world_data["maxX"], world_data["maxY"]
-            if "vectors" in data:
-                layers_data = data["vectors"]
-                for feature in layers_data:
-                    geometry = feature["geometry"]
-                    geometry_type = geometry["type"]
-                    if geometry_type == "LineString":
-                        self.line_features.append(geometry)
-                    elif geometry_type == "LineRing":
-                        self.ring_features.append(geometry)
-                    elif geometry_type == "Point":
-                        self.point_features.append(geometry)
-                    elif geometry_type == "Polygon":
-                        self.polygon_features.append(geometry)
-            if "rasters" in data:
-                raster_data = data["rasters"]
+            with open('HTF.csv', 'r') as csv_file:
+                raster_data= csv.reader(csv_file, delimiter=';')
                 for raster in raster_data:
-                    proxy_key = raster["t"]
-                    self.raster_metadata[proxy_key] = raster
-            #print(self.entities)
+                    self.raster_metadata.append(raster)
+
             self.tick_display[0] = True
             self.l.release_write()
         except (ConnectionResetError, ConnectionRefusedError, WebSocketConnectionClosedException):
@@ -170,19 +154,6 @@ class Visualization:
                 self.l.release_write()
             self.screen.fill(BLACK)
             self.ws = None
-
-    def update_exit_states(self, exit_data):
-        for exit_info in exit_data:
-            exit_id = exit_info["id"]
-            exit_color = RED
-            if exit_info["IsOpen"]:
-                exit_color = CYAN
-            elif not exit_info["IsLocked"]:
-                exit_color = YELLOW
-
-            # Update the exit's color in the visualization
-            if exit_id in self.exit_colors:
-                self.exit_colors[exit_id] = exit_color
 
     def visualize_content(self):
         self.clock.tick(self.desired_fps)
@@ -205,59 +176,30 @@ class Visualization:
 
         # line_width = int((scale_x + scale_y) / 2)
         line_width = 1
-        agent_size = 5
+        agent_size = 7
 
         surface = pygame.Surface(self.gameSize)
 
         # draw grid on everything
         for x in range(1, delta_x):
             for y in range(1, delta_y):
-                pygame.draw.line(surface, GRAY, (x * scale_x, 0), (x * scale_x, self.gameSize[1]))
-                pygame.draw.line(surface, GRAY, (0, y * scale_y), (self.gameSize[0], y * scale_y))
+                pygame.draw.line(surface, BLUE_LIGHT, (x * scale_x, 0), (x * scale_x, self.gameSize[1]))
+                pygame.draw.line(surface, BLUE_LIGHT, (0, y * scale_y), (self.gameSize[0], y * scale_y))
 
-        for raster_key in self.raster_metadata.keys():
-            raster = self.raster_metadata[raster_key]
-            width = raster["cellWidth"] * scale_x
-            height = raster["cellHeight"] * scale_y
+        for row_index, row in enumerate(self.raster_metadata):
+            for col_index, cell_value in enumerate(row):
+                x = col_index * scale_x  # Adjust this based on cell size
+                y = (len(self.raster_metadata) - row_index - 1) * scale_y  # Adjust this based on cell size
+                width = 1 * scale_x  # Adjust this based on cell size
+                height = 1 * scale_y  # Adjust this based on cell size
 
-            cells_with_value = raster["cells"]
-
-            for cell in cells_with_value:
-                x = ((cell[0] - self.WORLD_SIZE[0]) * scale_x)
-                y = ((cell[1] - self.WORLD_SIZE[1]) * scale_y)
-                 
-                value = cell[2]
+                # Determine color based on cell_value
                 color = UNKNOWN_RASTER
-                if value in RASTER_COLORS:
-                    color = RASTER_COLORS[value]
-                
+                color = BLACK
+                if cell_value == '1':
+                    color = BLUE_LIGHT
+
                 pygame.draw.rect(surface, color, pygame.Rect(x, y, width, height))
-
-        for geometry in self.point_features:
-            point = geometry["coordinates"]
-            point_feature = (((float(point[0]) - self.WORLD_SIZE[0]) * scale_x) + self.BORDER_WIDTH_PIXEL,
-                             ((float(point[1]) - self.WORLD_SIZE[1]) * scale_y))
-            pygame.draw.circle(surface, BLUE, (point_feature[0], point_feature[1]), line_width, 0)
-
-        for geometry in self.line_features:
-            line_feature = [(
-                (float(x[0] - self.WORLD_SIZE[0]) * scale_x) + self.BORDER_WIDTH_PIXEL,
-                ((float(x[1]) - self.WORLD_SIZE[1]) * scale_y)) for x in geometry["coordinates"]]
-            pygame.draw.lines(surface, PURPLE, False, line_feature, line_width)
-
-        for geometry in self.polygon_features:
-            polygon_geometry_list = geometry["coordinates"]
-            for coordinates in polygon_geometry_list:
-                pointlist = [(
-                    (float(x[0] - self.WORLD_SIZE[0]) * scale_x) + self.BORDER_WIDTH_PIXEL,
-                    (float(x[1] - self.WORLD_SIZE[1]) * scale_y)) for x in coordinates]
-                pygame.draw.polygon(surface, GREEN, pointlist, 0)
-
-        for geometry in self.ring_features:
-            pointlist = [(
-                ((float(x[0]) - self.WORLD_SIZE[0]) * scale_x) + self.BORDER_WIDTH_PIXEL,
-                ((float(x[1]) - self.WORLD_SIZE[1]) * scale_y)) for x in geometry["coordinates"]]
-            pygame.draw.polygon(surface, ORANGE, pointlist, line_width)
 
         for type_key in self.entities.keys():
             for entity in self.entities[type_key]:
@@ -282,14 +224,15 @@ class Visualization:
                              pygame.Rect((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y,
                                          scale_x, scale_y))
                 else:
-                    font = pygame.font.Font(None, 30)
-                    text_surface = font.render(str(type_key), True, AGENT_COLORS[type_key % len(AGENT_COLORS)])
+                    pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],   (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
+                                    ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
+                                   line_width * agent_size, 0)
+                    font = pygame.font.Font(None, 15)
+                    text_surface = font.render(((str(type_key))), True, BLACK)
                     text_rect = text_surface.get_rect(center=((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2,
                                                        (y - self.WORLD_SIZE[1]) * scale_y + scale_y / 2))
                     surface.blit(text_surface, text_rect)
-
-
-
+        # Map game area to main view
         flipped = pygame.transform.flip(surface, False, True)
         self.screen.blit(flipped, (10, 10))
         pygame.draw.rect(self.screen, WHITE, (*self.gamePos, *self.gameSize), 1)

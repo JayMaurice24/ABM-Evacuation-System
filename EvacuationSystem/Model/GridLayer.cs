@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Mars.Common.Core.Random;
 using Mars.Components.Environments;
@@ -12,7 +11,7 @@ using Mars.Interfaces.Layers;
 
 namespace EvacuationSystem.Model;
 
-public class GridLayer : RasterLayer
+public class GridLayer : RasterLayer, ISteppedActiveLayer
 {
     #region Init
 
@@ -24,20 +23,20 @@ public class GridLayer : RasterLayer
     /// <param name="registerAgentHandle">A handle for registering agents</param>
     /// <param name="unregisterAgentHandle">A handle for unregistering agents</param>
     /// <returns>A boolean that states if initialization was successful</returns>
-    [SuppressMessage("ReSharper.DPA", "DPA0000: DPA issues")]
     public override bool InitLayer(LayerInitData layerInitData, RegisterAgent registerAgentHandle,
         UnregisterAgent unregisterAgentHandle)
     {
-        if (registerAgentHandle == null) throw new ArgumentNullException(nameof(registerAgentHandle));
         var initLayer = base.InitLayer(layerInitData, registerAgentHandle, unregisterAgentHandle);
-        
-        EvacueeEnvironment = new SpatialHashEnvironment<Evacuee>(Width, Height);
+        AgentManager = layerInitData.Container.Resolve<IAgentManager>();
         FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
+        Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
+        EvacueeEnvironment = new SpatialHashEnvironment<Evacuee>(Width, Height);
+        
         AlarmEnvironment = new SpatialHashEnvironment<Alarm>(Width, Height);
         SmokeEnvironment = new SpatialHashEnvironment<Smoke>(Width, Height);
         
-        AgentManager = layerInitData.Container.Resolve<IAgentManager>();
-        Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
+        
+        
         Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
         Alarms = AgentManager.Spawn<Alarm, GridLayer>().ToList();
 
@@ -104,7 +103,7 @@ public class GridLayer : RasterLayer
     {
         for (var x = 1; x <= 18; x++)
         {
-            var numAgents = Rand.Next(1, 5);
+            var numAgents = Rand.Next(1, 3);
             for (var i = 0; i <= numAgents; i++)
             {
                 switch (x)
@@ -283,6 +282,7 @@ public class GridLayer : RasterLayer
     private List<EvacueeType18> Agent18 { get; set; } = new List<EvacueeType18>(); 
     
     public List<Position> FireLocations { get; set; }
+    public List<Position> SmokeLocations { get; set; }
     protected UnregisterAgent UnregisterAgentHandle { get; set; }
     public RegisterAgent RegisterAgentHandle { get; set; }
     private static readonly Random Rand = new Random();
@@ -294,5 +294,20 @@ public class GridLayer : RasterLayer
     public bool Ring { get; set; }
     
     #endregion
+
+    public void Tick()
+    {
+       Console.WriteLine($"Tick {GetCurrentTick()}");
+    }
+
+    public void PreTick()
+    {
+        //do nothing
+    }
+
+    public void PostTick()
+    {
+        //do nothing
+    }
 }
 

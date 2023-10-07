@@ -36,7 +36,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
         {
             Console.WriteLine($"Fire started in the {_layer.Room(Position)}");
             _layer.FireStarted = true;
-            _layer.FireLocations.Add(Position);
+           _layer.FireLocations.Add(Position);
 
         }
         else
@@ -61,32 +61,22 @@ public class Fire : IAgent<GridLayer>, IPositionable
         /// Spreads fire across a radius 
         /// </summary>
         private void Spread()
-        {
-            var randomDirection = _rand.Next(1, _directions.Count);
+        { var randomDirection = _rand.Next(1, _directions.Count);
             for (var i = 0; i < randomDirection; i++ ){
                 var numMovements = _rand.Next(0, _directions.Count - 1);
                 var cell = _directions[numMovements];
                 var newX = Position.X + cell.X;
                 var newY = Position.Y + cell.Y;
                 if (!(0 <= newX) || !(newX < _layer.Width) || !(0 <= newY) || !(newY < _layer.Height)) continue;
-                if (_layer.IsRoutable(newX, newY)){
-                    SpreadFromPosition(new Position(newX, newY));
-                }
+                if (!_layer.IsRoutable(newX, newY)) continue;
+                _layer.AgentManager.Spawn<Fire, GridLayer>(null, agent =>
+                {
+                    agent.Position = new Position(newX, newY);
+                }).Take(1).First();
+                _layer.FireLocations.Add(new Position(newX, newY));
             }
         }
-    
-        private void SpreadFromPosition(Position position)
-        {
-            _layer.FireLocations.Add(position);
-            var flame = _layer.AgentManager.Spawn<Fire, GridLayer>(null, agent =>
-            {
-                agent.Position = position;
-            }).Take(1).First();
-            _layer.Fires.Add(flame);
-           
-            Console.WriteLine("Fire spread to: {0}", position);
-        }
-
+        
         private void HurtAgent ()
         {
             var agent = _layer.EvacueeEnvironment.Entities.MinBy(agent =>
