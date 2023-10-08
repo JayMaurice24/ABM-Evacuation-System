@@ -69,7 +69,7 @@ class Visualization:
         self.polygon_features = []
         self.raster_metadata = []
         self.tick_display = [False, 0, 1000]
-        self.fps = 360
+        self.fps = 60
         self.run = True
         self.uri = "ws://127.0.0.1:4567/vis"
         self.ws = None

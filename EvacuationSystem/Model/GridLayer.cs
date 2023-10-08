@@ -31,31 +31,15 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
         FireEnvironment = new SpatialHashEnvironment<Fire>(Width, Height);
         Fires = AgentManager.Spawn<Fire, GridLayer>().ToList();
         EvacueeEnvironment = new SpatialHashEnvironment<Evacuee>(Width, Height);
-        
         AlarmEnvironment = new SpatialHashEnvironment<Alarm>(Width, Height);
         SmokeEnvironment = new SpatialHashEnvironment<Smoke>(Width, Height);
-        
-        
-        
-        Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
         Alarms = AgentManager.Spawn<Alarm, GridLayer>().ToList();
-
-        var exitLocations = new List<Position>
-        {
-            new(58, 68),
-            new(55, 70),
-            new(64, 70)
-        };
-
-        Exits = exitLocations;
-        FireLocations = new List<Position>();
-        
         
         var stairF = new List<Position>()
         {
             new(58, 75),
             new(57, 75),
-            new(56, 75),
+            new(56, 75)
             
         };
         var stairB = new List<Position>()
@@ -65,13 +49,12 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
         };
         FrontStairs = stairF;
         BackStairs = stairB;
-        Stairs = FrontStairs;
-        Stairs.AddRange(BackStairs);
-        PossibleGoal = Exits;
-        PossibleGoal.AddRange(Stairs);
+        Exits = FrontStairs;
+        Exits.AddRange(BackStairs);
         SpawnAgents();
         Directions = MovementDirections.CreateMovementDirectionsList();
         return initLayer;
+        
     }
    
     #endregion
@@ -176,7 +159,7 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     public Position FindRandomPosition()
     {
         var random = RandomHelper.Random;
-        bool check = true;
+        var check = true;
         int x = 0, y = 0;
         while (check)
         {   x = random.Next(Width);
@@ -231,7 +214,55 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
             _ => "In Passage"
         };
     }
+    private void SpreadFireAndSmoke()
+    {
+        Smokes.AddRange(AgentManager.Spawn<Smoke, GridLayer>().ToList()); 
+        if (GetCurrentTick() % _spreadFire != 0) return;
+        Fires.AddRange(AgentManager.Spawn<Fire, GridLayer>().ToList());
+        _spreadFire = Rand.Next(1, 10);
+    }
     
+    
+    public Position SetSmokeOrFirePosition(int x)
+    {
+        Position nearest; 
+        switch (x)
+        {
+            case 1:
+                var nextFireDirection = Rand.Next(FireLocations.Count);
+                nearest = FireLocations[nextFireDirection];
+                break;
+            default:
+                if (SmokeLocations.Count > 0)
+                {
+                    var nextSmokeDirection = Rand.Next(SmokeLocations.Count);
+                    nearest = SmokeLocations[nextSmokeDirection];
+                }
+                else
+                {
+                    nearest = FireLocations[0];
+                }
+                break;
+        }
+        double newX = 0, newY = 0;
+        var check = true;
+        while (check)
+        {
+            var randomDirection = Rand.Next(0, Directions.Count);
+            var nextDirection = Directions[randomDirection];
+            newX = nearest.X + nextDirection.X;
+            newY = nearest.Y + nextDirection.Y;
+            if (IsRoutable(newX,newY))
+            {
+                check = false;
+            }
+        }
+
+        var position = Position.CreatePosition(newX, newY);
+        if(x == 0) SmokeLocations.Add(position);
+        else{FireLocations.Add(position);}
+        return position;
+    }
 
     #endregion
     
@@ -241,9 +272,8 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     /// <summary>
     ///     The environment of the SimpleAgent agents
     /// </summary>
-
+    
     public List<Position> Exits { get; private set; }
-    public List<Position> Stairs { get; private set; }
     public List<Position> FrontStairs { get; private set; }
     public List<Position> BackStairs { get; private set; }
 
@@ -260,8 +290,7 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     public List<Position> Directions { get; private set; }
     public List<Smoke> Smokes { get; private set; }
     public List<Alarm> Alarms { get; private set; }
-    public List<Position> PossibleGoal {get; private set; }
-   
+
     private List<EvacueeType1> Agent1 { get; set; } = new List<EvacueeType1>();
     private List<EvacueeType2> Agent2 { get; set; } = new List<EvacueeType2>();
     private List<EvacueeType3> Agent3 { get; set; } = new List<EvacueeType3>();
@@ -275,20 +304,22 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     private List<EvacueeType11> Agent11 { get; set; } = new List<EvacueeType11>();
     private List<EvacueeType12> Agent12 { get; set; } = new List<EvacueeType12>();
     private List<EvacueeType13> Agent13 { get; set; } = new List<EvacueeType13>();
+
     private List<EvacueeType14> Agent14 { get; set; } = new List<EvacueeType14>();
+
     private List<EvacueeType15> Agent15 { get; set; } = new List<EvacueeType15>();
     private List<EvacueeType16> Agent16 { get; set; } = new List<EvacueeType16>();
     private List<EvacueeType17> Agent17 { get; set; } = new List<EvacueeType17>();
     private List<EvacueeType18> Agent18 { get; set; } = new List<EvacueeType18>(); 
     
-    public List<Position> FireLocations { get; set; }
-    public List<Position> SmokeLocations { get; set; }
+    public List<Position> FireLocations { get; set; } = new List<Position>();
+    public List<Position> SmokeLocations { get; set; } = new List<Position>();
     protected UnregisterAgent UnregisterAgentHandle { get; set; }
     public RegisterAgent RegisterAgentHandle { get; set; }
     private static readonly Random Rand = new Random();
-    public IAgentManager AgentManager { get; private set; }
-    
+    private IAgentManager AgentManager { get; set; }
     public bool SeeFire { get; set; }
+    private int _spreadFire;
     public bool FireStarted { get; set; }
     public bool SmokeSpread { get; set; }
     public bool Ring { get; set; }
@@ -297,12 +328,21 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
 
     public void Tick()
     {
-       Console.WriteLine($"Tick {GetCurrentTick()}");
+        Console.WriteLine($"Tick {GetCurrentTick()}");
+        switch (FireStarted)
+        {
+            case true when !SmokeSpread:
+                Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
+                break;
+            case true when SmokeSpread:
+                SpreadFireAndSmoke();
+                break;
+        }
     }
 
     public void PreTick()
     {
-        //do nothing
+        _spreadFire = Rand.Next(1,10);
     }
 
     public void PostTick()

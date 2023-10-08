@@ -41,7 +41,7 @@ public abstract class SocialForceModel
     }
     
     private static readonly Random Rand = new();
-    private static readonly double AttractiveForceMultiplier = 0.5;
-    private static readonly int RepulsiveForceMultiplier = 5;
-    private static readonly int ObstacleAvoidanceMultiplier = 5;
+    private static readonly double AttractiveForceMultiplier = 1;
+    private static readonly int RepulsiveForceMultiplier = 10;
+    private static readonly int ObstacleAvoidanceMultiplier = 10;
 }

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
+using Mars.Common;
+using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
 
@@ -19,54 +20,104 @@ public class Evacuate
         _evacuee = evacuee;
         _layer = layer;
     }
+
+    #region Solo Movement or Leader Movement
+
     public void Move()
     {
         if (!_tripInProgress)
         {
             FindRoute();
         }
-
         if (!_path.MoveNext()) return;
-
         if (_evacuee.AvoidFire(_path.Current))
         {
             FireAvoidance();
         }
-        else if (_evacuee.IsCellOccupied(_path.Current))
+        else if (IsCellOccupied(_path.Current))
         {
-            ToPushOrNotToPush();
+            if(!_evacuee.Helping){ToPushOrNotToPush();}
         }
         else
         {
             MoveToCell(_path.Current);
         }
-
         PositionOutput();
-
         if (_evacuee.Position.Equals(_evacuee.Goal))
         {
             HandleGoalReached();
         }
     }
-    public void MoveWithHelp()
-    {
-        var target =  _evacuee.Helper.Position;
-        _evacuee.Position = target;
-        _layer.EvacueeEnvironment.MoveTo(_evacuee, new Position(target.X, target.Y));
-    }
 
+    #endregion
+
+    #region GroupMovement
     public void MoveTowardsLeader()
     {
         if (!_evacuee.IsInGroup) return;
-        var socialForce = SocialForceModel.CalculateSocialForce(_evacuee.Leader, _evacuee, _layer.EvacueeEnvironment.Explore(_evacuee.Position, radius: 5).ToList());
-        var nearestObstacle = GetNearestObstacle();
-        var obstacleAvoidanceForce = SocialForceModel.CalculateObstacleAvoidanceForce(_evacuee, nearestObstacle);
-        var netForce = socialForce + obstacleAvoidanceForce;
-
-        UpdateVelocity(netForce);
-        UpdatePosition();
+        if (!_tripInProgress)
+        {
+            _evacuee.Goal = _evacuee.Leader.Position;
+            FindRoute();
+        }
+        if (!_path.MoveNext()) return;
+        UpdatePosition(_path.Current);
+        if (_evacuee.LeaderHasReachedExit) _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
+        if (!_evacuee.Position.Equals(_evacuee.Goal)) return;
+        if (_layer.Exits.Contains(_evacuee.Goal))
+        {
+            ExitReached();
+        }
+        else
+        {
+            FindRoute();
+        }
+    }
+    private Position AvoidCollision(Position target)
+    {
+        var group = GetNearByObstacles(); 
+        if(group == null) return target;
+        foreach (var evacuee in group)
+        {
+            if (!Equals(target, evacuee.Position)) return target;
+            if (!_evacuee.Leader.Group.Contains(_evacuee))
+            {
+                ToPushOrNotToPush();
+            }
+            else
+            {
+                target = evacuee.ChangeDirection(target); 
+            }
+        }
+        return target;
+    }
+    private void UpdatePosition(Position target)
+    {
+        var newPosition = AvoidCollision(target);
+        if (_evacuee.AvoidFire(newPosition))
+        {
+            FireAvoidance();
+        }
+        else
+        {
+            MoveToCell(newPosition);
+        }
         PrintMovementStatus();
     }
+    
+
+    #endregion
+   
+    #region Actions 
+    public void MoveWithHelp()
+    {
+        var target =  _evacuee.Helper.Position;
+        var directionToMove =
+            PositionHelper.CalculateBearingCartesian(_evacuee.Position.X, _evacuee.Position.Y, target.X, target.Y);
+        _layer.EvacueeEnvironment.MoveTowards(_evacuee, directionToMove, 1);
+        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is being carried by {_evacuee.GetType().Name} {_evacuee.ID}");
+    }
+    
 
     private void FindRoute()
     {
@@ -108,81 +159,20 @@ public class Evacuate
     {
         _layer.EvacueeEnvironment.MoveTo(_evacuee, cell, 1);
     }
-    
-    private void PositionOutput()
-    {
-        var status = _evacuee.IsLeader ? LeaderOutput() : NonLeaderOutput();
-
-        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has moved to cell {_evacuee.Position} {status}");
-    }
-    
-    private string LeaderOutput()
-    {
-        string status;
-
-        if (_evacuee.ReturningWithGroupForItem)
-        {
-            status = _evacuee.AgentReturningForItem
-                ? "(Is returning for item and group is following)"
-                : "(Group member forgot Item & Leader is returning with them)";
-        }
-        else if (_evacuee.ReturningWithGroupToHelp)
-        {
-            status = _evacuee.Helping
-                ? "(Is returning for item and group is following)"
-                : _evacuee.ReachedDistressedAgent
-                    ? $"(Is carrying agent {_evacuee.Helped.ID})"
-                    : $"(Is returning to help {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} With group)";
-        }
-        else
-        {
-            status = _evacuee.Group.Count == 0
-                ? "(Is Moving alone)"
-                : "(Is leading group)";
-        }
-
-        return status;
-    }
-    
-    
-    private string NonLeaderOutput()
-    {
-        string status;
-
-        if (_evacuee.AgentReturningForItem)
-        {
-            status = "(Is returning for item)";
-        }
-        else if (_evacuee.FoundDistressedAgent)
-        {
-            status = _evacuee.Helping
-                ? $"(Is carrying agent {_evacuee.Helped.ID})"
-                : _evacuee.ReachedDistressedAgent
-                    ? $"(Has reached at cell {_evacuee.Position} {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} and is now heading exit)"
-                    : $"(Has moved to cell {_evacuee.Position} and is going to help {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID})";
-        }
-        else
-        {
-            status = "(Is moving alone)";
-        }
-
-        return status;
-    }
-    
+      
     private void HandleGoalReached()
     {
         if (_evacuee.AgentReturningForItem && _evacuee.Goal.Equals(_evacuee.OriginalPosition))
         {
             ItemFound();
         }
-        else if (_layer.Stairs.Contains(_evacuee.Goal))
+        else if (_evacuee.FoundDistressedAgent)
+        {
+            ReachedHelplessEvacuee();
+        }
+        else if (_layer.Exits.Contains(_evacuee.Goal))
         {
             ExitReached();
-        }
-        else
-        {
-            _evacuee.Goal = _evacuee.FindNearestExit(_layer.Stairs);
-            _path = _layer.FindPath(_evacuee.Position, _evacuee.Goal).GetEnumerator();
         }
     }
     
@@ -190,10 +180,18 @@ public class Evacuate
     {
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has Found Item and is heading to the exit");
         _evacuee.AgentReturningForItem = false;
+        if(_evacuee.IsInGroup) GroupReturn();
+        _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
         _tripInProgress = false;
-        if(_evacuee.IsInGroup)GroupReturn();
-        _evacuee.Goal = _evacuee.FindNearestExit(_layer.PossibleGoal);
+    }
+
+    private void ReachedHelplessEvacuee()
+    {
+        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has Reached {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} is heading to the exit");
+        _evacuee.ReachedDistressedAgent = true; 
+        _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
         _path = _layer.FindPath(_evacuee.Position, _evacuee.Goal).GetEnumerator();
+        _tripInProgress = false;
     }
 
     private void GroupReturn()
@@ -214,63 +212,83 @@ public class Evacuate
             foreach (var agent in _evacuee.Group)
             {
                 agent.LeaderHasReachedExit = true;
-                agent.Goal = _evacuee.Goal;
+                Console.WriteLine($"{agent.GetType().Name} {agent.ID}'s group leader has reached exit {_evacuee.Goal} and is heading for exit too");
             }
         }
-
         _layer.RemoveFromSimulation(_evacuee);
     }
-    private void UpdateVelocity(Vector2 netForce)
+    private IEnumerable<Evacuee> GetNearByObstacles()
     {
-        // Update velocity using net force
-        _evacuee._currentVelocity += netForce;
+        return _layer.EvacueeEnvironment.Explore(_evacuee.Position, 1);
+    }
 
-        // Limit the velocity to a maximum value (MaxSpeed)
-        if (_evacuee._currentVelocity.Length() > Evacuee.MaxSpeed)
-        {
-            _evacuee._currentVelocity = Vector2.Normalize(_evacuee._currentVelocity) * Evacuee.MaxSpeed;
-        }
+   
+
+    private bool IsCellOccupied(Position targetPosition)
+    {
+        var agents = _layer.EvacueeEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(new[] { _evacuee.Position.X, _evacuee.Position.Y }, new[] { agent.Position.X, agent.Position.Y }));
+
+        return agents != null && targetPosition.Equals(agents.Position);
+    }
+    #endregion
+
+    #region Outputs
+    private void PositionOutput()
+    {
+        var status = _evacuee.IsLeader ? LeaderOutput() : NonLeaderOutput();
+
+        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has moved to cell {_evacuee.Position} {status}");
     }
     
-    private Evacuee GetNearestObstacle()
+    private string LeaderOutput()
     {
-        var nearest = _layer.EvacueeEnvironment.Entities.MinBy(agent =>
-            Distance.Chebyshev(_evacuee.Position.PositionArray, agent.Position.PositionArray));
+        string status;
 
-        if (nearest != _evacuee && nearest != null) return nearest;
-        return null;
-    }
-
-    private bool IsValidPosition(Position newPosition)
-    {
-        return 0 <= newPosition.X && newPosition.X < _layer.Width &&
-               0 <= newPosition.Y && newPosition.Y < _layer.Height &&
-               _layer.IsRoutable(newPosition.X, newPosition.Y);
-    }
-    private void UpdatePosition()
-    {
-        var newPosition = CalculateNewPosition();
-
-        if (!IsValidPosition(newPosition)) return;
-
-        if (_evacuee.AvoidFire(_path.Current))
+        if (_evacuee.ReturningWithGroupForItem)
         {
-            newPosition = _evacuee.ChangeDirection(newPosition);
+            status = _evacuee.AgentReturningForItem
+                ? "(Is returning for item and group is following)"
+                : "(Group member forgot Item & Leader is returning with them)";
         }
-        else if(_evacuee.IsCellOccupied(newPosition))
+        else if (_evacuee.ReturningWithGroupToHelp)
         {
-            ToPushOrNotToPush();
+            status = _evacuee.Helping
+                ? $"(Is carrying agent {_evacuee.Helped.ID})" : $"(Is returning to help {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} With group)";
         }
-       MoveToCell(newPosition);
-        _evacuee.Position = newPosition;
+        else 
+        {
+            status = _evacuee.Group.Count == 0
+                ? "(Is Moving alone)"
+                : "(Is leading group)";
+        }
+
+        return status;
+    }
+    private string NonLeaderOutput()
+    {
+        string status;
+
+        if (_evacuee.AgentReturningForItem)
+        {
+            status = "(Is returning for item)";
+        }
+        else if (_evacuee.FoundDistressedAgent)
+        {
+            status = _evacuee.Helping
+                ? $"(Is helping {_evacuee.Helped.GetType()} {_evacuee.Helped.ID} with Group)"
+                : _evacuee.ReachedDistressedAgent
+                    ? $"(Has reached {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} and is now heading exit)"
+                    : $"is going to help {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID})";
+        }
+        else
+        {
+            status = "(Is moving alone)";
+        }
+
+        return status;
     }
     
-    private Position CalculateNewPosition()
-    {
-        // Implement logic to calculate the new position based on velocity
-        // Example: return new Position((int)(Position.X + _currentVelocity.X), (int)(Position.Y + _currentVelocity.Y));
-        return new Position((int)(_evacuee.Position.X + _evacuee._currentVelocity.X), (int)(_evacuee.Position.Y + _evacuee._currentVelocity.Y));
-    }
     private void PrintMovementStatus()
     {
         string status;
@@ -292,6 +310,6 @@ public class Evacuate
 
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has moved to cell {_evacuee.Position} {status}");
     }
-
+    #endregion
 
 }

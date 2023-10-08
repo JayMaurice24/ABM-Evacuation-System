@@ -46,7 +46,7 @@ public class HandleAgentMovement
     {
         if (_rand.NextDouble() > 0.5)
         {
-            _evacuee.DelayTime = _rand.Next(30, 60);
+            _evacuee.DelayTime = _rand.Next(20, 60);
             _evacuee.ForgotAnItem = true;
         }
         SetExit();
@@ -55,7 +55,7 @@ public class HandleAgentMovement
 
     private void SetExit()
     {
-        _evacuee.Goal = _evacuee.FindNearestExit(_layer.PossibleGoal);
+        _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has started evacuating");
         _evacuee.FoundExit = true;
     }
@@ -169,7 +169,7 @@ public class HandleAgentMovement
             if (_evacuee.ReachedDistressedAgent)
             {
                 _evacuee.OfferHelp();
-                _evacuee.Goal = _evacuee.FindNearestExit(_layer.PossibleGoal);
+                _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
             }
             else
             {

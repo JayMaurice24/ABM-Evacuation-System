@@ -58,7 +58,7 @@ public class HandleGroup
         {
             agent.IsInGroup = false;
             agent.Leader = null;
-            agent.Goal = agent.FindNearestExit(_layer.PossibleGoal);
+            agent.Goal = agent.FindNearestExit(_layer.Exits);
             Console.WriteLine($"{agent.GetType().Name} {agent.ID} Has left the group and is now moving alone");
         }
 
@@ -88,7 +88,7 @@ public class HandleGroup
             a.Leader = newLeader;
             newLeader.Group.Add(a);
         }
-        newLeader.Goal = newLeader.FindNearestExit(_layer.PossibleGoal);
+        newLeader.Goal = newLeader.FindNearestExit(_layer.Exits);
         _evacuee.Group.Clear();
         
         _evacuee.IsLeader = false;
@@ -116,7 +116,7 @@ public class HandleGroup
                 var agent = newGroup[0];
                 agent.IsInGroup = false;
                 agent.Leader = null;
-                agent.Goal = agent.FindNearestExit(_layer.PossibleGoal);
+                agent.Goal = agent.FindNearestExit(_layer.Exits);
                 Console.WriteLine($"{agent.GetType().Name} {agent.ID} Has left group and is moving alone");
                 break;
             }
@@ -125,7 +125,7 @@ public class HandleGroup
                 var newLead = newGroup.OrderByDescending(agent => agent.Leadership).First();
                 newLead.IsLeader = true;
                 newLead.Leader = null;
-                newLead.Goal = newLead.FindNearestExit(_layer.PossibleGoal);
+                newLead.Goal = newLead.FindNearestExit(_layer.Exits);
 
                 foreach (var agent in newGroup)
                 {

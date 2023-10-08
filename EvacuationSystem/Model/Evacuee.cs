@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using Mars.Common;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
@@ -36,7 +35,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public virtual void Tick()
     {
         
-        }
+    }
 
     #endregion
 
@@ -64,7 +63,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public void FormGroup()
     {
         if (!IsLeader) return;
-        var potentialGroupMembers = Layer.EvacueeEnvironment.Explore(Position, radius: 10).ToList();
+        var potentialGroupMembers = Layer.EvacueeEnvironment.Explore(Position, radius: 3).ToList();
         if (potentialGroupMembers.Count <= 0) return;
         foreach (var agent in potentialGroupMembers.Where(agent => agent.CollaborationFactor > 0.5 && !agent.IsInGroup && !agent.IsLeader && agent!=this && !Group.Contains(agent)))
         {
@@ -73,14 +72,13 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             Group.Add(agent);
             Console.WriteLine($"{agent.GetType().Name} {agent.ID} has joined {GetType().Name} {ID}'s Group");
         }
-
     }
     /// <summary>
     /// Identifies if an agent can lead a group
     /// </summary>
     public void DetermineLeader()
     {
-        var surroundingAgents = Layer.EvacueeEnvironment.Explore(Position, radius: 10).ToList();
+        var surroundingAgents = Layer.EvacueeEnvironment.Explore(Position, radius: 5).ToList();
         if(surroundingAgents.Count < 2) return;
         var potentialLeaders = surroundingAgents.Where(agent => !agent.IsInGroup || !agent.IsLeader).ToList();
         if (!potentialLeaders.Any()) return;
@@ -122,31 +120,24 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             var nextCell = new Position(newX, newY);
 
             if (!Layer.IsRoutable(newX, newY) || !Layer.FireLocations.Contains(nextCell)) continue;
+           
+            if (IsInGroup && !IsLeader) return nextCell;
             // If the new direction is opposite to the original heading (180-degree turn), change goals to the south exit
-            if ((int)PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, newX, newY) == 180)
+            if ((int)PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, newX, newY) != 180)
+                return nextCell;
+            if (Layer.FrontStairs.Contains(Goal))
             {
-                if (Layer.Exits.Contains(Goal))
-                {
-                    foreach (var ex in Layer.Exits.Where(ex => !Goal.Equals(ex)))
-                    {
-                        Goal = ex;
-                        break;
-                    }
-                }
-                else if (Layer.FrontStairs.Contains(Goal))
-                {
-                    Goal = FindNearestExit(Layer.BackStairs);
-                }
-                else if (Layer.BackStairs.Contains(Goal))
-                {
-                    Goal = FindNearestExit(Layer.FrontStairs);
-                }
-                else
-                {
-                    Goal = FindNearestExit(Layer.PossibleGoal);
-                }
-                
+                Goal = FindNearestExit(Layer.BackStairs);
             }
+            else if (Layer.BackStairs.Contains(Goal))
+            {
+                Goal = FindNearestExit(Layer.FrontStairs);
+            }
+            else
+            {
+                Goal = FindNearestExit(Layer.Exits);
+            }
+
             return nextCell;
         }
         return position;
@@ -160,18 +151,6 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         return Layer.FireLocations.Contains(target);
     }
     
-    /// <summary>
-    /// Checks if the next cell is occupied by an agent
-    /// </summary>
-    /// <param name="targetPosition"></param>
-    /// <returns></returns>
-    public bool IsCellOccupied(Position targetPosition)
-    {
-        var agents = Layer.EvacueeEnvironment.Entities.MinBy(agent =>
-            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { agent.Position.X, agent.Position.Y }));
-
-        return agents != null && targetPosition.Equals(agents.Position);
-    }
 
     public bool Perception(Position agent1, Position agent2)
     {
@@ -301,16 +280,11 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         helped.FoundHelp = true;
 
     }
-    public void InhaleSmoke()
-    {
-        if (Layer.SmokeLocations.Contains(Position)) Health--;
-    }
-
     public void OfferHelp()
     {
-        if (Helped.Health != 0)
+        if (Helped.Health > 0)
         {
-            Helped.FoundHelp = true;
+            Console.WriteLine($"{GetType().Name} {ID} Has reached {Helped.GetType().Name} {Helped.ID} ");
             Helped.Helper = this;
             Helping = true;
         }
@@ -329,7 +303,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         {
             IsConscious = false; 
         }
-        if (Health != 0) return;
+        if (Health >= 0) return;
         Console.WriteLine($"{GetType().Name} {ID} Has been killed in the simulation");
         Layer.RemoveFromSimulation(this);
     }
@@ -337,27 +311,21 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     #endregion
 
     #region Fields and Properties
-
     public Guid ID { get; set; }
-   
     public Position Position { get; set; }
-
-
     public bool ForgotAnItem { get; set; }
-
     protected static GridLayer Layer;
-    public Position Goal;
+    public Position Goal { get; set; }
     protected static readonly Random Rand = new();
-
     public int RiskLevel { get; set;}
     public List<Evacuee> Group { get; set; }
     public int Aggression { get; set; }
-    public int Health;
+    public int Health { get; set; }
     public bool IsLeader { get; set; }
     public int Speed { get; set; }
     public bool Helping { get; set; }
     public int DelayTime { get; set; }
-    public bool LeaderHasReachedExit;
+    public bool LeaderHasReachedExit { get; set; }
     public Position OriginalPosition { get; set;}
     public bool FoundHelp { get; set; }
     public Evacuee Leader { get; set; }
@@ -365,7 +333,6 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public Evacuee Helped { get; set; }
     public bool IsInGroup;
     public bool FoundExit;
-    public const int MaxSpeed = 1;
     public bool AgentReturningForItem { get; set; }
     public bool ReturningWithGroupForItem { get; set; }
     public bool ReturningWithGroupToHelp { get; set; }
@@ -379,6 +346,5 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public double Strength { get; set; }
     public double Empathy { get; set; }
 
-    public Vector2 _currentVelocity = Vector2.Zero;
     #endregion
 }
