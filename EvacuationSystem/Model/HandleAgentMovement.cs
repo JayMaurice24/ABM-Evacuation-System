@@ -24,8 +24,7 @@ public class HandleAgentMovement
     /// <returns></returns>
     private bool ToMoveOrNotToMove()
     {
-        return _layer.GetCurrentTick() >= 2
-               && _layer.Ring
+        return  _layer.Ring
                && (_evacuee.RiskLevel >= _layer.GetCurrentTick() || _evacuee.Perception(_evacuee.Position, _layer.FireLocations[0]));
     }
 
@@ -46,7 +45,7 @@ public class HandleAgentMovement
     {
         if (_rand.NextDouble() > 0.5)
         {
-            _evacuee.DelayTime = _rand.Next(20, 60);
+            _evacuee.DelayTime = _evacuee.RiskLevel + _rand.Next(20, 60);
             _evacuee.ForgotAnItem = true;
         }
         SetExit();
@@ -62,10 +61,11 @@ public class HandleAgentMovement
 
     private void ChanceOfReturningForItem()
     {
-        if (!(_rand.NextDouble() < 0.5)) return;
+        if (_rand.NextDouble() < 0.5 || _evacuee.FoundDistressedAgent) return;
         _evacuee.Goal = _evacuee.OriginalPosition;
         if(_evacuee.IsInGroup) _group.Update();
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has forgotten an item and is heading back");
+        ModelOutput.NumForget++;
     }
 
     private void UnconsciousEvacuee()
@@ -93,28 +93,20 @@ public class HandleAgentMovement
             {
                 ChanceOfReturningForItem();
             }
-            if (!_evacuee.FoundDistressedAgent)
+            else 
             {
                 Evacuation();
             }
-            else if (_evacuee.ReturningWithGroupToHelp)
-            {
-                HelpingWithGroup();
-            }
-            else
-            {
-                HelpingAlone();
-            }
             
-            _evacuee.UpdateHealthStatus();
         }
+        _evacuee.UpdateHealthStatus();
     }
 
     private void Evacuation()
     {
         if (_evacuee.IsLeader)
         {
-            if(!_evacuee.ReturningWithGroupForItem) _evacuee.FormGroup();
+            if(!_evacuee.ReturningWithGroupForItem || !_evacuee.ReturningWithGroupToHelp) _evacuee.FormGroup();
             _agent.Move();
         }
         else if (_evacuee.IsInGroup)
@@ -132,51 +124,10 @@ public class HandleAgentMovement
         {
             _agent.Move();
         }
-        _evacuee.HelpAgent();
-    }
 
-    private void HelpingWithGroup()
-    {
-        if (_evacuee.IsLeader)
+        if (!_evacuee.FoundDistressedAgent)
         {
-            if (_evacuee.Helping)
-            {
-                _agent.Move();
-            }
-            else if (_evacuee.ReachedDistressedAgent)
-            {
-                _evacuee.OfferHelp();
-            }
-            else
-            {
-                _agent.Move();
-            }
-        }
-        else
-        {
-            _agent.MoveTowardsLeader();
+            _evacuee.HelpAgent();
         }
     }
-
-    private void HelpingAlone()
-    {
-        if (_evacuee.Helping)
-        {
-            _agent.Move();
-        }
-        else
-        {
-            if (_evacuee.ReachedDistressedAgent)
-            {
-                _evacuee.OfferHelp();
-                _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
-            }
-            else
-            {
-                _agent.Move();
-            }
-        }
-    }
-    
-
 }

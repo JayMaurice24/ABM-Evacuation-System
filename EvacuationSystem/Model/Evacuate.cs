@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mars.Common;
-using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Numerics;
 
@@ -62,7 +61,7 @@ public class Evacuate
         }
         if (!_path.MoveNext()) return;
         UpdatePosition(_path.Current);
-        if (_evacuee.LeaderHasReachedExit) _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
+        if (_evacuee.LeaderHasReachedExit){ _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits); return;}
         if (!_evacuee.Position.Equals(_evacuee.Goal)) return;
         if (_layer.Exits.Contains(_evacuee.Goal))
         {
@@ -70,7 +69,7 @@ public class Evacuate
         }
         else
         {
-            FindRoute();
+            _tripInProgress = false;
         }
     }
     private Position AvoidCollision(Position target)
@@ -102,7 +101,7 @@ public class Evacuate
         {
             MoveToCell(newPosition);
         }
-        PrintMovementStatus();
+        PositionOutput();
     }
     
 
@@ -115,7 +114,7 @@ public class Evacuate
         var directionToMove =
             PositionHelper.CalculateBearingCartesian(_evacuee.Position.X, _evacuee.Position.Y, target.X, target.Y);
         _layer.EvacueeEnvironment.MoveTowards(_evacuee, directionToMove, 1);
-        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is being carried by {_evacuee.GetType().Name} {_evacuee.ID}");
+        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has been moved to {_evacuee.Position} (is being carried by {_evacuee.Helper.GetType().Name} {_evacuee.Helper.ID} ");
     }
     
 
@@ -134,7 +133,7 @@ public class Evacuate
     
     private void ToPushOrNotToPush()
     {
-        var otherAgent = GetAgentAt(_evacuee.Position);
+        var otherAgent = GetAgentAt(_path.Current);
 
         switch (_evacuee.Aggression)
         {
@@ -180,28 +179,54 @@ public class Evacuate
     {
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has Found Item and is heading to the exit");
         _evacuee.AgentReturningForItem = false;
-        if(_evacuee.IsInGroup) GroupReturn();
+        if(_evacuee.ReturningWithGroupForItem) GroupReturn();
         _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
-        _tripInProgress = false;
+        FindRoute();
     }
 
     private void ReachedHelplessEvacuee()
     {
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has Reached {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} is heading to the exit");
         _evacuee.ReachedDistressedAgent = true; 
+        _evacuee.OfferHelp();
+        if(_evacuee.ReturningWithGroupToHelp) GroupReturn();
         _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
-        _path = _layer.FindPath(_evacuee.Position, _evacuee.Goal).GetEnumerator();
-        _tripInProgress = false;
+        FindRoute();
     }
 
     private void GroupReturn()
     {
         if (!_evacuee.IsLeader) return;
-        foreach (var agent in _evacuee.Group)
+        if (_evacuee.ReturningWithGroupToHelp)
         {
-            agent.ReturningWithGroupForItem = false;
-            _evacuee.ReturningWithGroupForItem = false;
+            if (_evacuee.Helping)
+            {
+                foreach (var agent in _evacuee.Group)
+                {
+                    agent.Helping = true;
+                }
+            }
+            else
+            {
+                foreach (var agent in _evacuee.Group)
+                {
+                    agent.ReturningWithGroupToHelp = false;
+                    agent.FoundDistressedAgent = false;
+                    agent.Helped = null;
+                }
+
+            }
+           
         }
+        else
+        {
+            foreach (var agent in _evacuee.Group)
+            {
+                agent.ReturningWithGroupForItem = false;
+                _evacuee.ReturningWithGroupForItem = false;
+            }
+        }
+      
     }
 
     private void ExitReached()
@@ -215,6 +240,9 @@ public class Evacuate
                 Console.WriteLine($"{agent.GetType().Name} {agent.ID}'s group leader has reached exit {_evacuee.Goal} and is heading for exit too");
             }
         }
+
+        ModelOutput.NumReachExit++;
+        ModelOutput.NumAgentsLeft--;
         _layer.RemoveFromSimulation(_evacuee);
     }
     private IEnumerable<Evacuee> GetNearByObstacles()
@@ -236,7 +264,7 @@ public class Evacuate
     #region Outputs
     private void PositionOutput()
     {
-        var status = _evacuee.IsLeader ? LeaderOutput() : NonLeaderOutput();
+        var status = !_evacuee.IsInGroup ? SoloOutput() : _evacuee.IsLeader ? LeaderOutput() : NonLeaderOutput();
 
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has moved to cell {_evacuee.Position} {status}");
     }
@@ -262,10 +290,9 @@ public class Evacuate
                 ? "(Is Moving alone)"
                 : "(Is leading group)";
         }
-
         return status;
     }
-    private string NonLeaderOutput()
+    private string SoloOutput()
     {
         string status;
 
@@ -276,7 +303,7 @@ public class Evacuate
         else if (_evacuee.FoundDistressedAgent)
         {
             status = _evacuee.Helping
-                ? $"(Is helping {_evacuee.Helped.GetType()} {_evacuee.Helped.ID} with Group)"
+                ? $"(Is helping {_evacuee.Helped.GetType()} {_evacuee.Helped.ID})"
                 : _evacuee.ReachedDistressedAgent
                     ? $"(Has reached {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} and is now heading exit)"
                     : $"is going to help {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID})";
@@ -289,7 +316,7 @@ public class Evacuate
         return status;
     }
     
-    private void PrintMovementStatus()
+    private string NonLeaderOutput()
     {
         string status;
 
@@ -301,14 +328,16 @@ public class Evacuate
         }
         else if (_evacuee.ReturningWithGroupToHelp)
         {
-            status = $"(Is Helping {_evacuee.Helped.GetType().Name}  {_evacuee.Helped.ID} with group)";
+            status = _evacuee.Helping
+                ? $"(Is Helping {_evacuee.Helped.GetType().Name}  {_evacuee.Helped.ID} with group)"
+                : $"(Is returning to help {_evacuee.Helped.GetType().Name}  {_evacuee.Helped.ID} with group)";
         }
         else
         {
             status = "(Is moving in group)";
         }
 
-        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has moved to cell {_evacuee.Position} {status}");
+        return status;
     }
     #endregion
 

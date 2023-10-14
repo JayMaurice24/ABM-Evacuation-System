@@ -76,10 +76,10 @@ public class HandleGroup
             _evacuee.ReturningWithGroupForItem = false;
             Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to find an item");
         }
+        ModelOutput.NumGroupLeave++;
     }
     private void LeaderChange()
     {
-        if(_evacuee.Group.Count>1){}
         var newLeader = _evacuee.Group.OrderByDescending(agent => agent.Leadership).First();
         newLeader.IsLeader = true;
 
@@ -105,6 +105,7 @@ public class HandleGroup
             _evacuee.ReturningWithGroupForItem = false;
             Console.WriteLine($"Group has been split, {newLeader.GetType().Name} {newLeader.ID} is the new leader");
         }
+        ModelOutput.NumGroupLeave++;
     }
 
     private void CreateNewGroup(List<Evacuee> newGroup)
@@ -118,6 +119,7 @@ public class HandleGroup
                 agent.Leader = null;
                 agent.Goal = agent.FindNearestExit(_layer.Exits);
                 Console.WriteLine($"{agent.GetType().Name} {agent.ID} Has left group and is moving alone");
+                ModelOutput.NumGroupLeave++;
                 break;
             }
             case >= 1:
@@ -135,6 +137,7 @@ public class HandleGroup
 
                 Console.WriteLine(
                     $"Group has been split into two, {newLead.GetType().Name} {newLead.ID} is the second group leader");
+                ModelOutput.NumGroupSplits++;
                 break;
             }
         }
@@ -168,6 +171,7 @@ public class HandleGroup
 
         _evacuee.Group.Clear();
         _evacuee.Group = remainingMembers;
+        if(newGroup.Count < 1) return;
         CreateNewGroup(newGroup);
     }
     private void FollowerUpdate()
@@ -233,6 +237,7 @@ public class HandleGroup
             _evacuee.Leader.ReturningWithGroupForItem = true;
             _evacuee.Leader.Goal = _evacuee.OriginalPosition;
         }
+        if (newGroup.Count<1) return;
         CreateNewGroup(newGroup);
     }
 }

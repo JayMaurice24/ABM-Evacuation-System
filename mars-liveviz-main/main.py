@@ -224,7 +224,7 @@ class Visualization:
                              pygame.Rect((x - self.WORLD_SIZE[0]) * scale_x, (y - self.WORLD_SIZE[1]) * scale_y,
                                          scale_x, scale_y))
                 else:
-                    pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS)],   (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
+                    pygame.draw.circle(surface, AGENT_COLORS[type_key % len(AGENT_COLORS) - 1],   (((x - self.WORLD_SIZE[0]) * scale_x + scale_x / 2),
                                     ((y - self.WORLD_SIZE[1]) * scale_y) + scale_y / 2),
                                    line_width * agent_size, 0)
                     font = pygame.font.Font(None, 15)

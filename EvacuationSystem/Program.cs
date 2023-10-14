@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using EvacuationSystem.Model;
 using Mars.Components.Starter;
@@ -38,17 +39,137 @@ internal static class Program
         
         
         // Load the simulation configuration from a JSON configuration file
-        var file = File.ReadAllText("config.json");
-        var config = SimulationConfig.Deserialize(file);
+        //var file = File.ReadAllText("config.json");
+        //var config = SimulationConfig.Deserialize(file);
+        var config = CreateConfig();
 
+        
         // Couple model description and simulation configuration
         var starter = SimulationStarter.Start(description, config);
-
         // Run the simulation
         var handle = starter.Run();
         
         // Close the program
         Console.WriteLine("Successfully executed iterations: " + handle.Iterations);
         starter.Dispose();
+    }
+    private static SimulationConfig CreateConfig()
+    {
+        var rand = new Random();
+        const int max = 3;
+        var startPoint = DateTime.Now;
+        var config = new SimulationConfig
+        {
+            SimulationIdentifier = "Evacuation System",
+            Globals =
+            {
+                StartPoint = startPoint,
+                EndPoint = startPoint + TimeSpan.FromHours(24),
+                DeltaTUnit = TimeSpanUnit.Seconds,
+                //ShowConsoleProgress = true,
+                LiveVisualization = true,
+                OutputTarget = OutputTargetType.Csv,
+            },
+            LayerMappings = {
+                new LayerMapping
+                {
+                    Name = nameof(GridLayer),
+                    File = "Resources/HTF.csv"
+                }},
+            AgentMappings =
+            {
+                
+                new AgentMapping(){
+                Name = nameof(EvacueeType1),
+                InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType1),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType2),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType3),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType4),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType5),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType6),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType7),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType8),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType9),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType10),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType11),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType12),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType13),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType14),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType15),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType16),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType17),
+                    InstanceCount = rand.Next(1, max),  
+                },
+                new AgentMapping(){
+                    Name = nameof(EvacueeType18),
+                    InstanceCount = rand.Next(1, max), 
+                },
+                new AgentMapping(){
+                    Name = nameof(Fire),
+                    InstanceCount = 1, 
+                },
+                new AgentMapping(){
+                    Name = nameof(Smoke),
+                    InstanceCount = 1, 
+                },
+                new AgentMapping(){
+                    Name = nameof(Alarm),
+                    InstanceCount = 22, 
+                    File = "Resources/AlarmLocations.csv",
+                },
+            }
+        };
+        return config;
     }
 }

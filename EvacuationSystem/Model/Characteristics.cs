@@ -6,26 +6,26 @@ public abstract class Characteristics
 {
         public static int LowRisk()
         {
-            return Rand.Next(1, 4);
+            return Rand.Next(1, 6);
         }
         public static int MediumRisk()
         {
-            return Rand.Next(4, 7);
+            return Rand.Next(5, 11);
         }
 
         public static int HighRisk()
         {
-            return Rand.Next(7, 10);
+            return Rand.Next(10, 16);
         }
 
         public static int LowSpeed()
         {
-            return Rand.Next(3, 5);
+            return Rand.Next(2, 4);
         }
 
         public static int HighSpeed()
         {
-            return Rand.Next(1, 3);
+            return 1;
         }
 
         private static readonly Random Rand = new Random(); 

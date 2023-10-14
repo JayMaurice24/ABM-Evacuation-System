@@ -1,4 +1,4 @@
-{
+json_config = {
   "globals": {
     "startTime": "2023-09-01T05:00",
     "endTime": "2023-09-01T10:00",
@@ -17,89 +17,110 @@
   "agents": [
     {
       "name": "Fire",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "Alarm",
       "count": 22,
-      "file": "Resources/AlarmLocations.csv"
+      "file": "Resources/AlarmLocations.csv",
+      "output": "csv"
     },
     {
       "name": "Smoke",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType1",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType2",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     
     {
       "name": "EvacueeType3",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType4",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType5",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType6",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType7",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType8",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType9",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType10",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType11",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType12",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType13",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType14",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType15",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType16",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType17",
-      "count": 1
+      "count": 1,
+      "output": "csv"
     },
     {
       "name": "EvacueeType18",
-      "count":  1
+      "count":  1,
+      "output": "csv"
     }
   ]
 }

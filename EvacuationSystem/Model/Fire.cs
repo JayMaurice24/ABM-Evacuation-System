@@ -45,13 +45,18 @@ public class Fire : IAgent<GridLayer>, IPositionable
         /// </summary>
         private void HurtAgent ()
         {
-            var agent = _layer.EvacueeEnvironment.Entities.MinBy(agent =>
-                Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray));
-            if (agent == null) return;
-            var targetDistance = (int) Distance.Chebyshev(Position.PositionArray, agent.Position.PositionArray);
-            if (targetDistance <= 2)
+            var nearbyEvacuees = _layer.EvacueeEnvironment.Explore(Position, 1);
+            if (nearbyEvacuees== null) return;
+            foreach (var evacuee in nearbyEvacuees)
             {
-                agent.Health -= 10;
+                if (evacuee.Position.Equals(Position))
+                {
+                    evacuee.Health -= 20;
+                }
+                else
+                {
+                    evacuee.Health -= 10;
+                }
             }
         }
     

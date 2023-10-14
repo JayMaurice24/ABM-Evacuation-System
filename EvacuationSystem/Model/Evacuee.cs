@@ -70,7 +70,14 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             agent.IsInGroup = true;
             agent.Leader = this;
             Group.Add(agent);
+            ModelOutput.NumInGroup++;
             Console.WriteLine($"{agent.GetType().Name} {agent.ID} has joined {GetType().Name} {ID}'s Group");
+        }
+
+        if (!GroupFormed && Group.Count > 1)
+        {
+            ModelOutput.NumberOfGroups++;
+            GroupFormed = true;
         }
     }
     /// <summary>
@@ -86,6 +93,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         if (leader != this) return;
         IsLeader = true;
         IsInGroup = true;
+        ModelOutput.NumInGroup++;
     }
 
     /// <summary>
@@ -104,23 +112,13 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     /// <returns></returns>
     public Position ChangeDirection(Position position)
     {
-        var fire = Layer.FireEnvironment.Entities.MinBy(flame =>
-            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { flame.Position.X, flame.Position.Y }));
-
-        if (fire == null) return position;
-
-        if (!position.Equals(fire.Position))
-        {
-            return position;
-        }
         foreach (var next in Layer.Directions)
         {
             var newX = Position.X + next.X;
             var newY = Position.Y + next.Y;
             var nextCell = new Position(newX, newY);
 
-            if (!Layer.IsRoutable(newX, newY) || !Layer.FireLocations.Contains(nextCell)) continue;
-           
+            if (!Layer.IsRoutable(newX, newY) || AvoidFire(nextCell)) continue;
             if (IsInGroup && !IsLeader) return nextCell;
             // If the new direction is opposite to the original heading (180-degree turn), change goals to the south exit
             if ((int)PositionHelper.CalculateBearingCartesian(Position.X, Position.Y, newX, newY) != 180)
@@ -140,6 +138,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
 
             return nextCell;
         }
+
         return position;
     }
     /// <summary>
@@ -204,6 +203,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             // Move the other agent to the new position
             otherAgent.Position = new Position(newAgentX, newAgentY);
             Layer.EvacueeEnvironment.MoveTo(otherAgent, new Position(newAgentX, newAgentY));
+            ModelOutput.NumberOfAgentsPushed++;
         }
 
     /// <summary>
@@ -244,49 +244,45 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         {
             var group = new HandleGroup(this, Layer);
             group.Update();
-            if (ReturningWithGroupToHelp)
+            switch (ReturningWithGroupToHelp)
             {
-                ReturningWithGroupToHelp = true;
-                if (IsLeader)
-                {
+                case true when IsLeader:
                     Helped = helped;
-                    helped.Helper = this; 
-                    Console.WriteLine($"{GetType().Name}  {ID} is going to help Agent {helped.ID} with group");
-                }
-                else
+                    helped.Helper = this;
+                    foreach (var agent in Group)
+                    {
+                        agent.Helped = helped;
+                    }
+                    break;
+                case true:
                 {
                     foreach (var agent in Leader.Group)
                     {
                         agent.Helped = helped;
-                        Console.WriteLine($"{GetType().Name}  {ID} is going to help Agent {helped.ID} with group");
                     }
-                    
+
+                    break;
                 }
-            }
-            else
-            {
-                Helped = helped;
-                helped.Helper = this;
-                Console.WriteLine($"{GetType().Name}  {ID} is going to help Agent {helped.ID}");
+                default:
+                    Helped = helped;
+                    helped.Helper = this;
+                    break;
             }
         }
         else
         {
             Helped = helped;
             helped.Helper = this;
-            Console.WriteLine($"{GetType().Name}  {ID}is going to help Agent {helped.ID}");
         }
-
-        helped.FoundHelp = true;
 
     }
     public void OfferHelp()
     {
-        if (Helped.Health > 0)
+        if (Layer.EvacueeEnvironment.Entities.Contains(Helped))
         {
-            Console.WriteLine($"{GetType().Name} {ID} Has reached {Helped.GetType().Name} {Helped.ID} ");
-            Helped.Helper = this;
+            Helped.FoundHelp = true;
             Helping = true;
+            ModelOutput.NumFoundHelp++;
         }
         else
         {
@@ -294,18 +290,22 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             FoundDistressedAgent = false;
             Helped = null;
         }
-       
     }
 
     public void UpdateHealthStatus()
     {
-        if (Health <= 5)
+        if (Health <= 5 && IsConscious)
         {
-            IsConscious = false; 
+            IsConscious = false;
+            ModelOutput.NumUnconscious++;
         }
-        if (Health >= 0) return;
+
+        if (Health > 0) return;
         Console.WriteLine($"{GetType().Name} {ID} Has been killed in the simulation");
         Layer.RemoveFromSimulation(this);
+        ModelOutput.NumDeaths++;
+        ModelOutput.NumAgentsLeft--;
+
     }
 
     #endregion
@@ -340,6 +340,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public bool FoundDistressedAgent { get; set; }
     protected double CollaborationFactor { get; set; }
     public double Leadership { get; set; }
+    private bool GroupFormed { get; set; }
     public bool IsConscious { get; set; }
     protected HandleAgentMovement Movement; 
     public bool EvacueeHasStartedMoving { get; set; }
