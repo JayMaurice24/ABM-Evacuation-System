@@ -37,10 +37,6 @@ internal static class Program
         description.AddAgent<Smoke, GridLayer>();
         
         
-        
-        // Load the simulation configuration from a JSON configuration file
-        //var file = File.ReadAllText("config.json");
-        //var config = SimulationConfig.Deserialize(file);
         var config = CreateConfig();
 
         
@@ -56,7 +52,7 @@ internal static class Program
     private static SimulationConfig CreateConfig()
     {
         var rand = new Random();
-        const int max = 3;
+        const int max = 10;
         var startPoint = DateTime.Now;
         var config = new SimulationConfig
         {
@@ -97,11 +93,11 @@ internal static class Program
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType4),
-                    InstanceCount = rand.Next(1, max), 
+                    InstanceCount = rand.Next(1, max),  
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType5),
-                    InstanceCount = rand.Next(1, max),  
+                    InstanceCount = rand.Next(1, max), 
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType6),
@@ -117,7 +113,7 @@ internal static class Program
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType9),
-                    InstanceCount = rand.Next(1, max), 
+                    InstanceCount = rand.Next(1, max),  
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType10),
@@ -133,11 +129,11 @@ internal static class Program
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType13),
-                    InstanceCount = rand.Next(1, max),  
+                    InstanceCount = rand.Next(1, max),   
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType14),
-                    InstanceCount = rand.Next(1, max),  
+                    InstanceCount = rand.Next(1, max), 
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType15),
@@ -145,7 +141,7 @@ internal static class Program
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType16),
-                    InstanceCount = rand.Next(1, max), 
+                    InstanceCount = rand.Next(1, max),  
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType17),

@@ -11,7 +11,7 @@ public class Evacuate
 {
     private readonly Evacuee _evacuee;
     private readonly GridLayer _layer;
-    private bool _tripInProgress;
+    public bool TripInProgress;
     private List<Position>.Enumerator _path;
 
     public Evacuate(Evacuee evacuee, GridLayer layer)
@@ -24,7 +24,7 @@ public class Evacuate
 
     public void Move()
     {
-        if (!_tripInProgress)
+        if (!TripInProgress)
         {
             FindRoute();
         }
@@ -35,7 +35,11 @@ public class Evacuate
         }
         else if (IsCellOccupied(_path.Current))
         {
-            if(!_evacuee.Helping){ToPushOrNotToPush();}
+            if (!_evacuee.Helping)
+            {
+                ToPushOrNotToPush();
+            }
+            MoveToCell(_path.Current);
         }
         else
         {
@@ -53,15 +57,13 @@ public class Evacuate
     #region GroupMovement
     public void MoveTowardsLeader()
     {
-        if (!_evacuee.IsInGroup) return;
-        if (!_tripInProgress)
+        if (!TripInProgress)
         {
-            _evacuee.Goal = _evacuee.Leader.Position;
+            _evacuee.Goal = _evacuee.Leader.Position; 
             FindRoute();
         }
         if (!_path.MoveNext()) return;
         UpdatePosition(_path.Current);
-        if (_evacuee.LeaderHasReachedExit){ _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits); return;}
         if (!_evacuee.Position.Equals(_evacuee.Goal)) return;
         if (_layer.Exits.Contains(_evacuee.Goal))
         {
@@ -69,7 +71,7 @@ public class Evacuate
         }
         else
         {
-            _tripInProgress = false;
+            TripInProgress = false;
         }
     }
     private Position AvoidCollision(Position target)
@@ -121,16 +123,43 @@ public class Evacuate
     private void FindRoute()
     {
         _path = _layer.FindPath(_evacuee.Position, _evacuee.Goal).GetEnumerator();
-        _tripInProgress = true;
+        TripInProgress = true;
     }
 
     private void FireAvoidance()
     {
         var next = _evacuee.ChangeDirection(_path.Current);
         MoveToCell(next);
-        _path = _layer.FindPath(_evacuee.Position, _evacuee.Goal).GetEnumerator();
     }
-    
+
+    public void HandleReturnForItem()
+    {
+        _evacuee.AgentReturningForItem = true;
+        _evacuee.Goal = _evacuee.OriginalPosition;
+        TripInProgress = false; 
+    }
+    public void HandleLeaderReturningForItem(Position target)
+    {
+        _evacuee.AgentReturningForItem = true;
+        _evacuee.Goal = target;
+        TripInProgress = false; 
+    }
+    public void HandleReturnForHelp()
+    {
+        Position nearestCell = null;
+        foreach (var direction in _layer.Directions)
+        {
+            var newX = _evacuee.Helped.Position.X + direction.X;
+            var newY = _evacuee.Helped.Position.Y + direction.Y;
+            nearestCell = new Position(newX, newY);
+
+            if (!_layer.IsRoutable(newX, newY)) continue;
+            _evacuee.Goal = nearestCell;
+        }
+
+        if (nearestCell == null) _evacuee.Goal = _evacuee.Helped.Position;
+        TripInProgress = false;
+    }
     private void ToPushOrNotToPush()
     {
         var otherAgent = GetAgentAt(_path.Current);
@@ -161,27 +190,35 @@ public class Evacuate
       
     private void HandleGoalReached()
     {
-        if (_evacuee.AgentReturningForItem && _evacuee.Goal.Equals(_evacuee.OriginalPosition))
+        if (_layer.Exits.Contains(_evacuee.Goal))
         {
-            ItemFound();
+            ExitReached();
         }
         else if (_evacuee.FoundDistressedAgent)
         {
             ReachedHelplessEvacuee();
         }
-        else if (_layer.Exits.Contains(_evacuee.Goal))
+        else if (_evacuee.AgentReturningForItem)
         {
-            ExitReached();
+            ItemFound();
         }
+        
     }
     
     private void ItemFound()
     {
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has Found Item and is heading to the exit");
-        _evacuee.AgentReturningForItem = false;
-        if(_evacuee.ReturningWithGroupForItem) GroupReturn();
-        _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
-        FindRoute();
+        switch (_evacuee.ReturningWithGroupForItem)
+        { 
+            case true:
+                GroupReturn();
+                break;
+            default:
+                _evacuee.AgentReturningForItem = false;
+                _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
+                TripInProgress = false;
+                break;
+        }
     }
 
     private void ReachedHelplessEvacuee()
@@ -189,9 +226,23 @@ public class Evacuate
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has Reached {_evacuee.Helped.GetType().Name} {_evacuee.Helped.ID} is heading to the exit");
         _evacuee.ReachedDistressedAgent = true; 
         _evacuee.OfferHelp();
-        if(_evacuee.ReturningWithGroupToHelp) GroupReturn();
+        switch (_evacuee.ReturningWithGroupToHelp)
+        {
+            case true:
+                GroupReturn();
+                break;
+            default:
+                _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
+                TripInProgress = false;
+                break;
+        }
+        
+    }
+
+    public void HandleGroupLeave()
+    {
         _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
-        FindRoute();
+        TripInProgress = false;
     }
 
     private void GroupReturn()
@@ -216,34 +267,37 @@ public class Evacuate
                 }
 
             }
-           
         }
         else
         {
             foreach (var agent in _evacuee.Group)
             {
                 agent.ReturningWithGroupForItem = false;
-                _evacuee.ReturningWithGroupForItem = false;
             }
+            _evacuee.ReturningWithGroupForItem = false;
+            _evacuee.AgentReturningForItem = false; 
         }
-      
+        _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
+        TripInProgress = false;
     }
 
     private void ExitReached()
     {
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has reached exit {_evacuee.Goal}");
-        if (_evacuee.IsLeader)
+        if (_evacuee.IsLeader && _evacuee.IsInGroup)
         {
             foreach (var agent in _evacuee.Group)
             {
                 agent.LeaderHasReachedExit = true;
+                agent.Goal = _evacuee.Goal;
+                agent.Movement.Agent.TripInProgress = false;
                 Console.WriteLine($"{agent.GetType().Name} {agent.ID}'s group leader has reached exit {_evacuee.Goal} and is heading for exit too");
             }
         }
 
         ModelOutput.NumReachExit++;
         ModelOutput.NumAgentsLeft--;
-        _layer.RemoveFromSimulation(_evacuee);
+        _evacuee.RemoveFromSimulation();
     }
     private IEnumerable<Evacuee> GetNearByObstacles()
     {
@@ -322,9 +376,7 @@ public class Evacuate
 
         if (_evacuee.ReturningWithGroupForItem)
         {
-            status = _evacuee.AgentReturningForItem
-                ? "(Is returning for item with group)"
-                : "(Group member forgot Item & Member is returning with them)";
+            status = "(Is returning for item with group)";
         }
         else if (_evacuee.ReturningWithGroupToHelp)
         {

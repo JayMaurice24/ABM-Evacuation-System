@@ -22,7 +22,7 @@ public class EvacueeType15: Evacuee
         CollaborationFactor = Rand.NextDouble();
         Health = Rand.Next(30, 100);
         Strength = Rand.NextDouble();
-        IsConscious = true; ;
+        IsConscious = true;
         Group = new List<Evacuee>();
         Leader = null;
         Helped = null;

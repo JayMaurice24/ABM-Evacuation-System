@@ -5,17 +5,17 @@ namespace EvacuationSystem.Model;
 public class HandleAgentMovement
 {
     private readonly Evacuee _evacuee;
-    private readonly Evacuate _agent;
-    private readonly HandleGroup _group;
+    public readonly Evacuate Agent;
+    public readonly HandleGroup Group;
     private readonly GridLayer _layer;
-    private readonly Random _rand = new Random();
+    private readonly Random _rand = new();
 
     public HandleAgentMovement(Evacuee evacuee, GridLayer layer)
     {
         _evacuee = evacuee;
         _layer = layer;
-        _agent = new Evacuate(evacuee, layer);
-        _group = new HandleGroup(evacuee, layer);
+        Agent = new Evacuate(evacuee, layer);
+        Group = new HandleGroup(evacuee, layer);
         
     }
      /// <summary>
@@ -25,7 +25,7 @@ public class HandleAgentMovement
     private bool ToMoveOrNotToMove()
     {
         return  _layer.Ring
-               && (_evacuee.RiskLevel >= _layer.GetCurrentTick() || _evacuee.Perception(_evacuee.Position, _layer.FireLocations[0]));
+               && (_evacuee.RiskLevel >= (int)_layer.GetCurrentTick() || _evacuee.Perception(_evacuee.Position, _layer.FireLocations[0]));
     }
 
      /// <summary>
@@ -56,15 +56,21 @@ public class HandleAgentMovement
     {
         _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has started evacuating");
-        _evacuee.FoundExit = true;
     }
 
     private void ChanceOfReturningForItem()
     {
         if (_rand.NextDouble() < 0.5 || _evacuee.FoundDistressedAgent) return;
-        _evacuee.Goal = _evacuee.OriginalPosition;
-        if(_evacuee.IsInGroup) _group.Update();
-        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has forgotten an item and is heading back");
+        
+        switch (_evacuee.IsInGroup)
+        {
+            case true:
+                Group.Update();
+                break;
+            default:
+                Agent.HandleReturnForItem();
+                break;
+        }
         ModelOutput.NumForget++;
     }
 
@@ -72,7 +78,7 @@ public class HandleAgentMovement
     {
         if (_evacuee.FoundHelp)
         {
-            _agent.MoveWithHelp();
+            Agent.MoveWithHelp();
         }
         else
         { 
@@ -107,22 +113,22 @@ public class HandleAgentMovement
         if (_evacuee.IsLeader)
         {
             if(!_evacuee.ReturningWithGroupForItem || !_evacuee.ReturningWithGroupToHelp) _evacuee.FormGroup();
-            _agent.Move();
+            Agent.Move();
         }
         else if (_evacuee.IsInGroup)
         {
-            if (!_evacuee.LeaderHasReachedExit)
+            if (_evacuee.LeaderHasReachedExit)
             {
-                _agent.MoveTowardsLeader();
+                Agent.Move();
             }
             else
             {
-                _agent.Move();
+                Agent.MoveTowardsLeader();
             }
         }
         else
         {
-            _agent.Move();
+            Agent.Move();
         }
 
         if (!_evacuee.FoundDistressedAgent)

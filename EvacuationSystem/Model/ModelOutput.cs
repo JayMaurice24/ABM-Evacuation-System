@@ -5,7 +5,7 @@ namespace EvacuationSystem.Model;
 public class ModelOutput
 {
     private readonly GridLayer _layer;
-    readonly StreamWriter _output = new StreamWriter("tickOutput.txt");
+    readonly StreamWriter _output = new("tickOutput.txt");
     public ModelOutput( GridLayer layer)
     {
         _layer = layer; 
@@ -37,7 +37,8 @@ public class ModelOutput
         _output.WriteLine($"Number of Agents Moving alone : {NumberOfAgents - NumInGroup}");
         _output.WriteLine($"Number of agents still in simulation: {NumAgentsLeft}");
         _output.WriteLine($"Number of groups formed: {NumberOfGroups}");
-        _output.WriteLine($"Number of agents who forgotten an item :{NumForget}");
+        _output.WriteLine($"Number of agents who forgot an item :{NumForget}");
+        _output.WriteLine($"Number of agents who forgot an item and is in group:{NumberRet}");
         _output.WriteLine($"Number of agents pushed : {NumberOfAgentsPushed}");
         _output.WriteLine($"Number of unconscious agents :  {NumUnconscious}");
         _output.WriteLine($"Number of agents who found help: {NumFoundHelp}");
@@ -48,11 +49,13 @@ public class ModelOutput
     }
     public static int NumberOfAgents { get; set; }
     public static int NumberOfGroups { get; set; }
+    public static int NumberRet { get; set; }
     public static int NumberOfAgentsPushed { get; set; }
     public static int NumGroupReturns { get; set; }
     public static int NumForget { get; set; }
     public static int NumAgentsLeft { get; set; }
     public static int NumInGroup { get; set; }
+    public static int NumHeadingForExit{ get; set; }
     public static int NumReachExit { get; set; }
     public static int NumUnconscious { get; set; }
     public static int NumDeaths { get; set; }

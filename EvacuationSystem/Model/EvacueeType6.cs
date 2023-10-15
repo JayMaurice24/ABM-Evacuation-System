@@ -27,6 +27,7 @@ public class EvacueeType6 : Evacuee
         Leader = null;
         Helped = null;
         Helper = null;
+        IsConscious = true;
         Movement = new HandleAgentMovement(this, layer);
         Layer.EvacueeEnvironment.Insert(this);
     }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Mars.Common.Core.Random;
 using Mars.Components.Environments;
@@ -9,7 +8,6 @@ using Mars.Core.Data;
 using Mars.Interfaces.Data;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
-using ServiceStack;
 
 namespace EvacuationSystem.Model;
 
@@ -105,12 +103,6 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
             default:
                 return false;
         }
-    }
-    public void RemoveFromSimulation(Evacuee agent)
-    {
-        if (agent == null) return;
-        EvacueeEnvironment.Remove(agent);
-        //UnregisterAgentHandle.Invoke(this, agent);
     }
     public Position FindRandomPosition()
     {

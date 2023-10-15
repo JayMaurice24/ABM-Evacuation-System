@@ -4,6 +4,7 @@ using System.Linq;
 using Mars.Common;
 using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
+using Mars.Interfaces.Layers;
 using Mars.Numerics;
 
 namespace EvacuationSystem.Model;
@@ -20,7 +21,6 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public virtual void Init(GridLayer layer)
     { 
         Layer = layer;
-
     }
 
     #endregion
@@ -74,11 +74,10 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             Console.WriteLine($"{agent.GetType().Name} {agent.ID} has joined {GetType().Name} {ID}'s Group");
         }
 
-        if (!GroupFormed && Group.Count > 1)
-        {
-            ModelOutput.NumberOfGroups++;
-            GroupFormed = true;
-        }
+        if (IsInGroup || Group.Count < 1) return;
+        ModelOutput.NumberOfGroups++;
+        ModelOutput.NumInGroup++;
+        IsInGroup = true;
     }
     /// <summary>
     /// Identifies if an agent can lead a group
@@ -92,8 +91,6 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         var leader = potentialLeaders.OrderByDescending(agent => agent.Leadership).First();
         if (leader != this) return;
         IsLeader = true;
-        IsInGroup = true;
-        ModelOutput.NumInGroup++;
     }
 
     /// <summary>
@@ -150,7 +147,10 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         return Layer.FireLocations.Contains(target);
     }
     
-
+    public void RemoveFromSimulation()
+    {  Layer.EvacueeEnvironment.Remove(this);
+        UnregisterAgentHandle.Invoke(Layer, this);
+    }
     public bool Perception(Position agent1, Position agent2)
     {
         switch (agent1.X)
@@ -204,6 +204,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             otherAgent.Position = new Position(newAgentX, newAgentY);
             Layer.EvacueeEnvironment.MoveTo(otherAgent, new Position(newAgentX, newAgentY));
             ModelOutput.NumberOfAgentsPushed++;
+            otherAgent.Movement.Agent.TripInProgress = false;
         }
 
     /// <summary>
@@ -215,66 +216,26 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
 
     private Evacuee FindAgentsInNeed()
     {
-        var nearbyAgents = Layer.EvacueeEnvironment.Explore(Position, radius: 10).ToList();
-        return nearbyAgents.FirstOrDefault(agent => !agent.IsConscious && Perception(Position, agent.Position));
+        return Layer.EvacueeEnvironment.Entities.FirstOrDefault(agent => !agent.IsConscious && Perception(Position, agent.Position));
     }
     public void HelpAgent()
     {
-        if (Health <= 50 || !(Empathy > 0.5) || !(Strength > 0.5)) return;
+        if (Health <= 30 || !(Empathy > 0.5) || !(Strength > 0.5)) return;
         var helped = FindAgentsInNeed();
         if (helped is not { Helper: null }) return;
-        if (Layer.IsRoutable(helped.Position.X + 1, helped.Position.Y))
-        {
-            Goal = new Position(helped.Position.X + 1, helped.Position.Y);
-        }
-        else if (Layer.IsRoutable(helped.Position.X - 1, helped.Position.Y))
-        {
-            Goal = new Position(helped.Position.X + 1, helped.Position.Y);
-        }
-        else if (Layer.IsRoutable(helped.Position.X, helped.Position.Y + 1))
-        {
-            Goal = new Position(helped.Position.X, helped.Position.Y + 1);
-        }
-        else
-        {
-            Goal = new Position(helped.Position.X, helped.Position.Y - 1);
-        }
         FoundDistressedAgent = true;
         if (IsInGroup)
         {
-            var group = new HandleGroup(this, Layer);
-            group.Update();
-            switch (ReturningWithGroupToHelp)
-            {
-                case true when IsLeader:
-                    Helped = helped;
-                    helped.Helper = this;
-                    foreach (var agent in Group)
-                    {
-                        agent.Helped = helped;
-                    }
-                    break;
-                case true:
-                {
-                    foreach (var agent in Leader.Group)
-                    {
-                        agent.Helped = helped;
-                    }
-
-                    break;
-                }
-                default:
-                    Helped = helped;
-                    helped.Helper = this;
-                    break;
-            }
+            Helped = helped;
+            Movement.Group.Update();
+            
         }
         else
         {
             Helped = helped;
             helped.Helper = this;
+            Movement.Agent.HandleReturnForHelp();
         }
-
     }
     public void OfferHelp()
     {
@@ -302,10 +263,9 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
 
         if (Health > 0) return;
         Console.WriteLine($"{GetType().Name} {ID} Has been killed in the simulation");
-        Layer.RemoveFromSimulation(this);
+        RemoveFromSimulation();
         ModelOutput.NumDeaths++;
         ModelOutput.NumAgentsLeft--;
-
     }
 
     #endregion
@@ -332,20 +292,19 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public Evacuee Helper { get; set; }
     public Evacuee Helped { get; set; }
     public bool IsInGroup;
-    public bool FoundExit;
+    public UnregisterAgent UnregisterAgentHandle { get; set; }
     public bool AgentReturningForItem { get; set; }
     public bool ReturningWithGroupForItem { get; set; }
     public bool ReturningWithGroupToHelp { get; set; }
     public bool ReachedDistressedAgent { get; set; }
     public bool FoundDistressedAgent { get; set; }
     protected double CollaborationFactor { get; set; }
-    public double Leadership { get; set; }
-    private bool GroupFormed { get; set; }
-    public bool IsConscious { get; set; }
-    protected HandleAgentMovement Movement; 
+    public double Leadership { get; protected set; }
+    public bool IsConscious { get; protected set; }
+    public HandleAgentMovement Movement; 
     public bool EvacueeHasStartedMoving { get; set; }
-    public double Strength { get; set; }
-    public double Empathy { get; set; }
+    public double Strength { get; protected set; }
+    public double Empathy { get; protected set; }
 
     #endregion
 }

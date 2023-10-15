@@ -54,28 +54,19 @@ public class HandleGroup
     
     private void DisbandGroup()
     {
-        foreach (var agent in _evacuee.Group)
-        {
-            agent.IsInGroup = false;
-            agent.Leader = null;
-            agent.Goal = agent.FindNearestExit(_layer.Exits);
-            Console.WriteLine($"{agent.GetType().Name} {agent.ID} Has left the group and is now moving alone");
-        }
+        var agent = _evacuee.Group[0]; 
+        agent.IsInGroup = false;
+        agent.Leader = null;
+        agent.Movement.Agent.HandleGroupLeave();
+        Console.WriteLine($"{agent.GetType().Name} {agent.ID} Has left the group and is now moving alone");
 
         _evacuee.Group.Clear();
         _evacuee.IsInGroup = false;
         _evacuee.IsLeader = false;
 
-        if (_evacuee.FoundDistressedAgent)
-        {
-            _evacuee.ReturningWithGroupToHelp = false;
-            Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to help an agent");
-        }
-        else
-        {
-            _evacuee.ReturningWithGroupForItem = false;
-            Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to find an item");
-        }
+        Console.WriteLine(_evacuee.FoundDistressedAgent
+            ? $"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to help an agent"
+            : $"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to find an item");
         ModelOutput.NumGroupLeave++;
     }
     private void LeaderChange()
@@ -93,18 +84,11 @@ public class HandleGroup
         
         _evacuee.IsLeader = false;
         _evacuee.IsInGroup = false;
-        
 
-        if (_evacuee.FoundDistressedAgent)
-        {
-            _evacuee.ReturningWithGroupToHelp = false;
-            Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to help an agent");
-        }
-        else
-        {
-            _evacuee.ReturningWithGroupForItem = false;
-            Console.WriteLine($"Group has been split, {newLeader.GetType().Name} {newLeader.ID} is the new leader");
-        }
+
+        Console.WriteLine(_evacuee.FoundDistressedAgent
+            ? $"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to help an agent"
+            : $"Group has been split, {newLeader.GetType().Name} {newLeader.ID} is the new leader");
         ModelOutput.NumGroupLeave++;
     }
 
@@ -117,17 +101,17 @@ public class HandleGroup
                 var agent = newGroup[0];
                 agent.IsInGroup = false;
                 agent.Leader = null;
-                agent.Goal = agent.FindNearestExit(_layer.Exits);
+                agent.Movement.Agent.HandleGroupLeave();
                 Console.WriteLine($"{agent.GetType().Name} {agent.ID} Has left group and is moving alone");
                 ModelOutput.NumGroupLeave++;
                 break;
             }
-            case >= 1:
+            case > 1:
             {
                 var newLead = newGroup.OrderByDescending(agent => agent.Leadership).First();
                 newLead.IsLeader = true;
                 newLead.Leader = null;
-                newLead.Goal = newLead.FindNearestExit(_layer.Exits);
+                newLead.Movement.Agent.HandleGroupLeave();
 
                 foreach (var agent in newGroup)
                 {
@@ -155,6 +139,7 @@ public class HandleGroup
                 {
                     agent.ReturningWithGroupToHelp = true;
                     agent.FoundDistressedAgent = true;
+                    agent.Helped = _evacuee.Helped;
                 }
                 else
                 {
@@ -169,8 +154,20 @@ public class HandleGroup
             }
         }
 
-        _evacuee.Group.Clear();
-        _evacuee.Group = remainingMembers;
+        if (remainingMembers.Count > 0)
+        {  _evacuee.Group.Clear();
+            _evacuee.Group = remainingMembers;
+            ModelOutput.NumGroupReturns++;
+        }
+        if (_evacuee.FoundDistressedAgent)
+        {
+            _evacuee.Movement.Agent.HandleReturnForHelp();
+        }
+        else
+        {
+            _evacuee.Movement.Agent.HandleReturnForItem();
+            ModelOutput.NumberRet++;
+        }
         if(newGroup.Count < 1) return;
         CreateNewGroup(newGroup);
     }
@@ -191,7 +188,16 @@ public class HandleGroup
         _evacuee.Leader.Group.Remove(_evacuee);
         _evacuee.Leader = null;
         _evacuee.IsInGroup = false;
-        Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} Has left group and is returning for item alone");
+        if (_evacuee.FoundDistressedAgent)
+        {
+            _evacuee.Movement.Agent.HandleReturnForHelp();
+            Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} Has left group and is returning to assist an agent");
+        }
+        else
+        {
+            _evacuee.Movement.Agent.HandleReturnForItem();
+            Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} Has left group and is returning for item alone");
+        }
     }
 
     private void ToGoAloneOrNotToGoALone()
@@ -207,6 +213,7 @@ public class HandleGroup
                 {
                     agent.ReturningWithGroupToHelp = true;
                     agent.FoundDistressedAgent = true;
+                    agent.Helped = _evacuee.Helped;
                 }
                 else
                 {
@@ -220,22 +227,26 @@ public class HandleGroup
                 newGroup.Add(agent);
             }
         }
-
-        _evacuee.Leader.Group.Clear();
-        _evacuee.Leader.Group = remainingMembers;
-
         if (_evacuee.Leader == null) return;
-
+        if (remainingMembers.Count > 0)
+        {   _evacuee.Leader.Group.Clear();
+            _evacuee.Leader.Group = remainingMembers;
+            ModelOutput.NumGroupReturns++;
+        }
         if (_evacuee.FoundDistressedAgent)
         {
             _evacuee.Leader.ReturningWithGroupToHelp = true;
             _evacuee.Leader.FoundDistressedAgent = true;
+            _evacuee.Leader.Helped = _evacuee.Helped;
             _evacuee.ReturningWithGroupToHelp = true;
+            _evacuee.Helped.Helper = _evacuee.Leader;
+            _evacuee.Leader.Movement.Agent.HandleReturnForHelp();
         }
         else
         {
             _evacuee.Leader.ReturningWithGroupForItem = true;
-            _evacuee.Leader.Goal = _evacuee.OriginalPosition;
+            _evacuee.Leader.Movement.Agent.HandleLeaderReturningForItem(_evacuee.OriginalPosition);
+            ModelOutput.NumberRet++;
         }
         if (newGroup.Count<1) return;
         CreateNewGroup(newGroup);

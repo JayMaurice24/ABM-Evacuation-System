@@ -24,7 +24,6 @@ public class EvacueeType11: Evacuee
         DelayTime = Rand.Next(30, 60);
         Strength = Rand.NextDouble();
         IsConscious = true;
-        IsConscious = true;
         Group = new List<Evacuee>();
         Leader = null;
         Helped = null;
