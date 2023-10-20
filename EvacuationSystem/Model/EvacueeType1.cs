@@ -9,14 +9,18 @@ public class EvacueeType1 : Evacuee
 {
     #region Init
 
+    /// <summary>
+    /// Initialisation Method of the evacuee type, this is where the properties are defined before as the instance is spawned
+    /// </summary>
     public override void Init(GridLayer layer)
     {
         Layer = layer;
-        OriginalPosition = Layer.FindRandomPosition();
-        Position = OriginalPosition;
+        Position =  Layer.FindRandomPosition();
         RiskLevel = Characteristics.LowRisk();
-        Speed = Characteristics.LowSpeed();
+        Mobility = Characteristics.LowSpeed();
         Aggression = 0;
+        var x = Position.X;
+        var y = Position.Y;
         Leadership = Rand.NextDouble();
         Empathy = Rand.NextDouble();
         CollaborationFactor = Rand.NextDouble();
@@ -27,7 +31,7 @@ public class EvacueeType1 : Evacuee
         Leader = null;
         Helped = null;
         Helper = null;
-        Movement = new HandleAgentMovement(this, layer);
+        Movement = new HandleAgentMovement(this, layer, x, y);
         Layer.EvacueeEnvironment.Insert(this);
     }
 

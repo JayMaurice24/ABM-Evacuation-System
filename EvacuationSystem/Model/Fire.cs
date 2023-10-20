@@ -41,7 +41,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
     #endregion
         #region Methods
         /// <summary>
-        /// Spreads fire across a radius 
+        /// Causes damage to agents 
         /// </summary>
         private void HurtAgent ()
         {
@@ -51,7 +51,8 @@ public class Fire : IAgent<GridLayer>, IPositionable
             {
                 if (evacuee.Position.Equals(Position))
                 {
-                    evacuee.Health -= 20;
+                    evacuee.RemoveFromSimulation();
+                    ModelOutput.WriteCasDetails(evacuee);
                 }
                 else
                 {

@@ -6,7 +6,7 @@ public abstract class Characteristics
 {
         public static int LowRisk()
         {
-            return Rand.Next(1, 6);
+            return Rand.Next(0, 6);
         }
         public static int MediumRisk()
         {
@@ -20,7 +20,7 @@ public abstract class Characteristics
 
         public static int LowSpeed()
         {
-            return Rand.Next(2, 4);
+            return 2;
         }
 
         public static int HighSpeed()

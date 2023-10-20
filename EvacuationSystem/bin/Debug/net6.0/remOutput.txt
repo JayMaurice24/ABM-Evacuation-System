@@ -1,0 +1,477 @@
+Tick 232
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 71), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (88, 29), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (82, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (87, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 66), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (78, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (74, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 69), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 233
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 72), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (88, 29), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (82, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (87, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 66), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (78, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (74, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 69), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 234
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 73), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (57, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (87, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (81, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (86, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 67), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (77, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (75, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 70), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 235
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 74), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (57, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (87, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (81, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (86, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 67), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (77, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (75, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 70), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 236
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 75), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (86, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (80, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (85, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 68), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (76, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (75, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 71), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 237
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 76), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (86, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (80, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (85, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 68), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (76, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (75, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 71), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 238
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 76), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (57, 71), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (85, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (79, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (84, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 69), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (75, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (76, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (58, 72), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 239
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 77), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (57, 71), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (85, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (79, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (84, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (54, 69), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType7, 76a9751f-5763-4540-99a3-5a243ec10db0, (74, 30), (75, 30), (108, 46), True, True, 8, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (76, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (58, 72), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 240
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 77), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 70), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (84, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (78, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (83, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (55, 70), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (76, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (59, 72), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 241
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 78), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 70), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (84, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (78, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (83, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (55, 70), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (76, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (59, 72), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 242
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 79), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (59, 71), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (83, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (77, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (82, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 71), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (77, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (60, 72), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 243
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 80), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (59, 71), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (83, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (77, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (82, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 71), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (77, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (60, 72), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 244
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 81), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (59, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (82, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (76, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (81, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (57, 70), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (77, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 73), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 245
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 82), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (59, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (82, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (76, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (81, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (57, 70), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (77, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 73), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 246
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 82), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (60, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (81, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (75, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (80, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (57, 71), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (78, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 74), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 247
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (63, 83), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (60, 72), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (81, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType13, 7eed3587-db7e-4433-bb91-217dae79ab44, (74, 30), (75, 30), (98, 64), True, True, 15, 2, False, False, False, False, True, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (80, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (57, 71), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (78, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 74), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 248
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (62, 83), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 73), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (80, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (79, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (58, 72), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (78, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 75), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 249
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (61, 84), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 73), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (80, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (79, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (58, 72), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (78, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 75), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 250
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (60, 84), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 74), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (79, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (78, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (59, 72), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (79, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 74), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 251
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (59, 84), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 74), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (79, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (78, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (59, 72), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (79, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 74), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 252
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 83), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 75), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (78, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (77, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (60, 71), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (79, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 75), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 253
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 82), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 75), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (78, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (77, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (60, 71), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (79, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 75), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 254
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 81), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 76), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (77, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (76, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (60, 72), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (80, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 76), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 255
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 80), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 76), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (77, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (76, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (60, 72), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (80, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 76), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 256
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 79), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 76), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (76, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (75, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 73), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (81, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (63, 77), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 257
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 78), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 76), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (76, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 7c8c447b-9987-4c69-8dee-c90f4e958a9a, (74, 30), (75, 30), (56, 46), True, True, 0, 2, False, True, False, True, True, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 73), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (81, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (63, 77), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 258
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 77), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 77), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (75, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 74), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (82, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (63, 78), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 259
+EvacueeType18, 44ebbb00-6bf6-4f25-ab78-02e368ad0ace, (58, 75), (58, 76), (102, 86), True, True, 11, 1, False, True, False, False, False, False
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 77), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType13, 3ce6f1b1-8037-4c07-adfb-d919a55fafb0, (74, 30), (75, 30), (79, 34), True, True, 11, 2, False, True, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 74), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (82, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (63, 78), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 260
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 78), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 75), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (82, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (63, 79), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 261
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 78), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 75), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (82, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (63, 79), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 262
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 79), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 75), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (83, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 80), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 263
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 79), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 75), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (83, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 80), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 264
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 79), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 76), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (83, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 80), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 265
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 79), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 76), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (83, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 80), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 266
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 80), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 77), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (84, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 81), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 267
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 80), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 77), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (84, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 81), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 268
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 81), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (63, 77), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (84, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 81), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 269
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 81), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (63, 77), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (84, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 81), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 270
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 81), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (63, 78), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (85, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 82), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 271
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 81), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (63, 78), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (85, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (62, 82), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 272
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (63, 82), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (63, 79), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (85, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 82), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 273
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (63, 82), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (63, 79), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (85, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 82), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 274
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 83), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 78), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (86, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 83), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 275
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (62, 83), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 78), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (86, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (61, 83), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 276
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 84), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 79), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (86, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (60, 84), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 277
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (61, 84), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 79), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (86, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (60, 84), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 278
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (60, 85), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 80), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (87, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (59, 85), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 279
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (60, 85), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 80), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (87, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (59, 85), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 280
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (60, 84), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 81), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (87, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (58, 84), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 281
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (60, 84), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 81), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (87, 26), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (58, 84), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 282
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (59, 84), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 82), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (88, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 83), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 283
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (59, 84), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 82), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (88, 27), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 83), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 284
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 83), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 83), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (89, 28), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 82), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 285
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 83), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 83), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (89, 28), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 82), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 286
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 82), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (88, 29), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 81), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 287
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (58, 82), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (62, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (88, 29), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 81), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 288
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (57, 81), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 83), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (87, 29), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 80), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 289
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (57, 81), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 83), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (87, 29), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 80), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 290
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 80), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (86, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 79), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 291
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 80), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (61, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (86, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 79), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 292
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 79), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (60, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (85, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 79), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 293
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 79), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (60, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (85, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 79), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 294
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 78), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (59, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (84, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 78), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 295
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 78), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (59, 84), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (84, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (57, 78), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 296
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 77), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (58, 83), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (83, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 77), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 297
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 77), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (58, 83), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (83, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 77), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 298
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 76), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (57, 82), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (82, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 76), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 299
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 76), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (57, 82), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (82, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+EvacueeType8, 1d9e6420-6c7f-44f1-a492-001ed6feaa0c, (56, 75), (56, 76), (17, 81), True, True, 6, 2, False, False, False, False, False, False
+Tick 300
+EvacueeType2, 8f6343a4-2910-4382-91bc-74bf99204aed, (56, 75), (56, 75), (1, 80), True, True, 1, 2, False, False, False, False, False, False
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 81), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (81, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 301
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 81), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (81, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 302
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 80), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (80, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 303
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 80), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (80, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 304
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 79), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (79, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 305
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 79), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (79, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 306
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 78), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (78, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 307
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 78), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (78, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 308
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 77), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (77, 30), (115, 80), True, True, 2, 2, False, False, False, False, False, False
+Tick 309
+EvacueeType1, 618b08f4-8b98-4c0f-bbcc-76c6bc046573, (56, 75), (56, 77), (7, 85), True, True, 3, 2, False, False, False, False, False, False
+EvacueeType1, 3ca33084-a2e4-4507-a42d-2a730ae6ef66, (74, 30), (77, 30), (115, 80), True,

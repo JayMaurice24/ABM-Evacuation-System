@@ -91,7 +91,12 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     /// <param name="y">y-coordinate of grid cell</param>
     /// <returns>Boolean representing if (x,y) is accessible</returns>
     public override bool IsRoutable(int x, int y) => this[x, y] == 0;
-
+    /// <summary>
+    /// Areas where agents should not be spawned 
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <returns></returns>
     private bool NoSpawn(int x, int y)
     {
         switch (x)
@@ -99,11 +104,18 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
             case > 1 and < 14 when y is < 50 and > 45:
             case > 77 and < 86 when y is < 50 and > 36:
             case > 73 and < 94 when y is < 25 and > 19:
+            case > 56 and < 65 when y is > 68 and < 88:
+            case > 73 and < 95 when y is > 25 and < 31:
                 return true;
             default:
                 return false;
         }
     }
+    
+    /// <summary>
+    /// finds a random position to spawn the agent
+    /// </summary>
+    /// <returns></returns>
     public Position FindRandomPosition()
     {
         var random = RandomHelper.Random;
@@ -121,6 +133,11 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
         return Position.CreatePosition(x, y); 
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="coordinate"></param>
+    /// <returns></returns>
     public string Room(Position coordinate)
     {
         return coordinate.X switch
@@ -210,11 +227,9 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     private void SpreadFireAndSmoke()
     {
         Smokes.AddRange(AgentManager.Spawn<Smoke, GridLayer>().ToList()); 
-        if (GetCurrentTick() % _spreadFire != 0) return;
+        if (GetCurrentTick() % SpreadRate != 0) return;
         Fires.AddRange(AgentManager.Spawn<Fire, GridLayer>().ToList());
-        _spreadFire = Rand.Next(1, 10);
     }
-    
     
     public Position SetSmokeOrFirePosition(int x)
     {
@@ -262,24 +277,15 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
    
     #region Fields and Properties
 
-    /// <summary>
-    ///     The environment of the SimpleAgent agents
-    /// </summary>
-    
     public List<Position> Exits { get; private set; }
     public List<Position> FrontStairs { get; private set; }
     public List<Position> BackStairs { get; private set; }
-
-    /// <summary>
-    ///     The environment of the ComplexAgent agents
-    /// </summary>
     public SpatialHashEnvironment<Evacuee> EvacueeEnvironment { get; private set; }
     public SpatialHashEnvironment<Fire> FireEnvironment { get; private set; }
     public SpatialHashEnvironment<Smoke> SmokeEnvironment { get; set; }
     public SpatialHashEnvironment<Alarm> AlarmEnvironment { get; set; }
- 
     public List<Fire> Fires { get; private set; }
-    public List<Position> Directions { get; private set; }
+   
     public List<Smoke> Smokes { get; private set; }
     public List<Alarm> Alarms { get; private set; }
     internal List<EvacueeType1> Agent1 { get; set; }
@@ -300,6 +306,7 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     internal List<EvacueeType16> Agent16 { get; set; }
     internal List<EvacueeType17> Agent17 { get; set; }
     internal List<EvacueeType18> Agent18 { get; set; }
+    public List<Position> Directions { get; private set; }
     public List<Position> FireLocations { get; set; } = new List<Position>();
     public List<Position> SmokeLocations { get; set; } = new List<Position>();
     protected UnregisterAgent UnregisterAgentHandle { get; set; }
@@ -307,8 +314,7 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     private static readonly Random Rand = new Random();
     private IAgentManager AgentManager { get; set; }
     private ModelOutput _output;
-    public bool SeeFire { get; set; }
-    private int _spreadFire;
+    public int SpreadRate { get; set;}
     public bool FireStarted { get; set; }
     public bool SmokeSpread { get; set; }
     public bool Ring { get; set; }
@@ -320,7 +326,7 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
         Console.WriteLine($"Tick {GetCurrentTick()}");
         Console.WriteLine($"Number of total agents: {ModelOutput.NumberOfAgents}");
         Console.WriteLine($"Number of agents who reached exit: {ModelOutput.NumReachExit}");
-        Console.WriteLine($"Number of agents still in simulation: {ModelOutput.NumAgentsLeft}");
+        Console.WriteLine($"Number of agents still in simulation: {EvacueeEnvironment.Entities.Count()}");
         _output.Write();
         switch (FireStarted)
         {
@@ -331,16 +337,18 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
                 SpreadFireAndSmoke();
                 break;
         }
-    }
-
-    public void PreTick()
-    {
-        _spreadFire = Rand.Next(1,10);
+        if(EvacueeEnvironment.Entities.Count()< 10){ModelOutput.WriteRemDetails();}
+        if (EvacueeEnvironment.Entities.Any()) return;
+        SmokeEnvironment.Reset();FireEnvironment.Reset();AlarmEnvironment.Reset();
     }
 
     public void PostTick()
     {
         //do nothing
+    }
+    public void PreTick()
+    {
+        SpreadRate = Rand.Next(1,5);
     }
 }
 

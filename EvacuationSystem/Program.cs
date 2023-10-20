@@ -6,7 +6,6 @@ using Mars.Components.Starter;
 using Mars.Interfaces.Model;
 
 namespace EvacuationSystem;
-
 internal static class Program
 {
     private static void Main()
@@ -74,90 +73,110 @@ internal static class Program
                 }},
             AgentMappings =
             {
-                
                 new AgentMapping(){
                 Name = nameof(EvacueeType1),
                 InstanceCount = rand.Next(1, max), 
+                OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType1),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType2),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType3),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType4),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType5),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType6),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType7),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType8),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType9),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType10),
-                    InstanceCount = rand.Next(1, max), 
+                    InstanceCount = rand.Next(1, max),
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType11),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType12),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType13),
                     InstanceCount = rand.Next(1, max),   
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType14),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType15),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType16),
-                    InstanceCount = rand.Next(1, max),  
+                    InstanceCount = rand.Next(1, max),
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType17),
                     InstanceCount = rand.Next(1, max),  
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(EvacueeType18),
                     InstanceCount = rand.Next(1, max), 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(Fire),
                     InstanceCount = 1, 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(Smoke),
                     InstanceCount = 1, 
+                    OutputTarget = OutputTargetType.Csv,
                 },
                 new AgentMapping(){
                     Name = nameof(Alarm),

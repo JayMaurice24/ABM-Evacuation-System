@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Mars.Interfaces.Environments;
 
 namespace EvacuationSystem.Model;
 
@@ -9,14 +11,17 @@ public class HandleAgentMovement
     public readonly HandleGroup Group;
     private readonly GridLayer _layer;
     private readonly Random _rand = new();
+    private readonly List<double> _coords = new();
 
-    public HandleAgentMovement(Evacuee evacuee, GridLayer layer)
+    public HandleAgentMovement(Evacuee evacuee, GridLayer layer, double x, double y)
     {
         _evacuee = evacuee;
         _layer = layer;
         Agent = new Evacuate(evacuee, layer);
         Group = new HandleGroup(evacuee, layer);
-        
+        _coords.Add(x);
+        _coords.Add(y);
+
     }
      /// <summary>
     /// Determines if An Agent can start moving
@@ -25,7 +30,7 @@ public class HandleAgentMovement
     private bool ToMoveOrNotToMove()
     {
         return  _layer.Ring
-               && (_evacuee.RiskLevel >= (int)_layer.GetCurrentTick() || _evacuee.Perception(_evacuee.Position, _layer.FireLocations[0]));
+               && (_evacuee.RiskLevel < (int)_layer.GetCurrentTick() || _evacuee.Perception(_evacuee.Position, _layer.FireLocations[0]));
     }
 
      /// <summary>
@@ -51,17 +56,34 @@ public class HandleAgentMovement
         SetExit();
         _evacuee.DetermineLeader();
     }
-
+    /// <summary>
+    /// Sets the 
+    /// </summary>
     private void SetExit()
     {
-        _evacuee.Goal = _evacuee.FindNearestExit(_layer.Exits);
+        _evacuee.Goal = ExitWithNoFire();
         Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} has started evacuating");
     }
-
+/// <summary>
+/// Sets an agent's position to an exit with no fire
+/// </summary>
+/// <returns></returns>
+    public Position ExitWithNoFire()
+    {
+        var fireStartLocation = _layer.FireLocations[0];
+        return fireStartLocation.X switch
+        {
+            > 56 and < 65 when fireStartLocation.Y is > 68 and < 88 => _evacuee.FindNearestExit(_layer.BackStairs),
+            > 73 and < 95 when fireStartLocation.Y is > 25 and < 31 => _evacuee.FindNearestExit(_layer.FrontStairs),
+            _ => _evacuee.FindNearestExit(_layer.Exits)
+        };
+    }
+    /// <summary>
+    /// Determines the evacuee's chance of returning for an item
+    /// </summary>
     private void ChanceOfReturningForItem()
     {
-        if (_rand.NextDouble() < 0.5 || _evacuee.FoundDistressedAgent) return;
-        
+        if (_evacuee.ProbabilityOfSuccess(OriginalPosition()) < 0.5 || _evacuee.FoundDistressedAgent) return;
         switch (_evacuee.IsInGroup)
         {
             case true:
@@ -73,7 +95,9 @@ public class HandleAgentMovement
         }
         ModelOutput.NumForget++;
     }
-
+    /// <summary>
+    /// Determines the flow of an unconscious evacuee
+    /// </summary>
     private void UnconsciousEvacuee()
     {
         if (_evacuee.FoundHelp)
@@ -85,10 +109,12 @@ public class HandleAgentMovement
             Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} is Unconscious at cell {_evacuee.Position}");
         }
     }
-
+    /// <summary>
+    /// Handles how the evacuee should move
+    /// </summary>
     public void IsMoving()
     {
-        if ((int)_layer.GetCurrentTick() % _evacuee.Speed != 0) return;
+        if ((int)_layer.GetCurrentTick() % _evacuee.Mobility != 0) return;
         if (!_evacuee.IsConscious)
         {
             UnconsciousEvacuee();
@@ -107,7 +133,9 @@ public class HandleAgentMovement
         }
         _evacuee.UpdateHealthStatus();
     }
-
+    /// <summary>
+    /// The evacuation process 
+    /// </summary>
     private void Evacuation()
     {
         if (_evacuee.IsLeader)
@@ -135,5 +163,10 @@ public class HandleAgentMovement
         {
             _evacuee.HelpAgent();
         }
+    }
+
+    public Position OriginalPosition()
+    {
+        return new Position(_coords[0], _coords[1]); 
     }
 }

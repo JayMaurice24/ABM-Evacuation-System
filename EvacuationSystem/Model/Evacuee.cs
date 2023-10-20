@@ -6,6 +6,7 @@ using Mars.Interfaces.Agents;
 using Mars.Interfaces.Environments;
 using Mars.Interfaces.Layers;
 using Mars.Numerics;
+using ServiceStack;
 
 namespace EvacuationSystem.Model;
 
@@ -65,7 +66,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
         if (!IsLeader) return;
         var potentialGroupMembers = Layer.EvacueeEnvironment.Explore(Position, radius: 3).ToList();
         if (potentialGroupMembers.Count <= 0) return;
-        foreach (var agent in potentialGroupMembers.Where(agent => agent.CollaborationFactor > 0.5 && !agent.IsInGroup && !agent.IsLeader && agent!=this && !Group.Contains(agent)))
+        foreach (var agent in potentialGroupMembers.Where(agent => agent.CollaborationFactor > 0.5 && !agent.IsInGroup && !agent.IsLeader && agent!=this && !Group.Contains(agent) && !FoundDistressedAgent  && !AgentReturningForItem))
         {
             agent.IsInGroup = true;
             agent.Leader = this;
@@ -86,7 +87,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     {
         var surroundingAgents = Layer.EvacueeEnvironment.Explore(Position, radius: 5).ToList();
         if(surroundingAgents.Count < 2) return;
-        var potentialLeaders = surroundingAgents.Where(agent => !agent.IsInGroup || !agent.IsLeader).ToList();
+        var potentialLeaders = surroundingAgents.Where(agent => !agent.IsInGroup || !agent.IsLeader || !FoundDistressedAgent || !AgentReturningForItem ).ToList();
         if (!potentialLeaders.Any()) return;
         var leader = potentialLeaders.OrderByDescending(agent => agent.Leadership).First();
         if (leader != this) return;
@@ -96,7 +97,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     /// <summary>
     /// Calculates the distance between two coordinates 
     /// </summary>
-    private double CalculateDistance(Position coords1, Position coords2)
+    public double CalculateDistance(Position coords1, Position coords2)
     {
         return Distance.Chebyshev(new[] { coords1.X, coords1.Y }, new[] { coords2.X, coords2.Y }); 
 
@@ -144,7 +145,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     /// <returns></returns>
     public bool AvoidFire(Position target)
     {
-        return Layer.FireLocations.Contains(target);
+        return Layer.FireEnvironment.Explore(target, 1) != null;
     }
     
     public void RemoveFromSimulation()
@@ -172,15 +173,66 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             case > 63 and < 94 when agent1.Y is > 26 and < 31 && agent2.X is > 63 and < 94 && agent2.Y is > 26 and < 31: //Passage4
             case > 63 and < 94 when agent1.Y is > 15 and < 19 && agent2.X is > 63 and < 94 && agent2.Y is > 15 and < 19: //Passage5
             case > 63 and < 73 when agent1.Y is > 19 and < 31 && agent2.X is > 63 and < 94 && agent2.Y is > 19 and < 31: //Passage6
-                if (Layer.SeeFire) return true;
-                Console.WriteLine($"{GetType().Name} {ID} has spotted the fire and alerted everyone else");
-                Layer.SeeFire = true;
                 return true;
             default:
                 return false;
         }
     }
+/// <summary>
+/// Calculates the probability of a successful return 
+/// </summary>
+/// <param name="target"></param>
+/// <returns></returns>
+    public double ProbabilityOfSuccess(Position target)
+    {
+        var exit = FindNearestExit(Layer.Exits);
+        var distanceToTarget =  CalculateDistance(Position, target);
+        var distanceToExit = CalculateDistance(Position, exit);
+        var nearestFlameToGoal = Layer.FireEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(new[] { target.X, target.Y }, new[] { agent.Position.X, agent.Position.Y }));
+        var nearestFlameToExit = Layer.FireEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(new[] { target.X, target.Y }, new[] { agent.Position.X, agent.Position.Y }));
+        var nearestFlameToAgent = Layer.FireEnvironment.Entities.MinBy(agent =>
+            Distance.Chebyshev(new[] { Position.X, Position.Y }, new[] { agent.Position.X, agent.Position.Y }));
+        
+        var distanceOfTargetToFire = CalculateDistance(nearestFlameToGoal.Position, target);
+        var distanceOfExitToFire  = CalculateDistance(nearestFlameToExit.Position,  exit);
+        var distanceOfTargetToExit = CalculateDistance(target, exit);
+        var distanceOfFireToAgent =  CalculateDistance(Position, nearestFlameToAgent.Position);
+        var timeTargetToExit = distanceOfTargetToExit * Mobility; 
+        var timeToExit = distanceToTarget * Mobility;
+        var timeToTarget = distanceToExit * Mobility;
+        var timeOfTargetToFire = distanceOfTargetToFire * Layer.SpreadRate;
+        var timeOfFireToExit = distanceOfExitToFire * Layer.SpreadRate;
+        var totalTimeToTargetAndBack = timeToTarget + timeTargetToExit;
+        var timeOfFireToAgent = distanceOfFireToAgent * Layer.SpreadRate;
 
+        double chance = 0;
+
+        if (timeToExit > timeToTarget)
+        {
+            chance+=1;
+        }
+        if (totalTimeToTargetAndBack < timeOfFireToExit)
+        {
+            chance+=1;
+        }
+        if ( timeOfFireToAgent > timeToTarget)
+        {
+            chance+=1;
+        }
+        if ( timeOfFireToAgent > timeToTarget*2)
+        {
+            chance+=1;
+        }
+        if ( timeOfTargetToFire < timeTargetToExit)
+        {
+            chance+=1;
+        }
+
+        double probabilityOfSuccess = chance / 5;
+        return probabilityOfSuccess;
+    }
     /// <summary>
     /// Push other agents out the way
     /// </summary>
@@ -212,17 +264,20 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
-  
-
     private Evacuee FindAgentsInNeed()
     {
         return Layer.EvacueeEnvironment.Entities.FirstOrDefault(agent => !agent.IsConscious && Perception(Position, agent.Position));
     }
+    
+    /// <summary>
+    /// Determines if an agent should be helped
+    /// </summary>
     public void HelpAgent()
     {
-        if (Health <= 30 || !(Empathy > 0.5) || !(Strength > 0.5)) return;
+        if (Empathy <= 0.5) return;
         var helped = FindAgentsInNeed();
         if (helped is not { Helper: null }) return;
+        if (ProbabilityOfSuccess(helped.Position) <= 0.5 && Strength <=0.5) return;
         FoundDistressedAgent = true;
         if (IsInGroup)
         {
@@ -237,6 +292,9 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             Movement.Agent.HandleReturnForHelp();
         }
     }
+    /// <summary>
+    /// Offer Help to an agent
+    /// </summary>
     public void OfferHelp()
     {
         if (Layer.EvacueeEnvironment.Entities.Contains(Helped))
@@ -252,7 +310,9 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
             Helped = null;
         }
     }
-
+    /// <summary>
+    /// Updates an agent's health
+    /// </summary>
     public void UpdateHealthStatus()
     {
         if (Health <= 5 && IsConscious)
@@ -263,6 +323,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
 
         if (Health > 0) return;
         Console.WriteLine($"{GetType().Name} {ID} Has been killed in the simulation");
+        ModelOutput.WriteCasDetails(this);
         RemoveFromSimulation();
         ModelOutput.NumDeaths++;
         ModelOutput.NumAgentsLeft--;
@@ -282,7 +343,7 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
     public int Aggression { get; set; }
     public int Health { get; set; }
     public bool IsLeader { get; set; }
-    public int Speed { get; set; }
+    public int Mobility { get; set; }
     public bool Helping { get; set; }
     public int DelayTime { get; set; }
     public bool LeaderHasReachedExit { get; set; }

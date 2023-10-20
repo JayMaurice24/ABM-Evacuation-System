@@ -27,7 +27,9 @@ public class HandleGroup
             FollowerUpdate();
         }
     }
-    
+    /// <summary>
+    /// Updates a leader's group status 
+    /// </summary>
     private void LeaderUpdate()
     {
         if (_rand.NextDouble() < 0.5)
@@ -51,7 +53,9 @@ public class HandleGroup
             ToSplitOrNotToSplit();
         }
     }
-    
+    /// <summary>
+    /// disbands group
+    /// </summary>
     private void DisbandGroup()
     {
         var agent = _evacuee.Group[0]; 
@@ -63,23 +67,36 @@ public class HandleGroup
         _evacuee.Group.Clear();
         _evacuee.IsInGroup = false;
         _evacuee.IsLeader = false;
+        if (_evacuee.FoundDistressedAgent)
+        {
+            _evacuee.Movement.Agent.HandleReturnForHelp();
+        }
+        else
+        {
+            _evacuee.Movement.Agent.HandleReturnForItem();
+        }
 
         Console.WriteLine(_evacuee.FoundDistressedAgent
             ? $"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to help an agent"
             : $"{_evacuee.GetType().Name} {_evacuee.ID} is no longer leading the group and is returning to find an item");
         ModelOutput.NumGroupLeave++;
     }
+    /// <summary>
+    /// Changes leader 
+    /// </summary>
     private void LeaderChange()
     {
-        var newLeader = _evacuee.Group.OrderByDescending(agent => agent.Leadership).First();
+        var group = _evacuee.Group;
+        var newLeader = group.OrderByDescending(agent => agent.Leadership).First();
         newLeader.IsLeader = true;
+        newLeader.Leader = null;
 
-        foreach (var a in _evacuee.Group)
+        foreach (var agent in _evacuee.Group.Where(agent => agent != newLeader))
         {
-            a.Leader = newLeader;
-            newLeader.Group.Add(a);
+            agent.Leader = newLeader;
+            newLeader.Group.Add(agent);
         }
-        newLeader.Goal = newLeader.FindNearestExit(_layer.Exits);
+        newLeader.Goal = newLeader.Movement.ExitWithNoFire();
         _evacuee.Group.Clear();
         
         _evacuee.IsLeader = false;
@@ -91,7 +108,10 @@ public class HandleGroup
             : $"Group has been split, {newLeader.GetType().Name} {newLeader.ID} is the new leader");
         ModelOutput.NumGroupLeave++;
     }
-
+    /// <summary>
+    /// Creates a new group
+    /// </summary>
+/// <param name="newGroup"></param>
     private void CreateNewGroup(List<Evacuee> newGroup)
     {
         switch (newGroup.Count)
@@ -126,6 +146,10 @@ public class HandleGroup
             }
         }
     }
+    
+    /// <summary>
+    /// Decides if a group should be split 
+    /// </summary>
     private void ToSplitOrNotToSplit()
     {
         var newGroup = new List<Evacuee>();
@@ -171,6 +195,10 @@ public class HandleGroup
         if(newGroup.Count < 1) return;
         CreateNewGroup(newGroup);
     }
+    
+    /// <summary>
+    /// Update group status for followers
+    /// </summary>
     private void FollowerUpdate()
     {
         if (_rand.NextDouble() > 0.5)
@@ -183,6 +211,9 @@ public class HandleGroup
         }
     }
     
+    /// <summary>
+    /// takes an agent our of a group
+    /// </summary>
     private void LeaveGroup()
     {
         _evacuee.Leader.Group.Remove(_evacuee);
@@ -199,7 +230,9 @@ public class HandleGroup
             Console.WriteLine($"{_evacuee.GetType().Name} {_evacuee.ID} Has left group and is returning for item alone");
         }
     }
-
+    /// <summary>
+    /// Same as split, from a follower's perspective
+    /// </summary>
     private void ToGoAloneOrNotToGoALone()
     {
         var newGroup = new List<Evacuee>();
@@ -245,7 +278,7 @@ public class HandleGroup
         else
         {
             _evacuee.Leader.ReturningWithGroupForItem = true;
-            _evacuee.Leader.Movement.Agent.HandleLeaderReturningForItem(_evacuee.OriginalPosition);
+            _evacuee.Leader.Movement.Agent.HandleLeaderReturningForItem(_evacuee.Movement.OriginalPosition());
             ModelOutput.NumberRet++;
         }
         if (newGroup.Count<1) return;
