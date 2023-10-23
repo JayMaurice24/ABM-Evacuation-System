@@ -283,9 +283,9 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
     public SpatialHashEnvironment<Fire> FireEnvironment { get; private set; }
     public SpatialHashEnvironment<Smoke> SmokeEnvironment { get; set; }
     public SpatialHashEnvironment<Alarm> AlarmEnvironment { get; set; }
-    public List<Fire> Fires { get; private set; }
-   
-    public List<Smoke> Smokes { get; private set; }
+    private List<Fire> Fires { get; set; }
+
+    private List<Smoke> Smokes { get; set; }
     public List<Alarm> Alarms { get; private set; }
     internal List<EvacueeType1> Agent1 { get; set; }
     internal List<EvacueeType2> Agent2 { get; set; }
@@ -322,22 +322,27 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
 
     public void Tick()
     {
-        Console.WriteLine($"Tick {GetCurrentTick()}");
-        Console.WriteLine($"Number of total agents: {ModelOutput.NumberOfAgents}");
-        Console.WriteLine($"Number of agents who reached exit: {ModelOutput.NumReachExit}");
-        Console.WriteLine($"Number of agents still in simulation: {EvacueeEnvironment.Entities.Count()}");
-        _output.Write();
-        switch (FireStarted)
+        if (EvacueeEnvironment.Entities.Any())
         {
-            case true when !SmokeSpread:
-                Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
-                break;
-            case true when SmokeSpread:
-                SpreadFireAndSmoke();
-                break;
+            Console.WriteLine($"Tick {GetCurrentTick()}");
+            Console.WriteLine($"Number of total agents: {ModelOutput.NumberOfAgents}");
+            Console.WriteLine($"Number of agents who reached exit: {ModelOutput.NumReachExit}");
+            Console.WriteLine($"Number of agents still in simulation: {EvacueeEnvironment.Entities.Count()}");
+            _output.Write();
+            switch (FireStarted)
+            {
+                case true when !SmokeSpread:
+                    Smokes = AgentManager.Spawn<Smoke, GridLayer>().ToList();
+                    break;
+                case true when SmokeSpread:
+                    SpreadFireAndSmoke();
+                    break;
+            }
         }
-        if (EvacueeEnvironment.Entities.Any()) return;
-        SmokeEnvironment.Reset();FireEnvironment.Reset();AlarmEnvironment.Reset();
+        else
+        {
+            SmokeEnvironment.Reset();FireEnvironment.Reset();AlarmEnvironment.Reset();
+        }
     }
 
     public void PostTick()
