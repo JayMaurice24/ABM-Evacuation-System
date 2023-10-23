@@ -10,11 +10,10 @@ namespace EvacuationSystem.Model;
 
 public class Evacuate
 {
-    public bool ReachedItem;
     private readonly Evacuee _evacuee;
     private readonly GridLayer _layer;
     public bool TripInProgress;
-    public List<Position>.Enumerator _path;
+    private List<Position>.Enumerator _path;
 
     public Evacuate(Evacuee evacuee, GridLayer layer)
     {
@@ -253,7 +252,6 @@ public class Evacuate
                 TripInProgress = false;
                 break;
         }
-        ReachedItem = true;
     }
 
     private void ReachedHelplessEvacuee()

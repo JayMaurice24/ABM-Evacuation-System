@@ -1,2 +1,0 @@
- West boundary: 
- TL: (21, 84), TR:  (54, 84), BL: (,)

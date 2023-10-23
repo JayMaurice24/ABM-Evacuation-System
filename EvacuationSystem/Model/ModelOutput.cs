@@ -8,23 +8,13 @@ public class ModelOutput
 {
     private static GridLayer _layer;
     readonly StreamWriter _output = new("tickOutput.txt");
-    static readonly StreamWriter ReturnOutput = new("returnOutput.txt");
-    static readonly StreamWriter ExitOutput = new("exitOutput.txt");
-    static readonly StreamWriter CasualtyOutput = new("casOutput.txt");
-    static readonly StreamWriter RemOutput = new("remOutput.txt");
     public ModelOutput( GridLayer layer)
     {
         _layer = layer; 
     }
     public void Write()
     {
-        if ((int)_layer.GetCurrentTick() == 1)
-        {
-            ReturnOutput.WriteLine("Evacuee Type, ID , Probability Of return");
-            ExitOutput.WriteLine("Evacuee Type, ID, Exit Location, tick, Risk level, Mobility, Forgot Item, Found distressed agent, In Group");
-            CasualtyOutput.WriteLine("Evacuee Type, ID, Location, Tick, Forgot Item, In Group");
-        }
-        _output.WriteLine($"Total ticks {_layer.GetCurrentTick()}");
+        _output.WriteLine($"Tick {_layer.GetCurrentTick()}");
         _output.WriteLine($"Number of total agents: {NumberOfAgents}");
         _output.WriteLine($"Number of Evacuee Type 1 : {_layer.Agent1.Count}");
         _output.WriteLine($"Number of Evacuee Type 2 : {_layer.Agent2.Count}");
