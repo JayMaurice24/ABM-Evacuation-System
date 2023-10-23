@@ -323,10 +323,8 @@ public class Evacuee : IAgent<GridLayer>, IPositionable
 
         if (Health > 0) return;
         Console.WriteLine($"{GetType().Name} {ID} Has been killed in the simulation");
-        ModelOutput.WriteCasDetails(this);
         RemoveFromSimulation();
         ModelOutput.NumDeaths++;
-        ModelOutput.NumAgentsLeft--;
     }
 
     #endregion

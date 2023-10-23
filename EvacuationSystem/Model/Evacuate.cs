@@ -329,9 +329,7 @@ public class Evacuate
                 Console.WriteLine($"{agent.GetType().Name} {agent.ID}'s group leader has reached exit {_evacuee.Goal} and is heading for exit too");
             }
         }
-        ModelOutput.WriteExitDetails(_evacuee);
         ModelOutput.NumReachExit++;
-        ModelOutput.NumAgentsLeft--;
         _evacuee.RemoveFromSimulation();
     }
     private IEnumerable<Evacuee> GetNearByObstacles()

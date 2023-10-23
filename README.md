@@ -59,3 +59,5 @@ Start the mini visualization by calling `$ python main.py`. The visualization no
 ## Interacting with the visualization
 
 While the visualization is running, its speed (framerate) can be changed by pressing the up arrow (increase speed) or down arrow (decrease speed) on your keyboard.
+
+PS: The simulation has to be stopped manually once the number of agents reach 0 

@@ -69,7 +69,6 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
         ModelOutput.NumberOfAgents = Agent1.Count + Agent2.Count + Agent3.Count + Agent4.Count + Agent5.Count + Agent6.Count
                          + Agent7.Count + Agent8.Count + Agent9.Count + Agent10.Count + Agent11.Count + Agent12.Count
                          + Agent13.Count + Agent14.Count + Agent15.Count + Agent16.Count + Agent17.Count + Agent18.Count;
-        ModelOutput.NumAgentsLeft = ModelOutput.NumberOfAgents;
         FrontStairs = stairF;
         BackStairs = stairB;
         Exits = FrontStairs;
@@ -337,7 +336,6 @@ public class GridLayer : RasterLayer, ISteppedActiveLayer
                 SpreadFireAndSmoke();
                 break;
         }
-        if(EvacueeEnvironment.Entities.Count()< 10){ModelOutput.WriteRemDetails();}
         if (EvacueeEnvironment.Entities.Any()) return;
         SmokeEnvironment.Reset();FireEnvironment.Reset();AlarmEnvironment.Reset();
     }

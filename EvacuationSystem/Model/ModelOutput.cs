@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Mars.Interfaces.Environments;
 
 namespace EvacuationSystem.Model;
@@ -46,7 +47,7 @@ public class ModelOutput
         _output.WriteLine($"Number of agents who reached exit: {NumReachExit}");
         _output.WriteLine($"Number of Agents Moving in group : {NumInGroup}");
         _output.WriteLine($"Number of Agents Moving alone : {NumberOfAgents - NumInGroup}");
-        _output.WriteLine($"Number of agents still in simulation: {NumAgentsLeft}");
+        _output.WriteLine($"Number of agents still in simulation: {_layer.EvacueeEnvironment.Entities.Count()}");
         _output.WriteLine($"Number of groups formed: {NumberOfGroups}");
         _output.WriteLine($"Number of agents who forgot an item :{NumForget}");
         _output.WriteLine($"Number of agents who forgot an item and is in group:{NumberRet}");
@@ -58,30 +59,14 @@ public class ModelOutput
         _output.WriteLine($"Number of Group Splits : {NumGroupSplits}");
         _output.WriteLine($"Number of Agents who left a group : {NumGroupLeave}");
     }
-    public static void WriteExitDetails(Evacuee evacuee)
-      {
-        
-          ExitOutput.WriteLine($"{evacuee.GetType().Name}, {evacuee.ID}, {evacuee.Goal}, {evacuee.RiskLevel}, {evacuee.Mobility}, {evacuee.AgentReturningForItem}, {evacuee.FoundDistressedAgent}, {evacuee.IsInGroup}");
-      }
-      public static void WriteCasDetails(Evacuee evacuee)
-      {
-          CasualtyOutput.WriteLine($"{evacuee.GetType().Name}, {evacuee.ID}, {evacuee.Goal}, {evacuee.RiskLevel}, {evacuee.Mobility}, {evacuee.AgentReturningForItem}, {evacuee.FoundDistressedAgent}, {evacuee.IsInGroup}");
-      }
-      public static void WriteRemDetails()
-      {
-          RemOutput.WriteLine($"Tick {_layer.GetCurrentTick()}");
-          foreach (var evacuee in _layer.EvacueeEnvironment.Entities)
-          {
-              RemOutput.WriteLine($"{evacuee.GetType().Name}, {evacuee.ID}, {evacuee.Goal}, {evacuee.Position}, {evacuee.Movement.OriginalPosition()}, {evacuee.IsConscious}, {evacuee.EvacueeHasStartedMoving}, {evacuee.RiskLevel}, {evacuee.Mobility}, {evacuee.AgentReturningForItem}, {evacuee.Movement.Agent.ReachedItem}, {evacuee.FoundDistressedAgent}, {evacuee.IsInGroup}, {evacuee.IsLeader}, {evacuee.LeaderHasReachedExit}");
-          }
-      }
+
+    
     public static int NumberOfAgents { get; set; }
     public static int NumberOfGroups { get; set; }
     public static int NumberRet { get; set; }
     public static int NumberOfAgentsPushed { get; set; }
     public static int NumGroupReturns { get; set; }
     public static int NumForget { get; set; }
-    public static int NumAgentsLeft { get; set; }
     public static int NumInGroup { get; set; }
     public static int NumReachExit { get; set; }
     public static int NumUnconscious { get; set; }

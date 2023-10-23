@@ -52,7 +52,7 @@ public class Fire : IAgent<GridLayer>, IPositionable
                 if (evacuee.Position.Equals(Position))
                 {
                     evacuee.RemoveFromSimulation();
-                    ModelOutput.WriteCasDetails(evacuee);
+                    ModelOutput.NumDeaths++;
                 }
                 else
                 {

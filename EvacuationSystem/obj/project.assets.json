@@ -4017,19 +4017,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\g19b8833\\.nuget\\packages\\": {}
+    "/home/jm/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\g19b8833\\Documents\\ABM-EVC\\EvacuationSystem\\EvacuationSystem.csproj",
+      "projectUniqueName": "/home/jm/Downloads/ABM-EVC/EvacuationSystem/EvacuationSystem.csproj",
       "projectName": "EvacuationSystem",
-      "projectPath": "C:\\Users\\g19b8833\\Documents\\ABM-EVC\\EvacuationSystem\\EvacuationSystem.csproj",
-      "packagesPath": "C:\\Users\\g19b8833\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\g19b8833\\Documents\\ABM-EVC\\EvacuationSystem\\obj\\",
+      "projectPath": "/home/jm/Downloads/ABM-EVC/EvacuationSystem/EvacuationSystem.csproj",
+      "packagesPath": "/home/jm/.nuget/packages/",
+      "outputPath": "/home/jm/Downloads/ABM-EVC/EvacuationSystem/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\g19b8833\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/home/jm/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
@@ -4069,30 +4069,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[6.0.14, 6.0.14]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Host.win-x64",
-            "version": "[6.0.14, 6.0.14]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[6.0.14, 6.0.14]"
-          },
-          {
-            "name": "Microsoft.WindowsDesktop.App.Ref",
-            "version": "[6.0.14, 6.0.14]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/jm/.dotnet/sdk/6.0.412/RuntimeIdentifierGraph.json"
       }
     }
   }
